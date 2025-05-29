@@ -13,16 +13,14 @@ public class Account {
     }
 
     // Getters.
-    public String getUsername() {
-        return username;
+    public String getUsername() { 
+        return username; 
     }
-
-    public String getUsername() {
-        return password;
+    public String getPassword() { 
+        return password; 
     }
-
-    public boolean isActive() {
-        return active;
+    public boolean isActive() { 
+        return active; 
     }
 
     // Deactivate Account Method.
