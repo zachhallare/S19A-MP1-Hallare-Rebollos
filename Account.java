@@ -27,17 +27,42 @@ public class Account {
         return active; 
     }
 
-    // Deactivate Account Method.
+    // Deactivates the account and removes all private calendars associated with it.
     public void deactivateAccount() {
         this.active = false;
-        calendars.removeIf(Calendar :: isPrivate);
+        
+        ArrayList<Calendar> filteredCalendars = new ArrayList<>();
+
+        // Loop through existing calendars and keep only the public ones.
+        for (Calendar cal : calendars) {
+            if (!cal.isPrivate()) {     // If calendar is public.
+                filteredCalendars.add(cal);     // Then keep it.
+            }
+        }
+
+        calendars = filteredCalendars;
     }
 
+
+    // Adds a new calendar to the account.
     public void addCalendar(Calendar calendar) {
         calendars.add(calendar);
     }
 
+
+    // Removes a calendar with the specified name from the account.
     public void removeCalendar(String calendarName) {
-        calendars.removeIf(cal -> cal.getName().equals(calendarName));
+        // New list to store calendars that should remain.
+        ArrayList<Calendar> updatedCalendars = new ArrayList<>();
+
+        // Loop through all calendars and check if they should be kept.
+        for (Calendar cal : calendars) {
+            boolean shouldKeep = !cal.getName().equals(calendarName);
+            if (shouldKeep) {
+                updatedCalendars.add(cal);
+            }
+        }
+
+        calendars = updatedCalendars;
     }
 }
