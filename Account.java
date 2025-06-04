@@ -61,7 +61,10 @@ public class Account {
     // }
 
 
-    // yo brent i changed up the logic a bit, i put the calendar.add outside the for loop. wdyt?
+    // yo brent i changed up the logic a bit, i put the calendar.add outside the for loop.
+    // cus i think it adds the calendar during the loop and could incorrectly allow duplicates?
+    // not sure tho :>
+
     // Adds a new calendar to the account.
     public boolean addCalendar(Calendar calendar) {
         boolean successfulCreation = true;
