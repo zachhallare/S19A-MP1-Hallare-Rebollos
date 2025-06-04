@@ -44,19 +44,39 @@ public class Account {
     }
 
 
+    // // Adds a new calendar to the account.
+    // public boolean addCalendar(Calendar calendar) {
+    //     boolean successfulCreation = false;
+    //     // check if calendar with the same name already exists
+    //     // cannot use break or return here, :(
+    //     for (Calendar cal : calendars) {
+    //         if (cal.getName().equals(calendar.getName())) {
+    //             successfulCreation = false; // Calendar with the same name exists.
+    //         } else {
+    //             calendars.add(calendar); // Add the new calendar.
+    //             successfulCreation = true; // Calendar with the same name does not exist.
+    //         }
+    //     }
+    //     return successfulCreation;
+    // }
+
+
+    // yo brent i changed up the logic a bit, i put the calendar.add outside the for loop. wdyt?
     // Adds a new calendar to the account.
     public boolean addCalendar(Calendar calendar) {
-        boolean successfulCreation = false;
+        boolean successfulCreation = true;
         // check if calendar with the same name already exists
         // cannot use break or return here, :(
         for (Calendar cal : calendars) {
             if (cal.getName().equals(calendar.getName())) {
                 successfulCreation = false; // Calendar with the same name exists.
-            } else {
-                calendars.add(calendar); // Add the new calendar.
-                successfulCreation = true; // Calendar with the same name does not exist.
             }
         }
+
+        if (successfulCreation) {
+            calendars.add(calendar); // Add the new calendar.
+        }
+
         return successfulCreation;
     }
 
