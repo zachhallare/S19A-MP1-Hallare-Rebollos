@@ -1,8 +1,5 @@
 import java.util.ArrayList;
 
-// each account can have multiple calendars, this can prob 
-// serve as a container for the calendarEntry class you made brent.
-
 public class Calendar {
     private String name;
     private boolean isPublic;      // true = public, false = private.
@@ -30,7 +27,7 @@ public class Calendar {
         System.out.println("##########################");
     }
 
-
+    // Getters.
     public String getName() {
         return name;
     }
@@ -44,21 +41,27 @@ public class Calendar {
         return entries;
     }
 
+    // Add a calendar entry.
     public void addEntry(CalendarEntry entry) {
         entries.add(entry);
     }
+
+    // Remove a calendar entry.
     public void removeEntry(CalendarEntry entry) {
         entries.remove(entry);
     }
+
+    // Delete calender contents.
     public void delete() {
         entries.clear();
     } 
 
+    // Setters
     public void setName(String name) {
         this.name = name;
     }
     public void setPrivate(boolean isPrivate) {
-        this.isPublic = false;
+        this.isPublic = !isPrivate;
     }
 
 
