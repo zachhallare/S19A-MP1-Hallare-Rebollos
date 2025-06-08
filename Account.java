@@ -30,12 +30,11 @@ public class Account {
     // Deactivates the account and removes all private calendars associated with it.
     public void deactivateAccount() {
         this.active = false;
-        
         ArrayList<Calendar> filteredCalendars = new ArrayList<>();
 
         // Loop through existing calendars and keep only the public ones.
         for (Calendar cal : calendars) {
-            if (!cal.isPrivate()) {     // If calendar is public.
+            if (cal.isPublic()) {     // If calendar is public.
                 filteredCalendars.add(cal);     // Then keep it.
             }
         }
@@ -84,19 +83,23 @@ public class Account {
     }
 
 
-    // Removes a calendar with the specified name from the account.
-    public void removeCalendar(String calendarName) {
-        // New list to store calendars that should remain.
-        ArrayList<Calendar> updatedCalendars = new ArrayList<>();
+    // // Removes a calendar with the specified name from the account.
+    // public void removeCalendar(String calendarName) {
+    //     // New list to store calendars that should remain.
+    //     ArrayList<Calendar> updatedCalendars = new ArrayList<>();
+    //     // Loop through all calendars and check if they should be kept.
+    //     for (Calendar cal : calendars) {
+    //         boolean shouldKeep = !cal.getName().equals(calendarName);
+    //         if (shouldKeep) {
+    //             updatedCalendars.add(cal);
+    //         }
+    //     }
+    //     calendars = updatedCalendars;
+    // }
 
-        // Loop through all calendars and check if they should be kept.
-        for (Calendar cal : calendars) {
-            boolean shouldKeep = !cal.getName().equals(calendarName);
-            if (shouldKeep) {
-                updatedCalendars.add(cal);
-            }
-        }
 
-        calendars = updatedCalendars;
+    // Removes calendar from account's list. 
+    public void removeCalendar(Calendar calendar) {
+        calendars.remove(calendar);     // i just realized we can do this lol.
     }
 }

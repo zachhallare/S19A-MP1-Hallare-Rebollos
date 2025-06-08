@@ -5,12 +5,14 @@ import java.util.ArrayList;
 
 public class Calendar {
     private String name;
-    private boolean isPrivate;
+    private boolean isPublic;      // true = public, false = private.
+    private Account owner;
     private ArrayList<CalendarEntry> entries;
     
-    public Calendar(String name, boolean isPrivate) {
+    public Calendar(String name, boolean isPublic, Account owner) {
         this.name = name;
-        this.isPrivate = isPrivate;
+        this.isPublic = isPublic;
+        this.owner = owner;
         this.entries = new ArrayList<>();
     }
 
@@ -28,14 +30,16 @@ public class Calendar {
         System.out.println("##########################");
     }
 
+
     public String getName() {
         return name;
     }
-
-    public boolean isPrivate() {
-        return isPrivate;
+    public boolean isPublic() {
+        return isPublic;
     }
-
+    public Account getOwner() {
+        return owner;
+    }
     public ArrayList<CalendarEntry> getEntries() {
         return entries;
     }
@@ -43,7 +47,6 @@ public class Calendar {
     public void addEntry(CalendarEntry entry) {
         entries.add(entry);
     }
-
     public void removeEntry(CalendarEntry entry) {
         entries.remove(entry);
     }
@@ -51,9 +54,8 @@ public class Calendar {
     public void setName(String name) {
         this.name = name;
     }
-
     public void setPrivate(boolean isPrivate) {
-        this.isPrivate = isPrivate;
+        this.isPublic = false;
     }
 
 
