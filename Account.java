@@ -14,6 +14,10 @@ public class Account {
         this.password = password;
         this.active = true;
         this.calendars = new ArrayList<>();
+
+        // Default private calendar name after the username.
+        Calendar defaultCalendar = new Calendar(username, false, this);     // "this" passes itself as the owner.
+        calendars.add(defaultCalendar);
     }
 
     // Getters.
@@ -26,80 +30,59 @@ public class Account {
     public boolean isActive() { 
         return active; 
     }
+    public ArrayList<Calendar> getCalendars() {
+        return calendars;
+    }
 
-    // Deactivates the account and removes all private calendars associated with it.
+    // Deactivates the account and removes all private calendars.
     public void deactivateAccount() {
-        this.active = false;
-        ArrayList<Calendar> filteredCalendars = new ArrayList<>();
+        active = false;
+        ArrayList<Calendar> publicCalendars = new ArrayList<>();
 
-        // Loop through existing calendars and keep only the public ones.
         for (Calendar cal : calendars) {
-            if (cal.isPublic()) {     // If calendar is public.
-                filteredCalendars.add(cal);     // Then keep it.
+            if (cal.isPublic()) {     
+                publicCalendars.add(cal);     
             }
         }
 
-        calendars = filteredCalendars;
+        calendars = publicCalendars;
     }
 
 
-    // // Adds a new calendar to the account.
-    // public boolean addCalendar(Calendar calendar) {
-    //     boolean successfulCreation = false;
-    //     // check if calendar with the same name already exists
-    //     // cannot use break or return here, :(
-    //     for (Calendar cal : calendars) {
-    //         if (cal.getName().equals(calendar.getName())) {
-    //             successfulCreation = false; // Calendar with the same name exists.
-    //         } else {
-    //             calendars.add(calendar); // Add the new calendar.
-    //             successfulCreation = true; // Calendar with the same name does not exist.
-    //         }
-    //     }
-    //     return successfulCreation;
-    // }
-
-
-    // yo brent i changed up the logic a bit, i put the calendar.add outside the for loop.
-    // cus i think it adds the calendar during the loop and could incorrectly allow duplicates?
-    // not sure tho :>
-
-    // Adds a new calendar to the account.
+    // Add calendar to account if name doesn't conflict.
     public boolean addCalendar(Calendar calendar) {
-        boolean successfulCreation = true;
-        // check if calendar with the same name already exists
-        // cannot use break or return here, :(
+        boolean exists = false;
+
         for (Calendar cal : calendars) {
             if (cal.getName().equals(calendar.getName())) {
-                successfulCreation = false; // Calendar with the same name exists.
+                exists = true; 
             }
         }
 
-        if (successfulCreation) {
-            calendars.add(calendar); // Add the new calendar.
+        if (!exists) {
+            calendars.add(calendar); 
         }
 
-        return successfulCreation;
+        return !exists;
     }
-
-
-    // // Removes a calendar with the specified name from the account.
-    // public void removeCalendar(String calendarName) {
-    //     // New list to store calendars that should remain.
-    //     ArrayList<Calendar> updatedCalendars = new ArrayList<>();
-    //     // Loop through all calendars and check if they should be kept.
-    //     for (Calendar cal : calendars) {
-    //         boolean shouldKeep = !cal.getName().equals(calendarName);
-    //         if (shouldKeep) {
-    //             updatedCalendars.add(cal);
-    //         }
-    //     }
-    //     calendars = updatedCalendars;
-    // }
 
 
     // Removes calendar from account's list. 
     public void removeCalendar(Calendar calendar) {
-        calendars.remove(calendar);     // i just realized we can do this lol.
+        calendars.remove(calendar);    
+    }
+
+
+    // Check if account owns a calendar
+    public boolean ownsCalendar(Calendar calendar) {
+        boolean owns = false;
+
+        for (Calendar cal : calendars) {
+            if (cal == calendar && cal.getOwner() == this) {
+                owns = true;
+            }
+        }
+
+        return owns;
     }
 }

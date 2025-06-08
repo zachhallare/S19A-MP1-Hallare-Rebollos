@@ -50,6 +50,9 @@ public class Calendar {
     public void removeEntry(CalendarEntry entry) {
         entries.remove(entry);
     }
+    public void delete() {
+        entries.clear();
+    } 
 
     public void setName(String name) {
         this.name = name;

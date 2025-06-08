@@ -7,7 +7,7 @@ import java.time.LocalTime;
 // P.S.S.S.S. Where each account has multiple calendars, and each calendar has multiple entries.
 public class CalendarEntry {
     private String title;
-    private LocalDate date;
+    private LocalDate date;        
     private LocalTime timeStart;
     private LocalTime timeEnd;
     private String description;
