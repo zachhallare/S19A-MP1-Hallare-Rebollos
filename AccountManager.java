@@ -31,7 +31,61 @@ public class AccountManager {
     }
 
     // Create new account.
-    public boolean createAccount {
+    public Account createAccount() {
+        System.out.println("\n--- Create Account ---");
+        String username = "";
+        boolean isUnique = false;
+        
+        while (!isUnique) {
+            System.out.print("Enter username: ");
+            username = scanner.nextLine().trim();
 
+            if (username.isEmpty()) {
+                System.out.println("Username cannot be empty.");
+            }
+            else if (usernameExists(username)) {
+                System.out.println("Username already exists. Try a different one.");
+            }
+            else {
+                isUnique = true;
+            }
+        }
+
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        Account newAccount = new Account(username, password);
+        // Add default private calendar with username as calendar name.
+        Calendar defaultCal = new Calendar(username, false, newAccount);
+        newAccount.addCalendar(defaultCal);
+
+        accounts.add(newAccount);
+        System.out.println("Account created sucessfully!");
+        return newAccount;
+    }
+
+    // Checks if username exists.
+    private boolean usernameExists(String username) {
+        for (Account acc : accounts) {
+            if (acc.getUsername().equals(username) && acc.isActive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void logout() {
+        System.out.println("Logged out successfully.");
+    }
+
+    public ArrayList<Account> getAccounts() {
+        return accounts;
+    }
+
+
+    // Delete account by deactivating and removing private calenders.
+    public void deleteAccount(Account account) {
+        account.deactivateAccount();
+        System.out.println("Account " + account.getUsername() + " deleted successfully.");
     }
 }
