@@ -1,5 +1,7 @@
 import java.util.*;
 
+// ts handles user account creation, login, deletion, and tracks all accounts.
+
 public class AccountManager {
     private ArrayList<Account> accounts;
     private Scanner scanner;
