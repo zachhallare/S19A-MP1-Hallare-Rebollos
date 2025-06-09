@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 // ts handles user account creation, login, deletion, and tracks all accounts.
 
@@ -8,7 +9,7 @@ public class AccountManager {
 
     // Constructor.
     public AccountManager() {
-        accounts = new ArrayList<>();
+        accounts = FileManager.loadAccounts();
         scanner = new Scanner(System.in);
     }
 
@@ -57,12 +58,15 @@ public class AccountManager {
         String password = scanner.nextLine();
 
         Account newAccount = new Account(username, password);
+
         // Add default private calendar with username as calendar name.
         Calendar defaultCal = new Calendar(username, false, newAccount);
         newAccount.addCalendar(defaultCal);
 
         accounts.add(newAccount);
+        FileManager.addAccount(newAccount);
         System.out.println("Account created sucessfully!");
+        
         return newAccount;
     }
 
@@ -76,9 +80,11 @@ public class AccountManager {
         return false;
     }
 
+
     public void logout() {
         System.out.println("Logged out successfully.");
     }
+
 
     public ArrayList<Account> getAccounts() {
         return accounts;
@@ -88,6 +94,7 @@ public class AccountManager {
     // Delete account by deactivating and removing private calenders.
     public void deleteAccount(Account account) {
         account.deactivateAccount();
+        FileManager.deleteAccount(account.getUsername());
         System.out.println("Account " + account.getUsername() + " deleted successfully.");
     }
 }

@@ -18,7 +18,11 @@ public class FileManager {
                 String[] userData = lineInFile.split(",");
                 String username = userData[0].trim();
                 String password = userData[1].trim();
-                accounts.add(new Account(username, password));
+                
+                Account acc = new Account(username, password);
+                Calendar defaultCal = new Calendar(username, false, acc);
+                acc.addCalendar(defaultCal);
+                accounts.add(acc);
             }
         }
         catch (IOException error) {
@@ -37,5 +41,22 @@ public class FileManager {
         catch (IOException error) {
             System.out.println("File writing error: " + error.getMessage());
         }     
+    }
+
+    // Delete specific account by username then rewrites the file.
+    public static void deleteAccount(String usernameToDelete) {
+        ArrayList<Account> accounts = loadAccounts();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            for (Account acc : accounts) {
+                if (acc.isActive() && !acc.getUsername().equals(usernameToDelete)) {
+                    writer.write(acc.getUsername() + ", " + acc.getPassword());
+                    writer.newLine();
+                }
+            }
+        } 
+        catch (IOException error) {
+            System.out.println("File saving error: " + error.getMessage());
+        }
     }
 }
