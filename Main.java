@@ -4,12 +4,12 @@ import java.util.*;
 // i'm basing this off my old java projects.
 // has the startup menu, main menu, and login/logout flow
 
-public class CalendarApp {
+public class Main {
     private AccountManager accountManager;
     private Scanner scanner;
 
     // Constructor
-    public CalendarApp() {
+    public Main() {
         accountManager = new AccountManager();
         scanner = new Scanner(System.in);
     }
@@ -36,7 +36,11 @@ public class CalendarApp {
                 int option = getUserOption(1, 6);
                 switch (option) {
                     // Temporary placeholders muna.
-                    case 1 -> System.out.println("View monthly calender");
+                    case 1 -> {
+                        // views monthly calendar.
+                        CalendarViewer viewer = new CalendarViewer(scanner); 
+                        viewer.viewCalendar(loggedInAccount);
+                    }
                     case 2 -> System.out.println("Add Calendar");
                     case 3 -> System.out.println("Delete Calender");
                     case 4 -> System.out.println("Manage Calender Entries");
@@ -54,7 +58,7 @@ public class CalendarApp {
     }
 
 
-    // Displays.
+    // Displays starting menu.
     private void displayStartupMenu() {
         System.out.println("\n=== DIGITAL CALENDAR APPLICATION ===");
         System.out.println("1. Login");
@@ -63,12 +67,15 @@ public class CalendarApp {
         System.out.print("Choose option: ");
     }
 
+    // Displays main menu.
     private void displayMainMenu(Account account) {
         System.out.println("\n=== Welcome, " + account.getUsername() + " ===");
+        
         System.out.println("Made Calendars:");
         for (Calendar cal : account.getCalendars()) {
             System.out.println("- " + cal.getName() + (cal.isPublic() ? " (Public)" : " (Private)"));
         }
+        
         System.out.println("\n1. View Monthly Calendar");
         System.out.println("2. Add Calendar");
         System.out.println("3. Delete Calendar");
@@ -100,7 +107,7 @@ public class CalendarApp {
 
     
     public static void main(String[] args) {
-        CalendarApp app = new CalendarApp();
+        Main app = new Main();
         app.start();
     }
 }
