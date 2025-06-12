@@ -1,3 +1,9 @@
+// Handles reading and writing account credentials to a text file.
+// It supports loading all accounts and adding a new one. 
+
+// P.S. maybe this we can add the active status of the user together with this later on.
+// like: username, password, activeStatus
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -12,13 +18,16 @@ public class FileManager {
     public static ArrayList<Account> loadAccounts() {
         ArrayList<Account> accounts = new ArrayList<>();
 
+        // Open text file and read each line.
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
             String lineInFile;
             while ((lineInFile = reader.readLine()) != null) {
+                // Split line by comma to get username and password.
                 String[] userData = lineInFile.split(",");
                 String username = userData[0].trim();
                 String password = userData[1].trim();
                 
+                // Create new Account o
                 Account acc = new Account(username, password);
                 Calendar defaultCal = new Calendar(username, false, acc);
                 acc.addCalendar(defaultCal);
@@ -43,20 +52,20 @@ public class FileManager {
         }     
     }
 
-    // Delete specific account by username then rewrites the file.
-    public static void deleteAccount(String usernameToDelete) {
-        ArrayList<Account> accounts = loadAccounts();
+    // // Delete specific account by username then rewrites the file.
+    // public static void deleteAccount(String usernameToDelete) {
+    //     ArrayList<Account> accounts = loadAccounts();
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (Account acc : accounts) {
-                if (acc.isActive() && !acc.getUsername().equals(usernameToDelete)) {
-                    writer.write(acc.getUsername() + ", " + acc.getPassword());
-                    writer.newLine();
-                }
-            }
-        } 
-        catch (IOException error) {
-            System.out.println("File saving error: " + error.getMessage());
-        }
-    }
+    //     try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME))) {
+    //         for (Account acc : accounts) {
+    //             if (acc.isActive() && !acc.getUsername().equals(usernameToDelete)) {
+    //                 writer.write(acc.getUsername() + ", " + acc.getPassword());
+    //                 writer.newLine();
+    //             }
+    //         }
+    //     } 
+    //     catch (IOException error) {
+    //         System.out.println("File saving error: " + error.getMessage());
+    //     }
+    // }
 }
