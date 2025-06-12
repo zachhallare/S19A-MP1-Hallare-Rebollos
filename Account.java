@@ -1,4 +1,5 @@
-// Account class for account info.
+// Account.java represents a user account.
+// It manages the user credentials and status.
 
 import java.util.ArrayList;
 
@@ -8,15 +9,16 @@ public class Account {
     private boolean active;
     private ArrayList<Calendar> calendars;
 
-    // Constructor.
+    // Constructor: Initializes user account with needed information.
     public Account(String username, String password) {
         this.username = username;
         this.password = password;
         this.active = true;
         this.calendars = new ArrayList<>();
 
-        // Default private calendar name after the username.
-        Calendar defaultCalendar = new Calendar(username, false, this);     // "this" passes itself as the owner.
+        // Create a blank default private calendar after creating an account. 
+        // "this" refers to the owner of the calender as it's named after them.
+        Calendar defaultCalendar = new Calendar(username, false, this);
         calendars.add(defaultCalendar);
     }
 
@@ -27,6 +29,8 @@ public class Account {
     public String getPassword() { 
         return password; 
     }
+
+    // Returns whether the account is active.
     public boolean isActive() { 
         return active; 
     }
@@ -36,7 +40,8 @@ public class Account {
 
     // Deactivates the account and removes all private calendars.
     public void deactivateAccount() {
-        active = false;
+        active = false;     // this doesn't work yet.
+        // this can be changed up in the AccountManager so the user can't access their account once it's deactivated.
         ArrayList<Calendar> publicCalendars = new ArrayList<>();
 
         for (Calendar cal : calendars) {
@@ -73,6 +78,7 @@ public class Account {
     }
 
 
+    // P.S. i dont think this method was used lol.
     // Check if account owns a calendar
     public boolean ownsCalendar(Calendar calendar) {
         boolean owns = false;

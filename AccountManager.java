@@ -1,44 +1,47 @@
+// AccountManager handles user account creation, login,
+// deletion, and tracks all accounts in the system.
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// ts handles user account creation, login, deletion, and tracks all accounts.
-
 public class AccountManager {
-    private ArrayList<Account> accounts;
-    private Scanner scanner;
+    private ArrayList<Account> accounts;        // Arraylist of all accounts loaded from text file.
+    private Scanner scanner;                    
 
-    // Constructor.
+    // Constructor: Loads accounts and initializes scanner.
     public AccountManager() {
-        accounts = FileManager.loadAccounts();
+        accounts = FileManager.loadAccounts();      // Lists the accounts already made.
         scanner = new Scanner(System.in);
     }
 
-    // Login
+    // Logs in an existing account if credentials match and account is currently active.
     public Account login() {
         System.out.println("\n--- Login ---");
         System.out.print("Enter username: ");
         String username = scanner.nextLine().trim();
-
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
         for (Account acc : accounts) {
+            // Check for matching credentials and ensure the account is active.
             if (acc.isActive() && acc.getUsername().equals(username) && acc.getPassword().equals(password)) {
                 System.out.println("Login successful! Welcome, " + acc.getUsername() + ".");
                 return acc;
             }
         }
 
+        // If no matching account was found.
         System.out.println("Invalid username or password.");
         return null;
     }
 
-    // Create new account.
+    // Create new account with unique username and adds it to the account list.
     public Account createAccount() {
         System.out.println("\n--- Create Account ---");
         String username = "";
         boolean isUnique = false;
         
+        // Loops until a valid username is provided.
         while (!isUnique) {
             System.out.print("Enter username: ");
             username = scanner.nextLine().trim();
@@ -54,15 +57,16 @@ public class AccountManager {
             }
         }
 
+        // P.S. maybe we can do a random password generator as a bonus? wdyt.
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
 
+        // Create the new account.
         Account newAccount = new Account(username, password);
+        // Calendar defaultCal = new Calendar(username, false, newAccount);
+        // newAccount.addCalendar(defaultCal);
 
-        // Add default private calendar with username as calendar name.
-        Calendar defaultCal = new Calendar(username, false, newAccount);
-        newAccount.addCalendar(defaultCal);
-
+        // Add to list and file.
         accounts.add(newAccount);
         FileManager.addAccount(newAccount);
         System.out.println("Account created sucessfully!");
@@ -70,7 +74,8 @@ public class AccountManager {
         return newAccount;
     }
 
-    // Checks if username exists.
+
+    // Checks if username is already used by another account.
     private boolean usernameExists(String username) {
         for (Account acc : accounts) {
             if (acc.getUsername().equals(username) && acc.isActive()) {
@@ -81,17 +86,19 @@ public class AccountManager {
     }
 
 
+    // Logs out the current account.
     public void logout() {
         System.out.println("Logged out successfully.");
     }
 
 
+    // Returns the list of all accounts.
     public ArrayList<Account> getAccounts() {
         return accounts;
     }
 
 
-    // Delete account by deactivating and removing private calenders.
+    // Deacti
     public void deleteAccount(Account account) {
         account.deactivateAccount();
         FileManager.deleteAccount(account.getUsername());

@@ -1,5 +1,7 @@
-import java.time.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 // Views the calender. based on my lab activity 1 before.
 // idk how to integrate it yet i just wanted to see how it would look first.
@@ -9,6 +11,7 @@ import java.util.*;
 
 // June 11 - imma try something big.
 // IT WORKED
+
 
 public class CalendarViewer {
     private Scanner scanner;
