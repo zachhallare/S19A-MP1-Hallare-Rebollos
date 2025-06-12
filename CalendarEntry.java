@@ -12,7 +12,7 @@ public class CalendarEntry {
     private LocalTime timeEnd;
     private String description;
 
-    // Default constructor
+    // Default Constructor.
     public CalendarEntry() {
         this.title = "";
         this.date = LocalDate.now();
@@ -21,7 +21,7 @@ public class CalendarEntry {
         this.description = "";
     }
 
-    // Actual constructor
+    // Full Constructor.
     public CalendarEntry(String title, LocalDate date, LocalTime timeStart, LocalTime timeEnd, String description) {
         this.title = title;
         this.date = date;

@@ -100,7 +100,7 @@ public class AccountManager {
 
     // Deactivates/"deletes" an account.
     public void deleteAccount(Account account) {
-        account.deactivateAccount();
+        account.deleteAccountCalendars();
         System.out.println("Account " + account.getUsername() + " deactivated.");
     }
 }

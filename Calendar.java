@@ -1,11 +1,16 @@
+// Represents a calendar that belongs to a specific user.
+// The calendar can be either public or private.
+// It holds a list of entries the user can add later on.
+
 import java.util.ArrayList;
 
 public class Calendar {
-    private String name;
-    private boolean isPublic;      // true = public, false = private.
-    private Account owner;
-    private ArrayList<CalendarEntry> entries;
+    private String name;            // Name of the calendar.
+    private boolean isPublic;       // Calendar Visibility: true = public, false = private.
+    private Account owner;          // Account that owns this calendar.
+    private ArrayList<CalendarEntry> entries;       // Lists of entries.
     
+    // Constructor: Calender with name, visibility, and owner.
     public Calendar(String name, boolean isPublic, Account owner) {
         this.name = name;
         this.isPublic = isPublic;
@@ -13,17 +18,10 @@ public class Calendar {
         this.entries = new ArrayList<>();
     }
 
-    // display top calendar information
-    /*
-     * ##########################
-     * #\t Calendar Name: abacadabra\t #
-     * # Sunday # Monday # Tuesday # Wednesday # Thursday # Friday # Saturday #
-     * ##########################
-     */
-    public void displayCalendarDetails() {
+    // Displays the calendar's name (not used yet, still can be used).
+    public void displayCalendarName() {
         System.out.println("##########################");
         System.out.printf("#\t Calendar Name: %s\t #\n", this.name);
-        System.out.println("# Sunday # Monday # Tuesday # Wednesday # Thursday # Friday # Saturday #");
         System.out.println("##########################");
     }
 
@@ -52,7 +50,7 @@ public class Calendar {
     }
 
     // Delete calender contents.
-    public void delete() {
+    public void deleteCalendarEntries() {
         entries.clear();
     } 
 
