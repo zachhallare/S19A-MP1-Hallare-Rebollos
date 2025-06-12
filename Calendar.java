@@ -18,13 +18,6 @@ public class Calendar {
         this.entries = new ArrayList<>();
     }
 
-    // Displays the calendar's name (not used yet, still can be used).
-    public void displayCalendarName() {
-        System.out.println("##########################");
-        System.out.printf("#\t Calendar Name: %s\t #\n", this.name);
-        System.out.println("##########################");
-    }
-
     // Getters.
     public String getName() {
         return name;

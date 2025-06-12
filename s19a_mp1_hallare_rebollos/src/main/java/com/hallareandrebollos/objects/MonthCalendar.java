@@ -1,0 +1,198 @@
+package com.hallareandrebollos.objects;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+
+public class MonthCalendar {
+    private ArrayList<Entry> entries; // List of entries for the month.
+    private int monthNumber;            // Month number (1-12).
+    private int yearNumber;             // Year number.
+    private int daysInMonth;            // Number of days in the month.
+    private int startDay;               // Day of the week the month starts on (1-7, where 1 is Sunday).
+    private int firstDay;              // First day of the month if sunday isn't the first day of the week.
+    private int currentDay;            // Current day of the month (1-31). -1 if not today.
+    private int calendarID;           // ID of the calendar.
+    private int ownerID;          // ID of the owner of the calendar. -1 if public calendar.
+
+    // Default Constructor: Initializes the month calendar with current month and year. For null safety.
+    public MonthCalendar(ArrayList<Entry> entries) {
+        this.entries = (entries != null) ? entries : new ArrayList<>();
+        this.monthNumber = java.time.LocalDate.now().getMonthValue();
+        this.yearNumber = java.time.LocalDate.now().getYear();
+        this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
+        this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
+        this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
+        this.currentDay = (java.time.LocalDate.now().getMonthValue() == monthNumber && 
+                           java.time.LocalDate.now().getYear() == yearNumber) ? 
+                           java.time.LocalDate.now().getDayOfMonth() : -1;
+                           // A Glorified if else statement to check if today is in the current month. LMAO
+    }
+
+    // Constructor: Initializes the month calendar with specified month and year. Assumes that selected month and year are not today.
+    public MonthCalendar(int monthNumber, int yearNumber, ArrayList<Entry> entries) {
+        this.entries = (entries != null) ? entries : new ArrayList<>();
+        this.monthNumber = monthNumber;
+        this.yearNumber = yearNumber;
+        this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
+        this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
+        this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
+        this.currentDay = -1; // No current day set for specified month/year.
+    }
+
+    public void displayCalendar() {
+        System.out.println("\n+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
+        System.out.println("|   Sunday  |   Monday  |  Tuesday  | Wednesday |  Thursday |   Friday  | Saturday  |");
+        System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
+
+        int currentDayPosition = 1;
+
+        // Empty cells before the start day.
+        for (int i = 1; i < this.startDay; i++) {
+            System.out.print("|           ");
+            currentDayPosition++;
+        }
+
+        // Print each day.
+        for (int day = 1; day <= this.daysInMonth; day++) {
+            boolean hasEntry = false;
+            for (int i = 0; i < entries.size(); i++) {
+                LocalDate entryDate = entries.get(i).getDate();
+                if (entryDate.getYear() == this.yearNumber && entryDate.getMonthValue() == this.monthNumber && entryDate.getDayOfMonth() == day) {
+                    hasEntry = true;
+                }
+            }
+
+            if (hasEntry) {
+                System.out.printf("| %2d   *    ", day);
+            } 
+            else {
+                System.out.printf("| %2d        ", day);
+            }
+
+            if (currentDayPosition % 7 == 0) {
+                System.out.println("|");
+                System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
+            }
+            currentDayPosition++;
+        }
+
+        // Fill remaining cells.
+        int trailing = (currentDayPosition - 1) % 7;
+        if (trailing != 0) {
+            int remaining = 7 - trailing;
+            for (int i = 0; i < remaining; i++) {
+                System.out.print("|           ");
+            }
+            System.out.println("|");
+            System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
+        }
+    }
+
+    public void displayEntries(int dayNumber) {
+        System.out.println("\nEntries for " + monthNumber + "/" + dayNumber + "/" + yearNumber + ":");
+        boolean hasEntries = false;
+        for (Entry entry : entries) {
+            if (entry.getDate().getYear() == yearNumber && 
+                entry.getDate().getMonthValue() == monthNumber && 
+                entry.getDate().getDayOfMonth() == dayNumber) {
+                System.out.println("["+ entry.getTimeStartString() + " - " + entry.getTimeEndString() + "] " + entry.getTitle());
+                System.out.println("Description: " + entry.getDescription());
+                System.out.println("-----------------------------");
+                hasEntries = true;
+            }
+        }
+        if (!hasEntries) {
+            System.out.println("No entries for this day.");
+        }
+    }
+
+    public boolean saveCalendar() {
+        // Saves calendar to ownerID folder inside resources/calendars.
+        // The calendar is saved in a text file format.
+        // Saves them as "calendarID.txt" format.
+        // First line is the owner ID.
+        // Second line is the month number.
+        // Third line is the year number.
+        // Fourth line and beyond are the entries in the format:
+        // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
+        String filePath = (this.ownerID == -1) ? 
+            "resources/calendars/public/" + this.calendarID + ".txt" : 
+            "resources/calendars/" + this.ownerID + "/" + this.calendarID + ".txt";
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(String.valueOf(this.ownerID));
+            writer.newLine();
+            writer.write(String.valueOf(this.monthNumber));
+            writer.newLine();
+            writer.write(String.valueOf(this.yearNumber));
+            writer.newLine();
+
+            for (Entry entry : this.entries) {
+                writer.write(entry.getDateString() + ", " + entry.getTitle() + ", " + 
+                             entry.getTimeStartString() + ", " + entry.getTimeEndString() + ", " + 
+                             entry.getDescription());
+                writer.newLine();
+            }
+            return true; // Successfully saved.
+        } catch (IOException e) {
+            System.out.println("Error saving calendar: " + e.getMessage());
+            return false; // Failed to save.
+        }
+    }
+
+    public boolean deleteCalendar() {
+        // Deletes the calendar file.
+        String filePath = (this.ownerID == -1) ? 
+            "resources/calendars/public/" + this.calendarID + ".txt" : 
+            "resources/calendars/" + this.ownerID + "/" + this.calendarID + ".txt";
+
+        java.io.File file = new java.io.File(filePath);
+        if (file.exists()) {
+            return file.delete(); // Returns true if deletion was successful.
+        } else {
+            System.out.println("Calendar file does not exist.");
+            return false; // File not found.
+        }
+    }
+
+    public boolean loadCalendar(String ownerID, String calendarID) {
+    // Loads the calendar from the specified owner ID and calendar ID.
+        String filePath = (ownerID.equals("-1")) ? 
+            "resources/calendars/public/" + calendarID + ".txt" : 
+            "resources/calendars/" + ownerID + "/" + calendarID + ".txt";
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            this.ownerID = Integer.parseInt(reader.readLine().trim());
+            this.monthNumber = Integer.parseInt(reader.readLine().trim());
+            this.yearNumber = Integer.parseInt(reader.readLine().trim());
+            this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
+            this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
+            this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
+            this.currentDay = -1; // No current day set for specified month/year.
+            this.entries.clear(); // Clear existing entries before loading.
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                LocalDate date = LocalDate.parse(parts[0].trim());
+                String title = parts[1].trim();
+                LocalTime timeStart = LocalTime.parse(parts[2].trim());
+                LocalTime timeEnd = LocalTime.parse(parts[3].trim());
+                String description = parts.length > 4 ? parts[4].trim() : "";
+
+                Entry entry = new Entry(title, description, date, timeStart, timeEnd);
+                this.entries.add(entry);
+            }
+            return true; // Successfully loaded.
+        } catch (IOException e) {
+            System.out.println("Error loading calendar: " + e.getMessage());
+            return false; // Failed to load.
+        }
+    }
+}
