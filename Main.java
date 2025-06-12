@@ -47,8 +47,8 @@ public class Main {
                         System.out.println("Add Calendar");       // Placeholder for adding calendar 
                     }
                     case 3 -> {
-                        // Deletes a calendar made.
-                        System.out.println("Delete Calendar");        // Placeholder for deleting calendar 
+                        // Remove a calendar made.
+                        System.out.println("Remove Calendar");        // Placeholder for deleting calendar 
                     }
                     case 4 -> {
                         // Can add entries per calender.
@@ -61,7 +61,7 @@ public class Main {
                         loggedInAccount = null;
                     }
                     case 6 -> {
-                        // Account deletion.
+                        // Account "deletion" (deletes only private calendars).
                         accountManager.deleteAccount(loggedInAccount);
                         loggedInAccount = null;
                     }
@@ -96,7 +96,7 @@ public class Main {
         System.out.println("3. Delete Calendar");
         System.out.println("4. Manage Calendar Entries");
         System.out.println("5. Logout");
-        System.out.println("6. Delete Account");
+        System.out.println("6. Delete Account ");
         System.out.print("Choose option: ");
     }
 

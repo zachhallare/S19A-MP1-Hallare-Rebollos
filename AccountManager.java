@@ -98,10 +98,9 @@ public class AccountManager {
     }
 
 
-    // Deacti
+    // Deactivates/"deletes" an account.
     public void deleteAccount(Account account) {
         account.deactivateAccount();
-        FileManager.deleteAccount(account.getUsername());
-        System.out.println("Account " + account.getUsername() + " deleted successfully.");
+        System.out.println("Account " + account.getUsername() + " deactivated.");
     }
 }

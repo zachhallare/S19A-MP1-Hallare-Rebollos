@@ -38,19 +38,21 @@ public class Account {
         return calendars;
     }
 
-    // Deactivates the account and removes all private calendars.
+
+
+    // "Deletes" the account and removes all private calendars.
     public void deactivateAccount() {
-        active = false;     // this doesn't work yet.
+        active = false;     
         // this can be changed up in the AccountManager so the user can't access their account once it's deactivated.
         ArrayList<Calendar> publicCalendars = new ArrayList<>();
-
         for (Calendar cal : calendars) {
             if (cal.isPublic()) {     
                 publicCalendars.add(cal);     
             }
         }
 
-        calendars = publicCalendars;
+        calendars.clear();
+        calendars.addAll(publicCalendars);
     }
 
 
@@ -63,7 +65,6 @@ public class Account {
                 exists = true; 
             }
         }
-
         if (!exists) {
             calendars.add(calendar); 
         }
