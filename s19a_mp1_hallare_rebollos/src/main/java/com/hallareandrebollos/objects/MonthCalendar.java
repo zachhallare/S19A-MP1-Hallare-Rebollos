@@ -112,6 +112,25 @@ public class MonthCalendar {
         }
     }
 
+    public void addEntry(Entry entry) {
+        // Adds an entry to the calendar.
+        if (entry != null && entry.getDate().getYear() == this.yearNumber && 
+            entry.getDate().getMonthValue() == this.monthNumber) {
+            this.entries.add(entry);
+        } else {
+            System.out.println("Entry date does not match the calendar month/year.");
+        }
+    }
+
+    public void deleteEntry(Entry entry) {
+        // Deletes an entry from the calendar.
+        if (entry != null) {
+            this.entries.remove(entry);
+        } else {
+            System.out.println("Entry could not be deleted.");
+        }
+    }
+
     public boolean saveCalendar() {
         // Saves calendar to ownerID folder inside resources/calendars.
         // The calendar is saved in a text file format.
@@ -166,6 +185,7 @@ public class MonthCalendar {
         String filePath = (ownerID.equals("-1")) ? 
             "resources/calendars/public/" + calendarID + ".txt" : 
             "resources/calendars/" + ownerID + "/" + calendarID + ".txt";
+        boolean returnValue = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             this.ownerID = Integer.parseInt(reader.readLine().trim());
@@ -189,10 +209,11 @@ public class MonthCalendar {
                 Entry entry = new Entry(title, description, date, timeStart, timeEnd);
                 this.entries.add(entry);
             }
-            return true; // Successfully loaded.
+            returnValue = true;
         } catch (IOException e) {
             System.out.println("Error loading calendar: " + e.getMessage());
-            return false; // Failed to load.
+            returnValue = false;
         }
+        return returnValue;
     }
 }

@@ -1,5 +1,7 @@
 package com.hallareandrebollos.objects;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 public class Account {
@@ -48,5 +50,14 @@ public class Account {
             return true; // Successfully added the calendar.
         }
         return false; // Calendar already exists in the account.
+    }
+
+    public void authenticate(String username, String password) {
+        // Authenticates the account by checking the provided username and password in resource/accounts.txt.
+        String filePath = "resource/accounts.txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            
+        } catch (Exception e) {
+        }
     }
 }
