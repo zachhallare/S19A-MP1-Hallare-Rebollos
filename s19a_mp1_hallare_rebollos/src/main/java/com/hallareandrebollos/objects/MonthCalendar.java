@@ -136,6 +136,17 @@ public class MonthCalendar {
         }
     }
 
+    // i think we need this.
+    public void editEntry(Entry oldEntry, Entry newEntry) {
+        // Modifies an entry from the calendar.
+        int index = this.entries.indexOf(oldEntry);
+        if (index != -1) {
+            this.entries.set(index, newEntry);
+        } else {
+            System.out.println("Entry could not be edited.");
+        }
+    }
+
     public boolean saveCalendar() {
         // Saves calendar to ownerID folder inside resources/calendars.
         // The calendar is saved in a text file format.
