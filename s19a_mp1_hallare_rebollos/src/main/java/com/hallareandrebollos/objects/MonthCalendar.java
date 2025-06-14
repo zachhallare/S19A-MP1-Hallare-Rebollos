@@ -29,9 +29,9 @@ public class MonthCalendar {
         this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
         this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
         this.currentDay = (java.time.LocalDate.now().getMonthValue() == monthNumber && 
-                           java.time.LocalDate.now().getYear() == yearNumber) ? 
-                           java.time.LocalDate.now().getDayOfMonth() : -1;
-                           // A Glorified if else statement to check if today is in the current month. LMAO
+                            java.time.LocalDate.now().getYear() == yearNumber) ? 
+                            java.time.LocalDate.now().getDayOfMonth() : -1;
+                            // A Glorified if else statement to check if today is in the current month. LMAO
     }
 
     // Constructor: Initializes the month calendar with specified month and year. Assumes that selected month and year are not today.
@@ -68,7 +68,11 @@ public class MonthCalendar {
                 }
             }
 
-            if (hasEntry) {
+            // idk if cooked with this lol.
+            if (day == currentDay) {
+                System.out.printf("|[%2d]       ", day);
+            }
+            else if (hasEntry) {
                 System.out.printf("| %2d   *    ", day);
             } 
             else {
@@ -79,6 +83,7 @@ public class MonthCalendar {
                 System.out.println("|");
                 System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
             }
+            
             currentDayPosition++;
         }
 
