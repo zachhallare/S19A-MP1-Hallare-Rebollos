@@ -122,7 +122,8 @@ public class MonthCalendar {
         if (entry != null && entry.getDate().getYear() == this.yearNumber && 
             entry.getDate().getMonthValue() == this.monthNumber) {
             this.entries.add(entry);
-        } else {
+        } 
+        else {
             System.out.println("Entry date does not match the calendar month/year.");
         }
     }
@@ -131,7 +132,8 @@ public class MonthCalendar {
         // Deletes an entry from the calendar.
         if (entry != null) {
             this.entries.remove(entry);
-        } else {
+        } 
+        else {
             System.out.println("Entry could not be deleted.");
         }
     }
@@ -142,7 +144,8 @@ public class MonthCalendar {
         int index = this.entries.indexOf(oldEntry);
         if (index != -1) {
             this.entries.set(index, newEntry);
-        } else {
+        } 
+        else {
             System.out.println("Entry could not be edited.");
         }
     }
@@ -175,7 +178,8 @@ public class MonthCalendar {
                 writer.newLine();
             }
             return true; // Successfully saved.
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             System.out.println("Error saving calendar: " + e.getMessage());
             return false; // Failed to save.
         }
@@ -190,7 +194,8 @@ public class MonthCalendar {
         java.io.File file = new java.io.File(filePath);
         if (file.exists()) {
             return file.delete(); // Returns true if deletion was successful.
-        } else {
+        } 
+        else {
             System.out.println("Calendar file does not exist.");
             return false; // File not found.
         }
@@ -226,7 +231,8 @@ public class MonthCalendar {
                 this.entries.add(entry);
             }
             returnValue = true;
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             System.out.println("Error loading calendar: " + e.getMessage());
             returnValue = false;
         }
