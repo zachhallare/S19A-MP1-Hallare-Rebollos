@@ -57,7 +57,9 @@ public class Account {
         String filePath = "resource/accounts.txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }

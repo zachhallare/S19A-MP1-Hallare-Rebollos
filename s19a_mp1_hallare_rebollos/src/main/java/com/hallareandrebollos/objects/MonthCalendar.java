@@ -29,9 +29,9 @@ public class MonthCalendar {
         this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
         this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
         this.currentDay = (java.time.LocalDate.now().getMonthValue() == monthNumber && 
-                           java.time.LocalDate.now().getYear() == yearNumber) ? 
-                           java.time.LocalDate.now().getDayOfMonth() : -1;
-                           // A Glorified if else statement to check if today is in the current month. LMAO
+                            java.time.LocalDate.now().getYear() == yearNumber) ? 
+                            java.time.LocalDate.now().getDayOfMonth() : -1;
+                            // A Glorified if else statement to check if today is in the current month. LMAO
     }
 
     // Constructor: Initializes the month calendar with specified month and year. Assumes that selected month and year are not today.
@@ -68,7 +68,11 @@ public class MonthCalendar {
                 }
             }
 
-            if (hasEntry) {
+            // idk if cooked with this lol.
+            if (day == currentDay) {
+                System.out.printf("|[%2d]       ", day);
+            }
+            else if (hasEntry) {
                 System.out.printf("| %2d   *    ", day);
             } 
             else {
@@ -79,6 +83,7 @@ public class MonthCalendar {
                 System.out.println("|");
                 System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
             }
+            
             currentDayPosition++;
         }
 
@@ -117,7 +122,8 @@ public class MonthCalendar {
         if (entry != null && entry.getDate().getYear() == this.yearNumber && 
             entry.getDate().getMonthValue() == this.monthNumber) {
             this.entries.add(entry);
-        } else {
+        } 
+        else {
             System.out.println("Entry date does not match the calendar month/year.");
         }
     }
@@ -126,8 +132,21 @@ public class MonthCalendar {
         // Deletes an entry from the calendar.
         if (entry != null) {
             this.entries.remove(entry);
-        } else {
+        } 
+        else {
             System.out.println("Entry could not be deleted.");
+        }
+    }
+
+    // i think we need this.
+    public void editEntry(Entry oldEntry, Entry newEntry) {
+        // Modifies an entry from the calendar.
+        int index = this.entries.indexOf(oldEntry);
+        if (index != -1) {
+            this.entries.set(index, newEntry);
+        } 
+        else {
+            System.out.println("Entry could not be edited.");
         }
     }
 
@@ -159,7 +178,8 @@ public class MonthCalendar {
                 writer.newLine();
             }
             return true; // Successfully saved.
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             System.out.println("Error saving calendar: " + e.getMessage());
             return false; // Failed to save.
         }
@@ -174,7 +194,8 @@ public class MonthCalendar {
         java.io.File file = new java.io.File(filePath);
         if (file.exists()) {
             return file.delete(); // Returns true if deletion was successful.
-        } else {
+        } 
+        else {
             System.out.println("Calendar file does not exist.");
             return false; // File not found.
         }
@@ -210,7 +231,8 @@ public class MonthCalendar {
                 this.entries.add(entry);
             }
             returnValue = true;
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             System.out.println("Error loading calendar: " + e.getMessage());
             returnValue = false;
         }
