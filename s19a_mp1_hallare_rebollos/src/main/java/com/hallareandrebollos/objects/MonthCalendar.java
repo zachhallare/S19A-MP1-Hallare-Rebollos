@@ -16,9 +16,7 @@ public class MonthCalendar {
     private int daysInMonth;            // Number of days in the month.
     private int startDay;               // Day of the week the month starts on (1-7, where 1 is Sunday).
     private int firstDay;              // First day of the month if sunday isn't the first day of the week.
-    private int currentDay;            // Current day of the month (1-31). -1 if not today.
-    private int calendarID;           // ID of the calendar.
-    private int connectedOwner;          // ID of the owner of the calendar. -1 if public calendar.
+    private int currentDay;            // Current day of the month (1-31). -1 if not today.\
 
     // Default Constructor: Initializes the month calendar with current month and year. For null safety.
     public MonthCalendar(ArrayList<Entry> entries) {
