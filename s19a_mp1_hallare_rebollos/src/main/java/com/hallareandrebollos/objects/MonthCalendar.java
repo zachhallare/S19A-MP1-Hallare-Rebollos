@@ -28,8 +28,8 @@ public class MonthCalendar {
         this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
         this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
         this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
-        this.currentDay = (java.time.LocalDate.now().getMonthValue() == monthNumber && 
-                            java.time.LocalDate.now().getYear() == yearNumber) ? 
+        this.currentDay = (java.time.LocalDate.now().getMonthValue() == this.monthNumber && 
+                            java.time.LocalDate.now().getYear() == this.yearNumber) ? 
                             java.time.LocalDate.now().getDayOfMonth() : -1;
                             // A Glorified if else statement to check if today is in the current month. LMAO
     }
@@ -46,7 +46,7 @@ public class MonthCalendar {
     }
 
     public void displayCalendar() {
-        System.out.println("\n+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
+        System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
         System.out.println("|   Sunday  |   Monday  |  Tuesday  | Wednesday |  Thursday |   Friday  | Saturday  |");
         System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
 
