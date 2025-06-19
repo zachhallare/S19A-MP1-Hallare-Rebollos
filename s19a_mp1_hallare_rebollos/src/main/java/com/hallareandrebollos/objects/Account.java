@@ -52,14 +52,40 @@ public class Account {
         return false; // Calendar already exists in the account.
     }
 
-    public void authenticate(String username, String password) {
+    public boolean authenticate(String username, String password) {
         // Authenticates the account by checking the provided username and password in resource/accounts.txt.
+        // Per line format is "accountID, isActive, username, password, <CalendarIDList>".
+        // Every integer after password is a Calendar ID owned by the account.
+        // Example: "1, true, user123, pass123, 101, 102, 103".
         String filePath = "resource/accounts.txt";
+        boolean found = false;
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            
-        } 
-        catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            String line;
+            while (((line = reader.readLine()) != null) && !found) {
+                String[] parts = line.split(", ");
+                if (parts.length < 4) continue; // Skip lines that don't have enough parts.
+                
+                int id = Integer.parseInt(parts[0]);
+                boolean active = Boolean.parseBoolean(parts[1]);
+                String fileUsername = parts[2];
+                String filePassword = parts[3];
+
+                if (fileUsername.equals(username) && filePassword.equals(password)) {
+                    this.accountID = id;
+                    this.isActive = active;
+                    this.username = fileUsername;
+                    this.password = filePassword;
+
+                    // Load owned calendars from the remaining parts of the line.
+                    for (int i = 4; i < parts.length; i++) {
+                        ownedCalendars.add(Integer.valueOf(parts[i]));
+                    }
+                    found = true; // Account found and authenticated.
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading accounts file: " + e.getMessage());
         }
+        return found; // Returns true if the account was found and authenticated, false otherwise.
     }
 }

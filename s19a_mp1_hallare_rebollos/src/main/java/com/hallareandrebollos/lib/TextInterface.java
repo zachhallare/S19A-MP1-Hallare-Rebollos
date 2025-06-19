@@ -6,17 +6,57 @@ import java.util.Scanner;
 import com.hallareandrebollos.objects.Account;
 
 public class TextInterface {
+
     private Account loggedInAccount; // The currently logged-in account.
     private int currentCalendarID; // The ID of the currently selected calendar.
     private Scanner scanner; // Scanner for user input.
+    private int pageIdx; // Page index to track the current page in the interface.
 
     public TextInterface() {
         this.loggedInAccount = null; // Initially, no account is logged in.
         this.currentCalendarID = -1; // No calendar is selected initially.
         this.scanner = new Scanner(System.in); // Initialize the scanner for user input.
+        this.pageIdx = 0; // Start at the first page.
     }
 
-    public void SignIn() {
+    public void LoginPageLogic() {
+        int selectedOption = scanner.nextInt(); // Read user input for the selected option.
+        switch (selectedOption) {
+            case 1 -> {
+                System.out.println("+----------------------------------+");
+                System.out.println("|--------[   Login Page   ]--------|");
+                System.out.println("+----------------------------------+");
+                System.out.print("Enter Username: ");
+                String username = scanner.next();
+                System.out.print("Enter Password: ");
+                String password = scanner.next();
+                if (username.isEmpty() || password.isEmpty()) {
+                    System.out.println("Username and Password cannot be empty. Please try again.");
+                    break;
+                }
+
+                // Attempt to authenticate the user.
+                this.loggedInAccount = new Account(); // This should be replaced with actual authentication logic.
+                if (this.loggedInAccount.authenticate(username, password)) {
+                    System.out.println("Login successful!");
+                    this.pageIdx = 1; // Set the page index to the main menu.
+                } else {
+                    System.out.println("Invalid username or password. Please try again.");
+                }
+            }
+            case 2 -> {
+                System.out.println("Signing up...");
+            }
+            case 3 -> {
+                System.out.println("Exiting the application...");
+                System.exit(0);
+            }
+            default ->
+                System.out.println("Invalid option. Please try again.");
+        }
+    }
+
+    public void LoginPage() {
         System.out.println("+----------------------------------+");
         System.out.println("|--------[Digital Calendar]--------|");
         System.out.println("|----------------------------------|");
@@ -26,7 +66,7 @@ public class TextInterface {
         System.out.println("+----------------------------------+");
     }
 
-    public void Menu() {
+    public void MenuPage() {
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
@@ -36,7 +76,7 @@ public class TextInterface {
         System.out.println("+---------------------------------------+");
     }
 
-    public void CalendarMenu() {
+    public void CalendarMenuPage() {
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
@@ -47,17 +87,17 @@ public class TextInterface {
         System.out.println("+---------------------------------------+");
     }
 
-    public void CalendarList(ArrayList<Integer> calendarIDs) {
+    public void CalendarListPage(ArrayList<Integer> calendarIDs) {
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
         System.out.println("|--------[   Select a Calendar ]--------|");
         System.out.println("|---------------------------------------|");
-        
+
         for (int i = 0; i < calendarIDs.size(); i++) {
             System.out.println("| " + (i + 1) + calendarIDs.get(i) + "|");
         }
-        
+
         System.out.println("+---------------------------------------+");
     }
 }
