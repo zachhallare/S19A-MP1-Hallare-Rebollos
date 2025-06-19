@@ -6,11 +6,13 @@ import java.util.Scanner;
 import com.hallareandrebollos.objects.Account;
 
 public class TextInterface {
+    private Scanner scanner; // Scanner for user input.
 
     private Account loggedInAccount; // The currently logged-in account.
     private int currentCalendarID; // The ID of the currently selected calendar.
-    private Scanner scanner; // Scanner for user input.
     private int pageIdx; // Page index to track the current page in the interface.
+
+    private ArrayList<Integer> calendarIDs; // List of calendar IDs associated with the logged-in account.
 
     public TextInterface() {
         this.loggedInAccount = null; // Initially, no account is logged in.
@@ -118,5 +120,10 @@ public class TextInterface {
         }
 
         System.out.println("+---------------------------------------+");
+    }
+
+    // checks the public calendar list
+    public void LoadCalendarList() {
+
     }
 }
