@@ -147,6 +147,11 @@ public class MonthCalendar {
             System.out.println("Entry could not be edited.");
         }
     }
+    /*
+     * 
+     * REQUIRES UPDATE...
+     * 
+     */
 
     public boolean saveCalendar() {
         // Saves calendar to ownerID folder inside resources/calendars.
