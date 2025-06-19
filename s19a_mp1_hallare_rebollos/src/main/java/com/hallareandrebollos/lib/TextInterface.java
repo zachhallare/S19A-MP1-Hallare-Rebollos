@@ -35,11 +35,13 @@ public class TextInterface {
             case 2 -> {
                 LoadCalendarList(this.loggedInAccount.getUsername()); // Load the calendar list for the logged-in user.
                 CalendarListPage(this.calendarIDs); // Display the list of calendars.
+                break;
             }
             case 3 -> {
                 System.out.println("Logging out...");
                 this.loggedInAccount = null; // Clear the logged-in account.
                 this.pageIdx = 0; // Reset to the login page.
+                break;
             }
             default ->
                 System.out.println("Invalid option. Please try again.");
@@ -70,6 +72,7 @@ public class TextInterface {
                 } else {
                     System.out.println("Invalid username or password. Please try again.");
                 }
+                break;
             }
             case 2 -> {
                 System.out.println("+----------------------------------+");
@@ -92,10 +95,12 @@ public class TextInterface {
                 } else {
                     System.out.println("Failed to create account. Please try again.");
                 }
+                break;
             }
             case 3 -> {
                 System.out.println("Exiting the application...");
                 System.exit(0);
+                break;
             }
             default ->
                 System.out.println("Invalid option. Please try again.");
