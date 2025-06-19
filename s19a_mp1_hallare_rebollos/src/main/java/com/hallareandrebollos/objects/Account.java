@@ -53,6 +53,47 @@ public class Account {
         return false; // Calendar already exists in the account.
     }
 
+    public boolean createAccount(String username, String password) {
+        // Creates a new account with the specified username and password.
+        // The account is initially inactive and has no owned calendars.
+        // Automatically saves the details to resource/accounts.txt.
+        this.username = username;
+        this.password = password;
+        this.accountID = (int) (Math.random() * 10000);
+        this.isActive = true;
+        this.ownedCalendars = new ArrayList<>();
+        String filePath = "resource/accounts.txt";
+
+        boolean success = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            boolean exists = false;
+            boolean checkFlag = false;
+            while (((line = reader.readLine()) != null) && !checkFlag) {
+                String[] parts = line.split(", ");
+                if (parts.length >= 4 && parts[2].equals(username)) {
+                    exists = true; // Username already exists.
+                    checkFlag = true; // Stop checking further lines.
+                }
+            }
+            if (!exists) {
+                // If the username does not exist, append the new account to the file.
+                StringBuilder sb = new StringBuilder();
+                sb.append(accountID).append(", ").append(isActive).append(", ").append(username)
+                  .append(", ").append(password);
+                for (Integer calendarID : ownedCalendars) {
+                    sb.append(", ").append(calendarID);
+                }
+                sb.append("\n");
+                java.nio.file.Files.write(java.nio.file.Paths.get(filePath), sb.toString().getBytes(), java.nio.file.StandardOpenOption.APPEND);
+                success = true; // Account created successfully.
+            }
+        } catch (Exception e) {
+            System.out.println("Error creating account: " + e.getMessage());
+        }
+        return success; // Returns true if the account was created successfully, false otherwise.
+    }
+
     public boolean authenticate(String username, String password) {
         // Authenticates the account by checking the provided username and password in resource/accounts.txt.
         // Per line format is "accountID, isActive, username, password, <CalendarIDList>".

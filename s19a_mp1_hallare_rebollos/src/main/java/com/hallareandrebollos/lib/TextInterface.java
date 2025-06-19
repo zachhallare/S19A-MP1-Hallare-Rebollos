@@ -45,7 +45,26 @@ public class TextInterface {
                 }
             }
             case 2 -> {
-                System.out.println("Signing up...");
+                System.out.println("+----------------------------------+");
+                System.out.println("|--------[   Sign Up Page   ]-------|");
+                System.out.println("+----------------------------------+");
+                System.out.print("Enter Username: ");
+                String username = scanner.next();
+                System.out.print("Enter Password: ");
+                String password = scanner.next();
+                if (username.isEmpty() || password.isEmpty()) {
+                    System.out.println("Username and Password cannot be empty. Please try again.");
+                    break;
+                }
+
+                // Attempt to create a new account.
+                this.loggedInAccount = new Account(); // This should be replaced with actual account creation logic.
+                if (this.loggedInAccount.createAccount(username, password)) {
+                    System.out.println("Account created successfully!");
+                    this.pageIdx = 1; // Set the page index to the main menu.
+                } else {
+                    System.out.println("Failed to create account. Please try again.");
+                }
             }
             case 3 -> {
                 System.out.println("Exiting the application...");
