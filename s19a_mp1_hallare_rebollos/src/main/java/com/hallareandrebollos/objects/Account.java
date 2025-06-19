@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 public class Account {
+
     private String username;        // Username of the account.
     private String password;        // Password of the account.
     private int accountID;         // Unique ID of the account.
@@ -63,24 +64,25 @@ public class Account {
             String line;
             while (((line = reader.readLine()) != null) && !found) {
                 String[] parts = line.split(", ");
-                if (parts.length < 4) continue; // Skip lines that don't have enough parts.
-                
-                int id = Integer.parseInt(parts[0]);
-                boolean active = Boolean.parseBoolean(parts[1]);
-                String fileUsername = parts[2];
-                String filePassword = parts[3];
+                if (parts.length >= 4) { // Only process lines that have enough parts.
 
-                if (fileUsername.equals(username) && filePassword.equals(password)) {
-                    this.accountID = id;
-                    this.isActive = active;
-                    this.username = fileUsername;
-                    this.password = filePassword;
+                    int id = Integer.parseInt(parts[0]);
+                    boolean active = Boolean.parseBoolean(parts[1]);
+                    String fileUsername = parts[2];
+                    String filePassword = parts[3];
 
-                    // Load owned calendars from the remaining parts of the line.
-                    for (int i = 4; i < parts.length; i++) {
-                        ownedCalendars.add(Integer.valueOf(parts[i]));
+                    if (fileUsername.equals(username) && filePassword.equals(password)) {
+                        this.accountID = id;
+                        this.isActive = active;
+                        this.username = fileUsername;
+                        this.password = filePassword;
+
+                        // Load owned calendars from the remaining parts of the line.
+                        for (int i = 4; i < parts.length; i++) {
+                            ownedCalendars.add(Integer.valueOf(parts[i]));
+                        }
+                        found = true; // Account found and authenticated.
                     }
-                    found = true; // Account found and authenticated.
                 }
             }
         } catch (Exception e) {
