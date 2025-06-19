@@ -1,5 +1,6 @@
 package com.hallareandrebollos.lib;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,6 +20,30 @@ public class TextInterface {
         this.currentCalendarID = -1; // No calendar is selected initially.
         this.scanner = new Scanner(System.in); // Initialize the scanner for user input.
         this.pageIdx = 0; // Start at the first page.
+    }
+
+    public void MenuPageLogic() {
+        int selectedOption = scanner.nextInt(); // Read user input for the selected option.
+        switch (selectedOption) {
+            case 1 -> {
+                System.out.println("+---------------------------------------+");
+                System.out.println("|--------[ Loading Today's Date ]-------|");
+                System.out.println("+---------------------------------------+");
+                // Display today's date and any entries for today.
+                // This should be replaced with actual logic to display today's entries.
+            }
+            case 2 -> {
+                LoadCalendarList(this.loggedInAccount.getUsername()); // Load the calendar list for the logged-in user.
+                CalendarListPage(this.calendarIDs); // Display the list of calendars.
+            }
+            case 3 -> {
+                System.out.println("Logging out...");
+                this.loggedInAccount = null; // Clear the logged-in account.
+                this.pageIdx = 0; // Reset to the login page.
+            }
+            default ->
+                System.out.println("Invalid option. Please try again.");
+        }
     }
 
     public void LoginPageLogic() {
@@ -74,6 +99,30 @@ public class TextInterface {
             }
             default ->
                 System.out.println("Invalid option. Please try again.");
+        }
+    }
+
+    public void LoadCalendarList(String username) {
+        // This method should load the calendar IDs associated with the given username.
+        // looks into the directory resources/calendars/username/ and retrieves each file name as a calendar ID.
+        this.calendarIDs = new ArrayList<>();
+        File dir = new File("resources/calendars/" + username + "/");
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles((d, name) -> name.endsWith(".txt"));
+            if (files != null) {
+                for (File file : files) {
+                    String fileName = file.getName();
+                    if (fileName.endsWith(".txt")) {
+                        String idStr = fileName.substring(0, fileName.length() - 4);
+                        try {
+                            int id = Integer.parseInt(idStr);
+                            this.calendarIDs.add(id);
+                        } catch (NumberFormatException e) {
+                            System.err.println("Invalid calendar ID format in file: " + fileName);
+                        }
+                    }
+                }
+            }
         }
     }
 

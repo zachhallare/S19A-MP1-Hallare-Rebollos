@@ -2,28 +2,24 @@ package com.hallareandrebollos.objects;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 
 public class Account {
 
     private String username;        // Username of the account.
     private String password;        // Password of the account.
-    private int accountID;         // Unique ID of the account.
     private boolean isActive;
 
     // Default Constructor: Initializes the account with default values.
     public Account() {
         this.username = "";
         this.password = "";
-        this.accountID = -1; // Default ID for null safety.
         this.isActive = false; // Account is inactive by default.
     }
 
     // Full Constructor: Initializes the account with specified values.
-    public Account(String username, String password, int accountID, boolean isActive, ArrayList<Integer> ownedCalendars) {
+    public Account(String username, String password, boolean isActive) {
         this.username = username;
         this.password = password;
-        this.accountID = accountID;
         this.isActive = isActive;
     }
 
@@ -33,7 +29,6 @@ public class Account {
         // Automatically saves the details to resource/accounts.txt.
         this.username = username;
         this.password = password;
-        this.accountID = (int) (Math.random() * 10000);
         this.isActive = true;
         String filePath = "resource/accounts.txt";
 
@@ -52,8 +47,7 @@ public class Account {
             if (!exists) {
                 // If the username does not exist, append the new account to the file.
                 StringBuilder sb = new StringBuilder();
-                sb.append(accountID).append(", ").append(isActive).append(", ").append(username)
-                  .append(", ").append(password);
+                sb.append(username).append(", ").append(isActive).append(", ").append(username).append(", ").append(password);
                 sb.append("\n");
                 java.nio.file.Files.write(java.nio.file.Paths.get(filePath), sb.toString().getBytes(), java.nio.file.StandardOpenOption.APPEND);
                 success = true; // Account created successfully.
@@ -77,13 +71,11 @@ public class Account {
                 String[] parts = line.split(", ");
                 if (parts.length >= 4) { // Only process lines that have enough parts.
 
-                    int id = Integer.parseInt(parts[0]);
                     boolean active = Boolean.parseBoolean(parts[1]);
                     String fileUsername = parts[2];
                     String filePassword = parts[3];
 
                     if (fileUsername.equals(username) && filePassword.equals(password)) {
-                        this.accountID = id;
                         this.isActive = active;
                         this.username = fileUsername;
                         this.password = filePassword;
@@ -95,5 +87,13 @@ public class Account {
             System.out.println("Error reading accounts file: " + e.getMessage());
         }
         return found; // Returns true if the account was found and authenticated, false otherwise.
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 }

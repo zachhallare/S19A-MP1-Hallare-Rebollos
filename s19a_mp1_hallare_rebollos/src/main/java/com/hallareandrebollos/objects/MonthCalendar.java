@@ -18,7 +18,7 @@ public class MonthCalendar {
     private int firstDay;              // First day of the month if sunday isn't the first day of the week.
     private int currentDay;            // Current day of the month (1-31). -1 if not today.
     private int calendarID;           // ID of the calendar.
-    private int ownerID;          // ID of the owner of the calendar. -1 if public calendar.
+    private int connectedOwner;          // ID of the owner of the calendar. -1 if public calendar.
 
     // Default Constructor: Initializes the month calendar with current month and year. For null safety.
     public MonthCalendar(ArrayList<Entry> entries) {
@@ -41,7 +41,7 @@ public class MonthCalendar {
         this.yearNumber = yearNumber;
         this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
         this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
-        this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
+        this.firstDay = (this.startDay == 7) ? 1 : this.startDay + 1; // Adjust if the week starts on Sunday.
         this.currentDay = -1; // No current day set for specified month/year.
     }
 
@@ -159,12 +159,12 @@ public class MonthCalendar {
         // Third line is the year number.
         // Fourth line and beyond are the entries in the format:
         // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
-        String filePath = (this.ownerID == -1) ? 
+        String filePath = (this.connectedOwner == -1) ? 
             "resources/calendars/public/" + this.calendarID + ".txt" : 
-            "resources/calendars/" + this.ownerID + "/" + this.calendarID + ".txt";
+            "resources/calendars/" + this.connectedOwner + "/" + this.calendarID + ".txt";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write(String.valueOf(this.ownerID));
+            writer.write(String.valueOf(this.connectedOwner));
             writer.newLine();
             writer.write(String.valueOf(this.monthNumber));
             writer.newLine();
@@ -185,11 +185,11 @@ public class MonthCalendar {
         }
     }
 
-    public boolean deleteCalendar() {
+    public boolean deleteCalendar(String username, String calendarID) {
         // Deletes the calendar file.
-        String filePath = (this.ownerID == -1) ? 
-            "resources/calendars/public/" + this.calendarID + ".txt" : 
-            "resources/calendars/" + this.ownerID + "/" + this.calendarID + ".txt";
+        String filePath = (username.equals("-1")) ? 
+            "resources/calendars/public/" + calendarID + ".txt" : 
+            "resources/calendars/" + username + "/" + calendarID + ".txt";
 
         java.io.File file = new java.io.File(filePath);
         if (file.exists()) {
@@ -201,20 +201,19 @@ public class MonthCalendar {
         }
     }
 
-    public boolean loadCalendar(String ownerID, String calendarID) {
+    public boolean loadCalendar(String username, String calendarID) {
     // Loads the calendar from the specified owner ID and calendar ID.
-        String filePath = (ownerID.equals("-1")) ? 
+        String filePath = (username.equals("-1")) ? 
             "resources/calendars/public/" + calendarID + ".txt" : 
-            "resources/calendars/" + ownerID + "/" + calendarID + ".txt";
+            "resources/calendars/" + username + "/" + calendarID + ".txt";
         boolean returnValue = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            this.ownerID = Integer.parseInt(reader.readLine().trim());
             this.monthNumber = Integer.parseInt(reader.readLine().trim());
             this.yearNumber = Integer.parseInt(reader.readLine().trim());
-            this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
-            this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
-            this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
+            this.daysInMonth = java.time.YearMonth.of(this.yearNumber, this.monthNumber).lengthOfMonth();
+            this.startDay = java.time.LocalDate.of(this.yearNumber, this.monthNumber, 1).getDayOfWeek().getValue();
+            this.firstDay = (this.startDay == 7) ? 1 : this.startDay + 1; // Adjust if the week starts on Sunday.
             this.currentDay = -1; // No current day set for specified month/year.
             this.entries.clear(); // Clear existing entries before loading.
 
