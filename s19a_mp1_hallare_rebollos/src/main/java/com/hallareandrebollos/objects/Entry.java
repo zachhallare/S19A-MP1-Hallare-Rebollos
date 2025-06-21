@@ -20,12 +20,52 @@ public class Entry {
     }
 
     // Full Constructor.
-    public Entry(String title, String description, LocalDate date, LocalTime timeStart, LocalTime timeEnd) {
+    public Entry(String title, String description) {
         this.title = title;
         this.description = description;
-        this.date = date;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
+    }
+
+    public boolean setStartTime(String startTime) {
+        // Parses "HH:mm" to set StartTime
+        try {
+            String[] parts = startTime.split(":");
+            if (parts.length == 2) {
+                int hour = Integer.parseInt(parts[0]);
+                int minute = Integer.parseInt(parts[1]);
+                this.timeStart = LocalTime.of(hour, minute);
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid start time format. Please use HH:mm.");
+        }
+        return false;
+    }
+
+    public boolean setEndTime(String endTime) {
+        // Parses "HH:mm" to set endTime
+        try {
+            String[] parts = endTime.split(":");
+            if (parts.length == 2) {
+                int hour = Integer.parseInt(parts[0]);
+                int minute = Integer.parseInt(parts[1]);
+                this.timeEnd = LocalTime.of(hour, minute);
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid start time format. Please use HH:mm.");
+        }
+        return false;
+    }
+
+    public boolean setDate(String date) {
+        // Parses "yyyy-MM-dd" to set date
+        try {
+            this.date = LocalDate.parse(date);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Invalid date format. Please use yyyy-MM-dd.");
+        }
+        return false;
     }
 
     // Save Format

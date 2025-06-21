@@ -1,6 +1,10 @@
 package com.hallareandrebollos.objects;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Account {
     private int accountID;          // Unique ID for the account.
@@ -27,12 +31,30 @@ public class Account {
     public boolean createAccount(String username, String password) {
         // Creates a new account with the specified username and password.
         // The account is initially inactive and has no owned calendars.
-        // Automatically saves the details to resource/accounts.txt.
+        // Automatically saves the details to data/accounts.txt.
         this.username = username;
         this.password = password;
         this.isActive = true;
 
-        String filePath = "resource/accounts.txt";
+        String filePath = "data/accounts.txt";
+        File file = new File(filePath);
+
+        // Ensure the data directory exists
+        File dataDir = new File("data");
+        if (!dataDir.exists()) {
+            dataDir.mkdirs();
+        }
+
+        // Create the file if it doesn't exist
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Error creating accounts file: " + e.getMessage());
+                return false;
+            }
+        }
+
         boolean exists = false;
         int maxID = 0;
 
@@ -69,11 +91,11 @@ public class Account {
     }
 
     public boolean authenticate(String username, String password) {
-        // Authenticates the account by checking the provided username and password in resource/accounts.txt.
+        // Authenticates the account by checking the provided username and password in data/accounts.txt.
         // Per line format is "accountID, isActive, username, password".
         // Every integer after password is a Calendar ID owned by the account.
         // Example: "1, true, user123, pass123".
-        String filePath = "resource/accounts.txt";
+        String filePath = "data/accounts.txt";
         boolean found = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {

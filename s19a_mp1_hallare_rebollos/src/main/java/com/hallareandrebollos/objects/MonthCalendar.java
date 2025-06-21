@@ -1,10 +1,14 @@
 package com.hallareandrebollos.objects;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 
 public class MonthCalendar {
     private ArrayList<Entry> entries;   // List of entries for the month.
@@ -14,8 +18,10 @@ public class MonthCalendar {
     private int startDay;               // Day of the week the month starts on (1-7, where 1 is Sunday).
     private int firstDay;               // First day of the month if sunday isn't the first day of the week.
     private int currentDay;             // Current day of the month (1-31). -1 if not today.
-    private int calendarID;             // ID of the calendar.
-    private int connectedOwner;         // ID of the owner of the calendar. -1 if public calendar.
+    private int selectedDay;         // Selected day of the month (1-31). -1 if not selected.
+
+    private String ownerUsername; // Username of the owner of the calendar.
+    private String calendarName; // Name of the calendar.
 
     // Default Constructor: Initializes the month calendar with current month and year. For null safety.
     public MonthCalendar(ArrayList<Entry> entries) {
@@ -100,13 +106,13 @@ public class MonthCalendar {
         }
     }
 
-    public void displayEntries(int dayNumber) {
-        System.out.println("\nEntries for " + monthNumber + "/" + dayNumber + "/" + yearNumber + ":");
+    public void displayEntries() {
+        System.out.println("\nEntries for " + this.monthNumber + "/" + this.selectedDay + "/" + this.yearNumber + ":");
         boolean hasEntries = false;
         for (Entry entry : entries) {
-            if (entry.getDate().getYear() == yearNumber && 
-                entry.getDate().getMonthValue() == monthNumber && 
-                entry.getDate().getDayOfMonth() == dayNumber) {
+            if (entry.getDate().getYear() == this.yearNumber && 
+                entry.getDate().getMonthValue() == this.monthNumber && 
+                entry.getDate().getDayOfMonth() == this.selectedDay) {
                 System.out.println("["+ entry.getTimeStartString() + " - " + entry.getTimeEndString() + "] " + entry.getTitle());
                 System.out.println("Description: " + entry.getDescription());
                 System.out.println("-----------------------------");
@@ -129,13 +135,13 @@ public class MonthCalendar {
         }
     }
 
-    public void deleteEntry(Entry entry) {
+    public void deleteEntry(String title) {
         // Deletes an entry from the calendar.
-        if (entry != null) {
-            this.entries.remove(entry);
-        } 
-        else {
-            System.out.println("Entry could not be deleted.");
+        for (int i = 0; i < this.entries.size(); i++) {
+            if (this.entries.get(i).getTitle().equals(title)) {
+                this.entries.remove(i);
+                i += this.entries.size(); // Exit loop after deletion.
+            }
         }
     }
 
@@ -150,27 +156,39 @@ public class MonthCalendar {
             System.out.println("Entry could not be edited.");
         }
     }
+
+    public boolean entryExists(String title) {
+        // Checks if an entry with the specified title exists in the calendar.
+        boolean found = false;
+        for (int i = 0; i < this.entries.size(); i++) {
+            if (this.entries.get(i).getTitle().equals(title)) {
+                found = true;
+                i += this.entries.size(); // Exit loop after finding the entry.
+            }
+        }
+        return found;
+    }
     /*
      * 
      * REQUIRES UPDATE...
      * 
      */
 
-    public boolean saveCalendar() {
-        // Saves calendar to ownerID folder inside resources/calendars.
+    public boolean saveCalendar(String ownerUsername) {
+        // Saves calendar to ownerID folder inside data/calendars.
         // The calendar is saved in a text file format.
         // Saves them as "calendarID.txt" format.
-        // First line is the owner ID.
+        // First line is the ownername.
         // Second line is the month number.
         // Third line is the year number.
         // Fourth line and beyond are the entries in the format:
         // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
-        String filePath = (this.connectedOwner == -1) ? 
-            "resources/calendars/public/" + this.calendarID + ".txt" : 
-            "resources/calendars/" + this.connectedOwner + "/" + this.calendarID + ".txt";
+        String filePath = (ownerUsername.isEmpty()) ? 
+            "data/calendars/public/" + this.calendarName + ".txt" : 
+            "data/calendars/" + this.ownerUsername + "/" + this.calendarName + ".txt";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write(String.valueOf(this.connectedOwner));
+            writer.write(String.valueOf(ownerUsername));
             writer.newLine();
             writer.write(String.valueOf(this.monthNumber));
             writer.newLine();
@@ -194,8 +212,8 @@ public class MonthCalendar {
     public boolean deleteCalendar(String username, String calendarID) {
         // Deletes the calendar file.
         String filePath = (username.equals("-1")) ? 
-            "resources/calendars/public/" + calendarID + ".txt" : 
-            "resources/calendars/" + username + "/" + calendarID + ".txt";
+            "data/calendars/public/" + calendarID + ".txt" : 
+            "data/calendars/" + username + "/" + calendarID + ".txt";
 
         java.io.File file = new java.io.File(filePath);
         if (file.exists()) {
@@ -209,9 +227,9 @@ public class MonthCalendar {
 
     public boolean loadCalendar(String username, String calendarID) {
     // Loads the calendar from the specified owner ID and calendar ID.
-        String filePath = (username.equals("-1")) ? 
-            "resources/calendars/public/" + calendarID + ".txt" : 
-            "resources/calendars/" + username + "/" + calendarID + ".txt";
+        String filePath = (username.equals("public")) ? 
+            "data/calendars/public/" + calendarID + ".txt" : 
+            "data/calendars/" + username + "/" + calendarID + ".txt";
         boolean returnValue = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -232,7 +250,10 @@ public class MonthCalendar {
                 LocalTime timeEnd = LocalTime.parse(parts[3].trim());
                 String description = parts.length > 4 ? parts[4].trim() : "";
 
-                Entry entry = new Entry(title, description, date, timeStart, timeEnd);
+                Entry entry = new Entry(title, description);
+                entry.setDate(date.toString());
+                entry.setStartTime(timeStart.toString());
+                entry.setEndTime(timeEnd.toString());
                 this.entries.add(entry);
             }
             returnValue = true;
@@ -252,5 +273,18 @@ public class MonthCalendar {
 
     public int getYearNumber() {
         return this.yearNumber;
+    }
+
+    public int getDaysInMonth() {
+        return this.daysInMonth;
+    }
+
+    public int getSelectedDay() {
+        return this.selectedDay;
+    }
+
+    // Setters
+    public void setSelectedDay(int selectedDay) {
+        this.selectedDay = selectedDay;
     }
 }
