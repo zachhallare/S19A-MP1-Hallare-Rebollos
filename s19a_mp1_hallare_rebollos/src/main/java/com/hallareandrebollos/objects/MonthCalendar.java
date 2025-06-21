@@ -243,4 +243,14 @@ public class MonthCalendar {
         }
         return returnValue;
     }
+
+
+    // Getters
+    public int getMonthNumber() {
+        return this.monthNumber;
+    }
+
+    public int getYearNumber() {
+        return this.yearNumber;
+    }
 }

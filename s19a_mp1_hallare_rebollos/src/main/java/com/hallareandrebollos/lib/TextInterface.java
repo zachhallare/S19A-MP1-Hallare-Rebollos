@@ -1,8 +1,8 @@
 package com.hallareandrebollos.lib;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.util.*;
+import java.time.*;
 import com.hallareandrebollos.objects.Account;
 import com.hallareandrebollos.objects.MonthCalendar;
 
@@ -29,25 +29,26 @@ public class TextInterface {
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[ Loading Today's Date ]-------|");
                 System.out.println("+---------------------------------------+");
-                LoadTodayCalendar();
+                loadTodayCalendar();
 
             }
             case 2 -> {
-                LoadCalendarList(this.loggedInAccount.getUsername()); // Load the calendar list for the logged-in user.
-                CalendarListPage(this.calendarIDs); // Display the list of calendars.
+                loadCalendarList(this.loggedInAccount.getUsername()); // Load the calendar list for the logged-in user.
+                CalendarListPage(this.calendarIDs);     // Display the list of calendars.
+                selectCalendarFromList();
             }
             case 3 -> {
                 System.out.println("Logging out...");
-                this.loggedInAccount = null; // Clear the logged-in account.
-                this.pageIndex = 0; // Reset to the login page.
+                this.loggedInAccount = null;        // Clear the logged-in account.
+                this.pageIndex = 0;                 // Reset to the login page.
             }
-            default ->
-                System.out.println("Invalid option. Please try again.");
+            default -> System.out.println("Invalid option. Please try again.");
         }
     }
 
     public void LoginPageLogic() {
-        int selectedOption = scanner.nextInt(); // Read user input for the selected option.
+        int selectedOption = scanner.nextInt();     // Read user input for the selected option.
+        scanner.nextLine();     // For safety measures (may extra newline).
         switch (selectedOption) {
             // Login Page.
             case 1 -> {
@@ -102,11 +103,38 @@ public class TextInterface {
             // Exit the program.
             case 3 -> {
                 System.out.println("Exiting the application...");
-                System.exit(0);     // I don't think this is allowed :((
+                this.pageIndex = -1;
             }
             // If invalid option.
             default -> System.out.println("Invalid option. Please try again.");
         }
+    }
+
+    public void loadTodayCalendar() {
+        // This method should load the calendar for today.
+        // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
+        if (calendarIDs != null && loggedInAccount != null) {
+            LocalDate today = LocalDate.now();
+            boolean found = false;
+
+            for (int calendarID : calendarIDs) {
+                MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
+                if (calendar.loadCalendar(loggedInAccount.getUsername(), String.valueOf(calendarID))) {
+                    if (calendar.getMonthNumber() == today.getMonthValue() && calendar.getYearNumber() == today.getYear()) {
+                        calendar.displayEntries(today.getDayOfMonth());
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found) {
+                System.out.println("No calendar matches today's date.");
+            }
+        } else {
+            System.out.println("Unable to load today's calendar.");
+            System.out.println("Please ensure you're logged in and have calendars available.");
+        }
+        
     }
 
     public void loadCalendarList(String username) {
@@ -132,19 +160,6 @@ public class TextInterface {
                 }
             }
         }
-    }
-
-    public void loadTodayCalendar() {
-        // This method should load the calendar for today.
-        // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        // if (calendarIDs == null || loggedInAccount == null) {
-        //     LocalDate today = LocalDate.now();
-        //     boolean found = false;
-        //     for (int calendarID : calendarIDs) {
-        //         MonthCalendar calendar = new MonthCalendar(calendarID, loggedInAccount.getUserID())
-        //     }
-        // } 
-        
     }
 
     public void selectCalendarFromList() {
