@@ -1,51 +1,43 @@
 package com.hallareandrebollos.lib;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Scanner;
-
+import java.io.*;
+import java.util.*;
 import com.hallareandrebollos.objects.Account;
 import com.hallareandrebollos.objects.MonthCalendar;
 
 public class TextInterface {
-    private Scanner scanner; // Scanner for user input.
-
-    private Account loggedInAccount; // The currently logged-in account.
-    private int currentCalendarID; // The ID of the currently selected calendar.
-    private int pageIdx; // Page index to track the current page in the interface.
-
-    private ArrayList<Integer> calendarIDs; // List of calendar IDs associated with the logged-in account.
-
-    private MonthCalendar currentCalendar; // The currently loaded calendar object.
+    private Scanner scanner;                    // Scanner for user input.
+    private Account loggedInAccount;            // The currently logged-in account.
+    private int currentCalendarID;              // The ID of the currently selected calendar.
+    private int pageIndex;                      // Page index to track the current page in the interface.
+    private ArrayList<Integer> calendarIDs;     // List of calendar IDs associated with the logged-in account.
+    private MonthCalendar currentCalendar;      // The currently loaded calendar object.
 
     public TextInterface() {
-        this.loggedInAccount = null; // Initially, no account is logged in.
-        this.currentCalendarID = -1; // No calendar is selected initially.
-        this.scanner = new Scanner(System.in); // Initialize the scanner for user input.
-        this.pageIdx = 0; // Start at the first page.
+        this.loggedInAccount = null;                // Initially, no account is logged in.
+        this.currentCalendarID = -1;                // No calendar is selected initially.
+        this.scanner = new Scanner(System.in);      // Initialize the scanner for user input.
+        this.pageIndex = 0;                         // Start at the first page.
     }
 
     public void MenuPageLogic() {
-        int selectedOption = scanner.nextInt(); // Read user input for the selected option.
+        int selectedOption = scanner.nextInt();     // Read user input for the selected option.
         switch (selectedOption) {
             case 1 -> {
+                // Display today's date and any entries for today.
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[ Loading Today's Date ]-------|");
                 System.out.println("+---------------------------------------+");
-                // Display today's date and any entries for today.
-                // This should be replaced with actual logic to display today's entries.
+                LoadTodayCalendar();
 
             }
             case 2 -> {
                 LoadCalendarList(this.loggedInAccount.getUsername()); // Load the calendar list for the logged-in user.
                 CalendarListPage(this.calendarIDs); // Display the list of calendars.
-                break;
             }
             case 3 -> {
                 System.out.println("Logging out...");
                 this.loggedInAccount = null; // Clear the logged-in account.
-                this.pageIdx = 0; // Reset to the login page.
-                break;
+                this.pageIndex = 0; // Reset to the login page.
             }
             default ->
                 System.out.println("Invalid option. Please try again.");
@@ -55,59 +47,63 @@ public class TextInterface {
     public void LoginPageLogic() {
         int selectedOption = scanner.nextInt(); // Read user input for the selected option.
         switch (selectedOption) {
+            // Login Page.
             case 1 -> {
                 System.out.println("+----------------------------------+");
                 System.out.println("|--------[   Login Page   ]--------|");
                 System.out.println("+----------------------------------+");
+                
                 System.out.print("Enter Username: ");
-                String username = scanner.next();
+                String username = scanner.nextLine();
                 System.out.print("Enter Password: ");
-                String password = scanner.next();
-                if (username.isEmpty() || password.isEmpty()) {
-                    System.out.println("Username and Password cannot be empty. Please try again.");
-                    break;
-                }
+                String password = scanner.nextLine();
 
                 // Attempt to authenticate the user.
-                this.loggedInAccount = new Account(); // This should be replaced with actual authentication logic.
-                if (this.loggedInAccount.authenticate(username, password)) {
-                    System.out.println("Login successful!");
-                    this.pageIdx = 1; // Set the page index to the main menu.
+                if (username.isEmpty() || password.isEmpty()) {
+                    System.out.println("Username and Password cannot be empty. Please try again.");
                 } else {
-                    System.out.println("Invalid username or password. Please try again.");
+                    Account tempAccount = new Account(); 
+                    if (tempAccount.authenticate(username, password)) {
+                        this.loggedInAccount = tempAccount;
+                        System.out.println("Login successful!");
+                        this.pageIndex = 1;         // Set the page index to the main menu.
+                    } else {
+                        System.out.println("Invalid username or password. Please try again.");
+                    }
                 }
-                break;
             }
+            // Sign Up Page.
             case 2 -> {
                 System.out.println("+----------------------------------+");
                 System.out.println("|-------[   Sign Up Page   ]-------|");
                 System.out.println("+----------------------------------+");
+                
                 System.out.print("Enter Username: ");
-                String username = scanner.next();
+                String username = scanner.nextLine();
                 System.out.print("Enter Password: ");
-                String password = scanner.next();
+                String password = scanner.nextLine();
+                
+                // Attempt to create a new account.
                 if (username.isEmpty() || password.isEmpty()) {
                     System.out.println("Username and Password cannot be empty. Please try again.");
-                    break;
-                }
-
-                // Attempt to create a new account.
-                this.loggedInAccount = new Account(); // This should be replaced with actual account creation logic.
-                if (this.loggedInAccount.createAccount(username, password)) {
-                    System.out.println("Account created successfully!");
-                    this.pageIdx = 1; // Set the page index to the main menu.
                 } else {
-                    System.out.println("Failed to create account. Please try again.");
+                    Account tempAccount = new Account();        // This should be replaced with actual account creation logic.
+                    if (tempAccount.createAccount(username, password)) {
+                        this.loggedInAccount = tempAccount;
+                        System.out.println("Account created successfully!");
+                        this.pageIndex = 1;         // Set the page index to the main menu.
+                    } else {
+                        System.out.println("Failed to create account. Please try again.");
+                    }
                 }
-                break;
             }
+            // Exit the program.
             case 3 -> {
                 System.out.println("Exiting the application...");
-                System.exit(0);
-                break;
+                System.exit(0);     // I don't think this is allowed :((
             }
-            default ->
-                System.out.println("Invalid option. Please try again.");
+            // If invalid option.
+            default -> System.out.println("Invalid option. Please try again.");
         }
     }
 
@@ -126,7 +122,8 @@ public class TextInterface {
                         try {
                             int id = Integer.parseInt(idStr);
                             this.calendarIDs.add(id);
-                        } catch (NumberFormatException e) {
+                        } 
+                        catch (NumberFormatException e) {
                             System.err.println("Invalid calendar ID format in file: " + fileName);
                         }
                     }
@@ -138,7 +135,7 @@ public class TextInterface {
     public void LoadTodayCalendar() {
         // This method should load the calendar for today.
         // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        
+        if (calendarIDs == null || loggedInAccount == null) return;  
     }
 
     public void LoginPage() {

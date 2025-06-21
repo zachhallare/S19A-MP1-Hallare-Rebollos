@@ -66,10 +66,11 @@ public class MonthCalendar {
                 }
             }
 
-            // idk if cooked with this lol.
+            // Displays the current day with brackets.
             if (day == currentDay) {
                 System.out.printf("|[%2d]       ", day);
             }
+            // Displays if the day has an entry.
             else if (hasEntry) {
                 System.out.printf("| %2d   *    ", day);
             } 
@@ -77,6 +78,7 @@ public class MonthCalendar {
                 System.out.printf("| %2d        ", day);
             }
 
+            // If it reached the end of the week.
             if (currentDayPosition % 7 == 0) {
                 System.out.println("|");
                 System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
@@ -84,6 +86,7 @@ public class MonthCalendar {
             
             currentDayPosition++;
         }
+
 
         // Fill remaining cells.
         int trailing = (currentDayPosition - 1) % 7;
