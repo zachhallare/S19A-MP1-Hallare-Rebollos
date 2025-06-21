@@ -1,5 +1,7 @@
 package com.hallareandrebollos.lib;
+
 import java.io.*;
+import java.time.LocalDate;
 import java.util.*;
 import com.hallareandrebollos.objects.Account;
 import com.hallareandrebollos.objects.MonthCalendar;
@@ -107,7 +109,7 @@ public class TextInterface {
         }
     }
 
-    public void LoadCalendarList(String username) {
+    public void loadCalendarList(String username) {
         // This method should load the calendar IDs associated with the given username.
         // looks into the directory resources/calendars/username/ and retrieves each file name as a calendar ID.
         this.calendarIDs = new ArrayList<>();
@@ -132,12 +134,24 @@ public class TextInterface {
         }
     }
 
-    public void LoadTodayCalendar() {
+    public void loadTodayCalendar() {
         // This method should load the calendar for today.
         // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        if (calendarIDs == null || loggedInAccount == null) return;  
+        // if (calendarIDs == null || loggedInAccount == null) {
+        //     LocalDate today = LocalDate.now();
+        //     boolean found = false;
+        //     for (int calendarID : calendarIDs) {
+        //         MonthCalendar calendar = new MonthCalendar(calendarID, loggedInAccount.getUserID())
+        //     }
+        // } 
+        
     }
 
+    public void selectCalendarFromList() {
+        
+    }
+
+    // ASCII Art for Each Pages.
     public void LoginPage() {
         System.out.println("+----------------------------------------+");
         System.out.println("|--------[   Digital Calendar   ]--------|");
@@ -177,7 +191,7 @@ public class TextInterface {
         System.out.println("|---------------------------------------|");
 
         for (int i = 0; i < calendarIDs.size(); i++) {
-            System.out.println("| " + (i + 1) + calendarIDs.get(i) + "|");
+            System.out.printf("| %2d. Calendar ID: %d |\n" + (i + 1) + calendarIDs.get(i));
         }
 
         System.out.println("+---------------------------------------+");
