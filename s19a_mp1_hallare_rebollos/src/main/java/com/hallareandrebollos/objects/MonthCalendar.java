@@ -1,37 +1,34 @@
 package com.hallareandrebollos.objects;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.time.YearMonth;
 
 public class MonthCalendar {
-    private ArrayList<Entry> entries; // List of entries for the month.
+    private ArrayList<Entry> entries;   // List of entries for the month.
     private int monthNumber;            // Month number (1-12).
     private int yearNumber;             // Year number.
     private int daysInMonth;            // Number of days in the month.
     private int startDay;               // Day of the week the month starts on (1-7, where 1 is Sunday).
-    private int firstDay;              // First day of the month if sunday isn't the first day of the week.
-    private int currentDay;            // Current day of the month (1-31). -1 if not today.
-    private int calendarID;           // ID of the calendar.
-    private int connectedOwner;          // ID of the owner of the calendar. -1 if public calendar.
+    private int firstDay;               // First day of the month if sunday isn't the first day of the week.
+    private int currentDay;             // Current day of the month (1-31). -1 if not today.
+    private int calendarID;             // ID of the calendar.
+    private int connectedOwner;         // ID of the owner of the calendar. -1 if public calendar.
 
     // Default Constructor: Initializes the month calendar with current month and year. For null safety.
     public MonthCalendar(ArrayList<Entry> entries) {
         this.entries = (entries != null) ? entries : new ArrayList<>();
-        this.monthNumber = java.time.LocalDate.now().getMonthValue();
-        this.yearNumber = java.time.LocalDate.now().getYear();
-        this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
-        this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
-        this.firstDay = (startDay == 7) ? 1 : startDay + 1; // Adjust if the week starts on Sunday.
-        this.currentDay = (java.time.LocalDate.now().getMonthValue() == this.monthNumber && 
-                            java.time.LocalDate.now().getYear() == this.yearNumber) ? 
-                            java.time.LocalDate.now().getDayOfMonth() : -1;
-                            // A Glorified if else statement to check if today is in the current month. LMAO
+        LocalDate today = LocalDate.now();      // For simplicity.
+        this.monthNumber = today.getMonthValue();
+        this.yearNumber = today.getYear();
+        this.daysInMonth = YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
+        this.startDay = LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
+        this.firstDay = (startDay == 7) ? 1 : startDay + 1;     // Adjust if the week starts on Sunday.
+        this.currentDay = (today.getMonthValue() == this.monthNumber && 
+                            today.getYear() == this.yearNumber) ? 
+                            today.getDayOfMonth() : -1;     // Check if today is in the current month.
     }
 
     // Constructor: Initializes the month calendar with specified month and year. Assumes that selected month and year are not today.
@@ -39,12 +36,14 @@ public class MonthCalendar {
         this.entries = (entries != null) ? entries : new ArrayList<>();
         this.monthNumber = monthNumber;
         this.yearNumber = yearNumber;
-        this.daysInMonth = java.time.YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
-        this.startDay = java.time.LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
+        this.daysInMonth = YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
+        this.startDay = LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
         this.firstDay = (this.startDay == 7) ? 1 : this.startDay + 1; // Adjust if the week starts on Sunday.
-        this.currentDay = -1; // No current day set for specified month/year.
+        this.currentDay = -1;       // No current day set for specified month/year.
     }
 
+
+    // Displays the calendar.
     public void displayCalendar() {
         System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
         System.out.println("|   Sunday  |   Monday  |  Tuesday  | Wednesday |  Thursday |   Friday  | Saturday  |");
