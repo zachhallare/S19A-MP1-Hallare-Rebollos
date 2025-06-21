@@ -26,9 +26,8 @@ public class MonthCalendar {
         this.daysInMonth = YearMonth.of(yearNumber, monthNumber).lengthOfMonth();
         this.startDay = LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue();
         this.firstDay = (startDay == 7) ? 1 : startDay + 1;     // Adjust if the week starts on Sunday.
-        this.currentDay = (today.getMonthValue() == this.monthNumber && 
-                            today.getYear() == this.yearNumber) ? 
-                            today.getDayOfMonth() : -1;     // Check if today is in the current month.
+        this.currentDay = (today.getMonthValue() == this.monthNumber && today.getYear() == this.yearNumber) 
+                            ? today.getDayOfMonth() : -1;     // Check if today is in the current month.
     }
 
     // Constructor: Initializes the month calendar with specified month and year. Assumes that selected month and year are not today.
@@ -148,6 +147,11 @@ public class MonthCalendar {
             System.out.println("Entry could not be edited.");
         }
     }
+    /*
+     * 
+     * REQUIRES UPDATE...
+     * 
+     */
 
     public boolean saveCalendar() {
         // Saves calendar to ownerID folder inside resources/calendars.

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import com.hallareandrebollos.objects.Account;
+import com.hallareandrebollos.objects.MonthCalendar;
 
 public class TextInterface {
     private Scanner scanner; // Scanner for user input.
@@ -14,6 +15,8 @@ public class TextInterface {
     private int pageIdx; // Page index to track the current page in the interface.
 
     private ArrayList<Integer> calendarIDs; // List of calendar IDs associated with the logged-in account.
+
+    private MonthCalendar currentCalendar; // The currently loaded calendar object.
 
     public TextInterface() {
         this.loggedInAccount = null; // Initially, no account is logged in.
@@ -31,6 +34,7 @@ public class TextInterface {
                 System.out.println("+---------------------------------------+");
                 // Display today's date and any entries for today.
                 // This should be replaced with actual logic to display today's entries.
+
             }
             case 2 -> {
                 LoadCalendarList(this.loggedInAccount.getUsername()); // Load the calendar list for the logged-in user.
@@ -76,7 +80,7 @@ public class TextInterface {
             }
             case 2 -> {
                 System.out.println("+----------------------------------+");
-                System.out.println("|--------[   Sign Up Page   ]-------|");
+                System.out.println("|-------[   Sign Up Page   ]-------|");
                 System.out.println("+----------------------------------+");
                 System.out.print("Enter Username: ");
                 String username = scanner.next();
@@ -131,14 +135,20 @@ public class TextInterface {
         }
     }
 
+    public void LoadTodayCalendar() {
+        // This method should load the calendar for today.
+        // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
+        
+    }
+
     public void LoginPage() {
-        System.out.println("+----------------------------------+");
-        System.out.println("|--------[Digital Calendar]--------|");
-        System.out.println("|----------------------------------|");
-        System.out.println("|--------[    1. Login    ]--------|");
-        System.out.println("|--------[   2. Sign up   ]--------|");
-        System.out.println("|--------[    3. Exit     ]--------|");
-        System.out.println("+----------------------------------+");
+        System.out.println("+----------------------------------------+");
+        System.out.println("|--------[   Digital Calendar   ]--------|");
+        System.out.println("|----------------------------------------|");
+        System.out.println("|--------[       1. Login       ]--------|");
+        System.out.println("|--------[      2. Sign up      ]--------|");
+        System.out.println("|--------[       3. Exit        ]--------|");
+        System.out.println("+----------------------------------------+");
     }
 
     public void MenuPage() {
