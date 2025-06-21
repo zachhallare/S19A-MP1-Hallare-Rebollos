@@ -110,32 +110,6 @@ public class TextInterface {
         }
     }
 
-    public void loadTodayCalendar() {
-        // This method should load the calendar for today.
-        // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        if (calendarIDs != null && loggedInAccount != null) {
-            LocalDate today = LocalDate.now();
-            boolean found = false;
-
-            for (int calendarID : calendarIDs) {
-                MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
-                if (calendar.loadCalendar(loggedInAccount.getUsername(), String.valueOf(calendarID))) {
-                    if (calendar.getMonthNumber() == today.getMonthValue() && calendar.getYearNumber() == today.getYear()) {
-                        calendar.displayEntries(today.getDayOfMonth());
-                        found = true;
-                    }
-                }
-            }
-
-            if (!found) {
-                System.out.println("No calendar matches today's date.");
-            }
-        } else {
-            System.out.println("Unable to load today's calendar.");
-            System.out.println("Please ensure you're logged in and have calendars available.");
-        }
-        
-    }
 
     public void loadCalendarList(String username) {
         // This method should load the calendar IDs associated with the given username.
@@ -162,8 +136,53 @@ public class TextInterface {
         }
     }
 
+
+    public void loadTodayCalendar() {
+        // This method should load the calendar for today.
+        // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
+        if (calendarIDs != null && loggedInAccount != null) {
+            LocalDate today = LocalDate.now();
+            boolean found = false;
+
+            for (int calendarID : calendarIDs) {
+                MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
+                if (calendar.loadCalendar(loggedInAccount.getUsername(), String.valueOf(calendarID))) {
+                    if (calendar.getMonthNumber() == today.getMonthValue() && calendar.getYearNumber() == today.getYear()) {
+                        calendar.displayEntries(today.getDayOfMonth());
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found) {
+                System.out.println("No calendar matches today's date.");
+            }
+        } 
+        else {
+            System.out.println("Unable to load today's calendar. Please ensure you're logged in and have calendars available.");
+        }
+    }
+
+
     public void selectCalendarFromList() {
-        
+        System.out.print("Enter the number of calendar to load: ");
+        int choice = scanner.nextInt();
+        int index = 1;
+
+        for (int id : calendarIDs) {
+            if (index == choice) {
+                MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
+                if (calendar.loadCalendar(loggedInAccount.getUsername(), String.valueOf(id))) {
+                    this.currentCalendar = calendar;
+                    this.currentCalendarID = id;
+                    System.out.println("Calendar loaded successfully.");
+                    this.pageIndex = 2;
+                } else {
+                    System.out.println("Failed to load selected calendar.");
+                }
+            }
+            index++;
+        }
     }
 
     // ASCII Art for Each Pages.
@@ -212,8 +231,21 @@ public class TextInterface {
         System.out.println("+---------------------------------------+");
     }
 
-    // checks the public calendar list
-    public void LoadCalendarList() {
+    
+    // Getters and Setters.
+    public Scanner getScanner() {
+        return this.scanner;
+    }
 
+    public MonthCalendar getCurrentCalendar() {
+        return this.currentCalendar;
+    }
+
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
+    }
+
+    public int getPageIndex() {
+        return this.pageIndex;
     }
 }
