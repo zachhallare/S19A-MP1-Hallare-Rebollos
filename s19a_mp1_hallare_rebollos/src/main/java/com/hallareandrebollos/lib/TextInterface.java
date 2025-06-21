@@ -1,12 +1,15 @@
 package com.hallareandrebollos.lib;
 
-import java.io.*;
-import java.util.*;
-import java.time.*;
+import java.io.File;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import com.hallareandrebollos.objects.Account;
 import com.hallareandrebollos.objects.MonthCalendar;
 
 public class TextInterface {
+
     private Scanner scanner;                    // Scanner for user input.
     private Account loggedInAccount;            // The currently logged-in account.
     private int currentCalendarID;              // The ID of the currently selected calendar.
@@ -25,7 +28,6 @@ public class TextInterface {
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
         switch (selectedOption) {
             case 1 -> {
-                // Display today's date and any entries for today.
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[ Loading Today's Date ]-------|");
                 System.out.println("+---------------------------------------+");
@@ -42,7 +44,8 @@ public class TextInterface {
                 this.loggedInAccount = null;        // Clear the logged-in account.
                 this.pageIndex = 0;                 // Reset to the login page.
             }
-            default -> System.out.println("Invalid option. Please try again.");
+            default ->
+                System.out.println("Invalid option. Please try again.");
         }
     }
 
@@ -55,7 +58,7 @@ public class TextInterface {
                 System.out.println("+----------------------------------+");
                 System.out.println("|--------[   Login Page   ]--------|");
                 System.out.println("+----------------------------------+");
-                
+
                 System.out.print("Enter Username: ");
                 String username = scanner.nextLine();
                 System.out.print("Enter Password: ");
@@ -64,52 +67,59 @@ public class TextInterface {
                 // Attempt to authenticate the user.
                 if (username.isEmpty() || password.isEmpty()) {
                     System.out.println("Username and Password cannot be empty. Please try again.");
-                } else {
-                    Account tempAccount = new Account(); 
-                    if (tempAccount.authenticate(username, password)) {
-                        this.loggedInAccount = tempAccount;
-                        System.out.println("Login successful!");
-                        this.pageIndex = 1;         // Set the page index to the main menu.
-                    } else {
-                        System.out.println("Invalid username or password. Please try again.");
-                    }
+                    break;
                 }
+                Account tempAccount = new Account();
+                if (!tempAccount.authenticate(username, password)) {
+                    System.out.println("Invalid username or password. Please try again.");
+                    break;
+                }
+
+                this.loggedInAccount = tempAccount;
+                System.out.println("Login successful!");
+                this.pageIndex = 1;         // Set the page index to the main menu.
+                break;
             }
             // Sign Up Page.
             case 2 -> {
                 System.out.println("+----------------------------------+");
                 System.out.println("|-------[   Sign Up Page   ]-------|");
                 System.out.println("+----------------------------------+");
-                
+
                 System.out.print("Enter Username: ");
                 String username = scanner.nextLine();
                 System.out.print("Enter Password: ");
                 String password = scanner.nextLine();
-                
+
                 // Attempt to create a new account.
                 if (username.isEmpty() || password.isEmpty()) {
                     System.out.println("Username and Password cannot be empty. Please try again.");
-                } else {
-                    Account tempAccount = new Account();        // This should be replaced with actual account creation logic.
-                    if (tempAccount.createAccount(username, password)) {
-                        this.loggedInAccount = tempAccount;
-                        System.out.println("Account created successfully!");
-                        this.pageIndex = 1;         // Set the page index to the main menu.
-                    } else {
-                        System.out.println("Failed to create account. Please try again.");
-                    }
+                    break;
                 }
+                Account tempAccount = new Account();        // This should be replaced with actual account creation logic.
+                if (!tempAccount.createAccount(username, password)) {
+                    System.out.println("Failed to create account. Please try again.");
+                    break;
+                }
+
+                this.loggedInAccount = tempAccount;
+                System.out.println("Account created successfully!");
+                this.pageIndex = 1;         // Set the page index to the main menu.
+                break;
             }
             // Exit the program.
             case 3 -> {
                 System.out.println("Exiting the application...");
                 this.pageIndex = -1;
+                break;
             }
             // If invalid option.
-            default -> System.out.println("Invalid option. Please try again.");
+            default -> {
+                System.out.println("Invalid option. Please try again.");
+                break;
+            }
         }
     }
-
 
     public void loadCalendarList(String username) {
         // This method should load the calendar IDs associated with the given username.
@@ -126,8 +136,7 @@ public class TextInterface {
                         try {
                             int id = Integer.parseInt(idStr);
                             this.calendarIDs.add(id);
-                        } 
-                        catch (NumberFormatException e) {
+                        } catch (NumberFormatException e) {
                             System.err.println("Invalid calendar ID format in file: " + fileName);
                         }
                     }
@@ -136,17 +145,18 @@ public class TextInterface {
         }
     }
 
-
     public void loadTodayCalendar() {
         // This method should load the calendar for today.
         // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        if (calendarIDs != null && loggedInAccount != null) {
+        if (this.calendarIDs == null || this.calendarIDs.isEmpty()) {
+            System.out.println("Unable to load today's calendar. Please ensure you're logged in and have calendars available.");
+        } else {
             LocalDate today = LocalDate.now();
             boolean found = false;
 
             for (int calendarID : calendarIDs) {
                 MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
-                if (calendar.loadCalendar(loggedInAccount.getUsername(), String.valueOf(calendarID))) {
+                if (calendar.loadCalendar(this.loggedInAccount.getUsername(), String.valueOf(calendarID))) {
                     if (calendar.getMonthNumber() == today.getMonthValue() && calendar.getYearNumber() == today.getYear()) {
                         calendar.displayEntries(today.getDayOfMonth());
                         found = true;
@@ -157,19 +167,15 @@ public class TextInterface {
             if (!found) {
                 System.out.println("No calendar matches today's date.");
             }
-        } 
-        else {
-            System.out.println("Unable to load today's calendar. Please ensure you're logged in and have calendars available.");
         }
     }
-
 
     public void selectCalendarFromList() {
         System.out.print("Enter the number of calendar to load: ");
         int choice = scanner.nextInt();
         int index = 1;
 
-        for (int id : calendarIDs) {
+        for (int id : this.calendarIDs) {
             if (index == choice) {
                 MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
                 if (calendar.loadCalendar(loggedInAccount.getUsername(), String.valueOf(id))) {
@@ -231,7 +237,6 @@ public class TextInterface {
         System.out.println("+---------------------------------------+");
     }
 
-    
     // Getters and Setters.
     public Scanner getScanner() {
         return this.scanner;
