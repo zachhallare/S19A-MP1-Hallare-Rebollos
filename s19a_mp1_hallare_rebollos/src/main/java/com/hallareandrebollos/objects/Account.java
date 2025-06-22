@@ -12,6 +12,8 @@ public class Account {
     private String password;        // Password of the account.
     private boolean isActive;
 
+    private static final String ACCOUNT_FILE_PATH = "data/accounts.txt";
+
     // Default Constructor: Initializes the account with default values.
     public Account() {
         this.accountID = -1;
@@ -32,12 +34,6 @@ public class Account {
         // Creates a new account with the specified username and password.
         // The account is initially inactive and has no owned calendars.
         // Automatically saves the details to data/accounts.txt.
-        this.username = username;
-        this.password = password;
-        this.isActive = true;
-
-        String filePath = "data/accounts.txt";
-        File file = new File(filePath);
 
         // Ensure the data directory exists
         File dataDir = new File("data");
@@ -46,6 +42,7 @@ public class Account {
         }
 
         // Create the file if it doesn't exist
+        File file = new File(ACCOUNT_FILE_PATH);
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -58,7 +55,7 @@ public class Account {
         boolean exists = false;
         int maxID = 0;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(ACCOUNT_FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(", ");
@@ -78,8 +75,11 @@ public class Account {
 
         if (!exists) {
             this.accountID = maxID + 1;
+            this.username = username;
+            this.password = password;
+            this.isActive = true;
             String newAccountLine = this.accountID + ", " + this.isActive + ", " + this.username + ", " + this.password + "\n";
-            try (FileWriter writer = new FileWriter(filePath, true)) {
+            try (FileWriter writer = new FileWriter(ACCOUNT_FILE_PATH, true)) {
                 writer.write(newAccountLine);
                 return true;
             } catch (IOException e) {
@@ -95,10 +95,9 @@ public class Account {
         // Per line format is "accountID, isActive, username, password".
         // Every integer after password is a Calendar ID owned by the account.
         // Example: "1, true, user123, pass123".
-        String filePath = "data/accounts.txt";
         boolean found = false;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(ACCOUNT_FILE_PATH))) {
             String line;
             while (((line = reader.readLine()) != null) && !found) {
                 String[] parts = line.split(", ");
@@ -108,7 +107,7 @@ public class Account {
                     String fileUsername = parts[2];
                     String filePassword = parts[3];
 
-                    if (fileUsername.equals(username) && filePassword.equals(password)) {
+                    if (fileUsername.equals(username) && filePassword.equals(password) && active) {
                         this.accountID = id;
                         this.username = fileUsername;
                         this.password = filePassword;
@@ -124,6 +123,36 @@ public class Account {
         return found; // Returns true if the account was found and authenticated, false otherwise.
     }
 
+    public void deactivateAccount() {
+        File tempFile = new File("data/accounts_temp.txt");
+        File originalFile = new File(ACCOUNT_FILE_PATH);
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
+            FileWriter writer = new FileWriter(tempFile)) {
+            
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts.length >= 4) {
+                    int id = Integer.parseInt(parts[0]);
+                    if (id == this.accountID) {
+                        parts[1] = "false";
+                        line = parts[0] + ", false, " + parts[2] + ", " + parts[3];
+                    }
+                }
+                writer.write(line + "\n");
+            }
+
+            originalFile.delete();
+            tempFile.renameTo(originalFile);
+            this.isActive = false;
+            
+        } catch (IOException e) {
+            System.out.println("Error updating account status: " + e.getMessage());
+        }
+    }
+
+
     // Getters.
     public int getAccountID() {
         return this.accountID;
@@ -135,5 +164,9 @@ public class Account {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public boolean isActive() {
+        return this.isActive;
     }
 }
