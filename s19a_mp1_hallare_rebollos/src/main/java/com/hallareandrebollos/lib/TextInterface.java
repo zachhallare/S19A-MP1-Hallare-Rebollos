@@ -49,6 +49,7 @@ public class TextInterface {
             }
             case 3 -> {
                 System.out.println("Logging out...");
+                System.out.println("\n");
                 this.loggedInAccount = null;        // Clear the logged-in account.
                 this.pageIndex = 0;                 // Reset to the login page.
             }
@@ -60,8 +61,10 @@ public class TextInterface {
 
     // Main logic for the user login page.
     public void LoginPageLogic() {
+        System.out.print("Enter number: ");
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
         scanner.nextLine();     // For safety measures (if may extra newline).
+        System.out.println("\n");
 
         switch (selectedOption) {
             // Login Page.
@@ -94,6 +97,7 @@ public class TextInterface {
                 if (validLogin) {
                     this.loggedInAccount = tempAccount;
                     System.out.println("Login successful!");
+                    System.out.println("\n");
                     this.pageIndex = 1;         // Set the page index to the main menu.
                 }
             }
@@ -128,6 +132,7 @@ public class TextInterface {
                 if (validSignup) {
                     this.loggedInAccount = tempAccount;
                     System.out.println("Account created successfully!");
+                    System.out.println("\n");
                     this.pageIndex = 1;         // Set the page index to the main menu.
                 }
             }
@@ -199,6 +204,7 @@ public class TextInterface {
 
         if (!found) {
             System.out.println("No calendar matches today's date.");
+            System.out.println("\n");
         }
     }
 
