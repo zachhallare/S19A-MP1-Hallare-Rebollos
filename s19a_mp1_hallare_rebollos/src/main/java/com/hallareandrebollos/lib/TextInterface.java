@@ -11,36 +11,41 @@ import com.hallareandrebollos.objects.MonthCalendar;
 
 public class TextInterface {
 
-    private Scanner scanner;                    // Scanner for user input.
-    private Account loggedInAccount;            // The currently logged-in account.
-    private int currentCalendarID;              // The ID of the currently selected calendar.
-    private int pageIndex;                      // Page index to track the current page in the interface.
-    private ArrayList<String> calendarIDs;     // List of calendar IDs associated with the logged-in account.
-    private ArrayList<String> publicCalendarIDs; // List of public calendar IDs.
-    private MonthCalendar currentCalendar;      // The currently loaded calendar object.
+    private Scanner scanner;                        // Scanner for user input.
+    private Account loggedInAccount;                // The currently logged-in account.
+    private int currentCalendarID;                  // The ID of the currently selected calendar.
+    private int pageIndex;                          // Page index to track the current page in the interface.
+    private ArrayList<String> calendarIDs;          // List of calendar IDs associated with the logged-in account.
+    private ArrayList<String> publicCalendarIDs;    // List of public calendar IDs.
+    private MonthCalendar currentCalendar;          // The currently loaded calendar object.
 
+    // Constructor.
     public TextInterface() {
+        this.scanner = new Scanner(System.in);      // Initialize the scanner for user input.
         this.loggedInAccount = null;                // Initially, no account is logged in.
         this.currentCalendarID = -1;                // No calendar is selected initially.
-        this.scanner = new Scanner(System.in);      // Initialize the scanner for user input.
         this.pageIndex = 0;                         // Start at the first page.
+        this.calendarIDs = new ArrayList<>();
+        this.publicCalendarIDs = new ArrayList<>();
     }
 
+
+    // Main logic for the main menu page.
     public void MenuPageLogic() {
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
+        scanner.nextLine();     // For safety measures (if may extra newline).
+
         switch (selectedOption) {
             case 1 -> {
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[ Loading Today's Date ]-------|");
                 System.out.println("+---------------------------------------+");
                 loadTodayCalendar();
-                break;
             }
             case 2 -> {
-                loadCalendarList(); // Load the calendar list for the logged-in user.
-                CalendarListPage(); // Display the calendar list page.
-                calendarSelector();                    // Allow the user to select a calendar.
-                break;
+                loadCalendarList();     // Load the calendar list for the logged-in user.
+                CalendarListPage();     // Display the calendar list page.
+                calendarSelector();     // Allow the user to select a calendar.
             }
             case 3 -> {
                 System.out.println("Logging out...");
@@ -52,9 +57,12 @@ public class TextInterface {
         }
     }
 
+
+    // Main logic for the user login page.
     public void LoginPageLogic() {
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
-        scanner.nextLine();     // For safety measures (may extra newline).
+        scanner.nextLine();     // For safety measures (if may extra newline).
+
         switch (selectedOption) {
             // Login Page.
             case 1 -> {
@@ -68,20 +76,26 @@ public class TextInterface {
                 String password = scanner.nextLine();
 
                 // Attempt to authenticate the user.
+                boolean validLogin = true;
                 if (username.isEmpty() || password.isEmpty()) {
                     System.out.println("Username and Password cannot be empty. Please try again.");
-                    break;
-                }
-                Account tempAccount = new Account();
-                if (!tempAccount.authenticate(username, password)) {
-                    System.out.println("Invalid username or password. Please try again.");
-                    break;
+                    validLogin = false;
                 }
 
-                this.loggedInAccount = tempAccount;
-                System.out.println("Login successful!");
-                this.pageIndex = 1;         // Set the page index to the main menu.
-                break;
+                Account tempAccount = null;
+                if (validLogin) {
+                    tempAccount = new Account();
+                    if (!tempAccount.authenticate(username, password)) {
+                        System.out.println("Invalid username or password. Please try again.");
+                        validLogin = false;
+                    }
+                }
+
+                if (validLogin) {
+                    this.loggedInAccount = tempAccount;
+                    System.out.println("Login successful!");
+                    this.pageIndex = 1;         // Set the page index to the main menu.
+                }
             }
             // Sign Up Page.
             case 2 -> {
@@ -95,91 +109,96 @@ public class TextInterface {
                 String password = scanner.nextLine();
 
                 // Attempt to create a new account.
+                boolean validSignup = true;
+                Account tempAccount = null;
+
                 if (username.isEmpty() || password.isEmpty()) {
                     System.out.println("Username and Password cannot be empty. Please try again.");
-                    break;
-                }
-                Account tempAccount = new Account();        // This should be replaced with actual account creation logic.
-                if (!tempAccount.createAccount(username, password)) {
-                    System.out.println("Failed to create account. Please try again.");
-                    break;
+                    validSignup = false;
                 }
 
-                this.loggedInAccount = tempAccount;
-                System.out.println("Account created successfully!");
-                this.pageIndex = 1;         // Set the page index to the main menu.
-                break;
+                if (validSignup) {
+                    tempAccount = new Account();   
+                    if (!tempAccount.createAccount(username, password)) {
+                        System.out.println("Failed to create account. Please try again.");
+                        validSignup = false;
+                    }
+                }
+
+                if (validSignup) {
+                    this.loggedInAccount = tempAccount;
+                    System.out.println("Account created successfully!");
+                    this.pageIndex = 1;         // Set the page index to the main menu.
+                }
             }
             // Exit the program.
             case 3 -> {
                 System.out.println("Exiting the application...");
                 this.pageIndex = -1;
-                break;
             }
             // If invalid option.
-            default -> {
+            default ->
                 System.out.println("Invalid option. Please try again.");
-                break;
-            }
         }
     }
+
 
     public void loadCalendarList() {
         // This method should load the calendar IDs associated with the given username.
         // looks into the directory data/calendars/username/ and retrieves each file name as a calendar ID.
-        this.calendarIDs = new ArrayList<>();
-        File dir = new File("data/calendars/" + this.loggedInAccount.getUsername() + "/");
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles((d, name) -> name.endsWith(".txt"));
-            if (files != null) {
-                for (File file : files) {
-                    String fileName = file.getName();
-                    if (fileName.endsWith(".txt")) {
-                        String idStr = fileName.substring(0, fileName.length() - 4);
-                        this.calendarIDs.add(idStr);
-                    }
+        this.calendarIDs.clear();
+        this.publicCalendarIDs.clear();
+        
+        File userDir = new File("data/calendars/" + this.loggedInAccount.getUsername() + "/");
+        if (userDir.exists() && userDir.isDirectory()) {
+            File[] userFiles = userDir.listFiles((d, name) -> name.endsWith(".txt"));
+            if (userFiles != null) {
+                for (File file : userFiles) {
+                    String id = file.getName().replace(".txt", "");
+                    this.calendarIDs.add(id);
                 }
             }
         }
+
         File publicDir = new File("data/calendars/public/");
         if (publicDir.exists() && publicDir.isDirectory()) {
             File[] publicFiles = publicDir.listFiles((d, name) -> name.endsWith(".txt"));
             if (publicFiles != null) {
                 for (File file : publicFiles) {
-                    String fileName = file.getName();
-                    if (fileName.endsWith(".txt")) {
-                        String idStr = fileName.substring(0, fileName.length() - 4);
-                        this.publicCalendarIDs.add(idStr);
-                    }
+                    String id = file.getName().replace(".txt", "");
+                    this.publicCalendarIDs.add(id);
                 }
             }
         }
     }
 
+
     public void loadTodayCalendar() {
         // This method should load the calendar for today.
         // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        if (this.calendarIDs == null || this.calendarIDs.isEmpty()) {
-            System.out.println("Unable to load today's calendar. Please ensure you're logged in and have calendars available.");
-        } else {
-            LocalDate today = LocalDate.now();
-            boolean found = false;
+        boolean found = false;
 
-            for (String calendarID : calendarIDs) {
+        if (!this.calendarIDs.isEmpty()) {
+            LocalDate today = LocalDate.now();
+
+            for (String calenderID : this.calendarIDs) {
                 MonthCalendar calendar = new MonthCalendar(new ArrayList<>());
-                if (calendar.loadCalendar(this.loggedInAccount.getUsername(), String.valueOf(calendarID))) {
-                    if (calendar.getMonthNumber() == today.getMonthValue() && calendar.getYearNumber() == today.getYear()) {
-                        this.currentCalendar = calendar; // Set the current calendar to the one matching today's date.
-                        this.currentCalendar.displayCalendar(); // Display the calendar.
-                        this.currentCalendar.displayEntries(); // Display the entries for today.
-                        found = true;
+
+                if (!found && calendar.loadCalendar(this.loggedInAccount.getUsername(), calenderID)) {
+                    if (calendar.getMonthNumber() == today.getMonthValue() &&
+                        calendar.getYearNumber() == today.getYear()) {
+                            this.currentCalendar = calendar;            // Set the current calendar to the one matching today's date.
+                            this.currentCalendar.setSelectedDay(today.getDayOfMonth());
+                            this.currentCalendar.displayCalendar();     // Display the calendar.
+                            this.currentCalendar.displayEntries();      // Display the entries for today.
+                            found = true;
                     }
                 }
             }
+        }
 
-            if (!found) {
-                System.out.println("No calendar matches today's date.");
-            }
+        if (!found) {
+            System.out.println("No calendar matches today's date.");
         }
     }
 

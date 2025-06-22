@@ -4,15 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Entry {
-    private int entryID;            // Unique ID of the entry (easier Identification).
-    private String title;           // Title of the entry.
-    private String description;     // Description of the entry.
-    private LocalDate date;         // Date of the entry.
-    private LocalTime timeStart;    // Start time of the entry.
-    private LocalTime timeEnd;      // End time of the entry.
+    private static int entryCounter = 0;    // Static counter to assign unique IDs. 
+    private int entryID;                    // Unique ID of the entry (easier Identification).
+    private String title;                   // Title of the entry.
+    private String description;             // Description of the entry.
+    private LocalDate date;                 // Date of the entry.
+    private LocalTime timeStart;            // Start time of the entry.
+    private LocalTime timeEnd;              // End time of the entry.
 
     // Default Constructor.
     public Entry() {
+        this.entryID = ++entryCounter;
         this.title = "";
         this.description = "";
         this.date = LocalDate.now();
@@ -22,6 +24,7 @@ public class Entry {
 
     // Semi-Full Constructor.
     public Entry(String title, String description) {
+        this.entryID = ++entryCounter;
         this.title = title;
         this.description = description;
         this.date = LocalDate.now();
@@ -29,8 +32,9 @@ public class Entry {
         this.timeEnd = LocalTime.of(0, 0);
     }
 
-    // Full COnstructor.
+    // Full Constructor.
     public Entry(String title, String description, LocalDate date, LocalTime timeStart, LocalTime timeEnd) {
+        this.entryID = ++entryCounter;
         this.title = title;
         this.description = description;
         this.date = date;
@@ -38,6 +42,7 @@ public class Entry {
         this.timeEnd = timeEnd;
     }
 
+    
     public boolean setStartTime(String startTime) {
         // Parses "HH:mm" to set StartTime
         try {
@@ -54,6 +59,7 @@ public class Entry {
         return false;
     }
 
+
     public boolean setEndTime(String endTime) {
         // Parses "HH:mm" to set endTime
         try {
@@ -69,6 +75,7 @@ public class Entry {
         }
         return false;
     }
+
 
     public boolean setDate(String date) {
         // Parses "yyyy-MM-dd" to set date
@@ -104,11 +111,15 @@ public class Entry {
     // Save Format
     // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
     public String toSaveFormat() {
-        return getDateString() + ", " + this.title + ", " + getTimeStartString() + ", " + getTimeEndString() + ", " + this.description;
+        return entryID + ", " + getDateString() + ", " + this.title + ", " + getTimeStartString() + ", " + getTimeEndString() + ", " + this.description;
     }
 
 
     // Getters
+    public int getEntryID() {
+        return this.entryID;
+    }
+
     public String getTitle() {
         return this.title;
     }
