@@ -81,8 +81,10 @@ public class Entry {
         return false;
     }
 
-    // Save Format
-    // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
+    // Checks if time range range is valid. 
+    public boolean isValidTimeRange() {
+        return timeEnd.isAfter(timeStart);
+    }
 
     // Convert date into a string format.
     public String getDateString() {
@@ -99,35 +101,52 @@ public class Entry {
         return timeEnd.toString();
     }
 
+    // Save Format
+    // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
+    public String toSaveFormat() {
+        return getDateString() + ", " + this.title + ", " + getTimeStartString() + ", " + getTimeEndString() + ", " + this.description;
+    }
+
+
     // Getters
     public String getTitle() {
-        return title;
+        return this.title;
     }
+
     public String getDescription() {
-        return description;
+        return this.description;
     }
+
     public LocalDate getDate() {
-        return date;
+        return this.date;
     }
+
     public LocalTime getTimeStart() {
-        return timeStart;
+        return this.timeStart;
     }
+
     public LocalTime getTimeEnd() {
-        return timeEnd;
+        return this.timeEnd;
     }
+
+
     // Setters
     public void setTitle(String title) {
         this.title = title;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public void setDate(LocalDate date) {
         this.date = date;
     }
+
     public void setTimeStart(LocalTime timeStart) {
         this.timeStart = timeStart;
     }
+
     public void setTimeEnd(LocalTime timeEnd) {
         this.timeEnd = timeEnd;
     }
