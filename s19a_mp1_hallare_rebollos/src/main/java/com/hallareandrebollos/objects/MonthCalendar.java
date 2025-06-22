@@ -192,10 +192,10 @@ public class MonthCalendar {
     }
 
 
-    public boolean entryExists(LocalDate date, String title) {
+    public boolean entryExists(String title) {
         // Checks if an entry with the specified title exists in the calendar.
         for (Entry entry : entries) {
-            if (entry.getDate().equals(date) && entry.getTitle().equalsIgnoreCase(title)) {
+            if (entry.getTitle().equalsIgnoreCase(title)) {
                 return true;
             }
         }

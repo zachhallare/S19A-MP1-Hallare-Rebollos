@@ -209,16 +209,15 @@ public class TextInterface {
             String input = scanner.nextLine();
             if (input.isEmpty()) {
                 System.out.println("Calendar ID cannot be empty. Please try again.");
-            } else {
-                if (this.calendarIDs.contains(input)) {
-                    this.currentCalendar = new MonthCalendar(new ArrayList<>());
-                    if (this.currentCalendar.loadCalendar(this.loggedInAccount.getUsername(), input)) {
-                        this.currentCalendarID = Integer.parseInt(input);
-                        loopLock = true; // Valid input, exit the loop.
-                    } else {
-                        System.out.println("Failed to load calendar with ID: " + input);
-                    }
-                } else if (this.publicCalendarIDs.contains(input)) {
+            } else if (calendarIDs.contains(input)){
+                this.currentCalendar = new MonthCalendar(new ArrayList<>());
+                if (this.currentCalendar.loadCalendar(this.loggedInAccount.getUsername(), input)) {
+                    this.currentCalendarID = Integer.parseInt(input);
+                    loopLock = true; // Valid input, exit the loop.
+                } else {
+                    System.out.println("Failed to load calendar with ID: " + input);
+                }
+            } else if (this.publicCalendarIDs.contains(input)) {
                     this.currentCalendar = new MonthCalendar(new ArrayList<>());
                     if (this.currentCalendar.loadCalendar("public", input)) {
                         this.currentCalendarID = Integer.parseInt(input);
@@ -226,20 +225,22 @@ public class TextInterface {
                     } else {
                         System.out.println("Failed to load public calendar with ID: " + input);
                     }
-                } else {
-                    System.out.println("Invalid Calendar ID. Please try again.");
-                }
+            } else {
+                System.out.println("Invalid Calendar ID. Please try again.");
             }
         }
     }
 
     public void CalendarPageLogic(int selectedOption) {
         selectedOption = scanner.nextInt();     // Read user input for the selected option.
+        scanner.nextLine();     // For safety measures (if may extra newline).
+        
         switch (selectedOption) {
             case 1 -> {
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[   Viewing Entries   ]--------|");
                 System.out.println("+---------------------------------------+");
+                
                 if (this.currentCalendar != null) {
                     this.currentCalendar.displayEntries();
                 } else {
@@ -252,6 +253,7 @@ public class TextInterface {
                     System.out.println("|--------[   Adding New Entry   ]-------|");
                     System.out.println("+---------------------------------------+");
                     System.out.println("Please enter the details for the new entry:");
+                    
                     System.out.println("Title: ");
                     String title = scanner.nextLine();
                     System.out.println("Description: ");
@@ -260,22 +262,33 @@ public class TextInterface {
                     String startTime = scanner.nextLine();
                     System.out.println("End Time (HH:mm): ");
                     String endTime = scanner.nextLine();
-                    String date = this.currentCalendar.getYearNumber() + "-" + this.currentCalendar.getMonthNumber() + "-" + this.currentCalendar.getSelectedDay();
+
+                    String date = this.currentCalendar.getYearNumber() + "-" + 
+                                this.currentCalendar.getMonthNumber() + "-" + 
+                                this.currentCalendar.getSelectedDay();
+
+                    boolean validEntry = true;
                     if (title.isEmpty() || description.isEmpty() || startTime.isEmpty() || endTime.isEmpty()) {
                         System.out.println("All fields are required. Please try again.");
-                        break;
+                        validEntry = false;
                     }
-                    Entry newEntry = new Entry(title, description);
-                    if (!newEntry.setStartTime(startTime) || !newEntry.setEndTime(endTime) || !newEntry.setDate(date)) {
-                        System.out.println("Invalid time or date format. Please try again.");
-                        break;
+
+                    Entry newEntry = null;
+                    if (validEntry) {
+                        newEntry = new Entry(title, description);
+                        if (!newEntry.setStartTime(startTime) || !newEntry.setEndTime(endTime) || !newEntry.setDate(date)) {
+                            System.out.println("Invalid time or date format. Please try again.");
+                            validEntry = false;
+                        }
                     }
-                    this.currentCalendar.addEntry(newEntry); // Add the new entry to the current calendar.
-                    System.out.println("Entry added successfully!");
+
+                    if (validEntry) {
+                        this.currentCalendar.addEntry(newEntry); // Add the new entry to the current calendar.
+                        System.out.println("Entry added successfully!");
+                    }
                 } else {
                     System.out.println("No calendar is currently selected.");
                 }
-                break;
             }
             case 3 -> {
                 if (this.currentCalendar != null && this.currentCalendar.getSelectedDay() != -1) {
@@ -284,37 +297,43 @@ public class TextInterface {
                     System.out.println("+---------------------------------------+");
                     System.out.println("Please enter the title of the entry to delete:");
                     String title = scanner.nextLine();
+
+                    boolean canDelete = true;
                     if (title.isEmpty()) {
                         System.out.println("Title cannot be empty. Please try again.");
-                        break;
+                        canDelete = false;
                     }
-                    if (!this.currentCalendar.entryExists(title)) {
+                    if (canDelete && !this.currentCalendar.entryExists(title)) {
                         System.out.println("No entry found with the title: " + title);
-                        break;
+                        canDelete = false;
                     }
-                    this.currentCalendar.deleteEntry(title);
-                    System.out.println("Entry"+ title + "deleted successfully!");
+
+                    if (canDelete) {
+                        this.currentCalendar.deleteEntry(title);
+                        System.out.println("Entry"+ title + "deleted successfully!");
+                    }
+                } else {
+                    System.out.println("No calendar is currently selected.");
                 }
-                break;
             }
             case 4 -> {
                 System.out.println("Returning to the current calendar menu...");
                 this.pageIndex = 2;
-                break;
             }
             default -> System.out.println("Invalid option. Please try again.");
         }
     }
 
     public void DaySelector() {
-        boolean loopLock = false; // Loop lock to ensure valid input.
+        boolean loopLock = false;       // Loop lock to ensure valid input.
         while (!loopLock) {
             System.out.println("Select a Date to view (Enter 0 to return):");
             int input = scanner.nextInt();
             if (input == 0) {
-                loopLock = true; // Exit the loop if user enters 0.
-            } else if (input < 1 || input > this.currentCalendar.getDaysInMonth()) {
+                loopLock = true;        // Exit the loop if user enters 0.
+            } else if (input >= 1 && input <= this.currentCalendar.getDaysInMonth()) {
                 this.currentCalendar.setSelectedDay(input);
+                loopLock = true;
             } else {
                 System.out.println("Invalid date. Please try again.");
             }
@@ -324,9 +343,9 @@ public class TextInterface {
     public void CalendarDisplayController() {
         // This method should display the current calendar and allow the user to select a day.
         if (this.currentCalendar != null) {
-            this.currentCalendar.displayCalendar(); // Display the calendar.
-            DaySelector(); // Allow the user to select a day.
-            CalendarMenuPage(); // Show the calendar menu page.
+            this.currentCalendar.displayCalendar();     // Display the calendar.
+            DaySelector();                              // Allow the user to select a day.
+            CalendarMenuPage();                         // Show the calendar menu page.
         } else {
             System.out.println("No calendar is currently selected.");
         }
@@ -381,6 +400,7 @@ public class TextInterface {
 
         System.out.println("+---------------------------------------+");
     }
+
 
     // Getters and Setters.
     public Scanner getScanner() {
