@@ -4,11 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Entry {
-    private String title;          // Title of the entry.
-    private String description;    // Description of the entry.
-    private LocalDate date;          // Date of the entry.
-    private LocalTime timeStart;      // Start time of the entry.
-    private LocalTime timeEnd;        // End time of the entry.
+    private int entryID;            // Unique ID of the entry (easier Identification).
+    private String title;           // Title of the entry.
+    private String description;     // Description of the entry.
+    private LocalDate date;         // Date of the entry.
+    private LocalTime timeStart;    // Start time of the entry.
+    private LocalTime timeEnd;      // End time of the entry.
 
     // Default Constructor.
     public Entry() {
@@ -19,10 +20,22 @@ public class Entry {
         this.timeEnd = LocalTime.of(0, 0);
     }
 
-    // Full Constructor.
+    // Semi-Full Constructor.
     public Entry(String title, String description) {
         this.title = title;
         this.description = description;
+        this.date = LocalDate.now();
+        this.timeStart = LocalTime.of(0, 0);
+        this.timeEnd = LocalTime.of(0, 0);
+    }
+
+    // Full COnstructor.
+    public Entry(String title, String description, LocalDate date, LocalTime timeStart, LocalTime timeEnd) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
     }
 
     public boolean setStartTime(String startTime) {
