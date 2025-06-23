@@ -32,6 +32,7 @@ public class TextInterface {
 
     // Main logic for the main menu page.
     public void MenuPageLogic() {
+        System.out.print("Enter number: ");
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
         scanner.nextLine();     // For safety measures (if may extra newline).
 
@@ -53,8 +54,26 @@ public class TextInterface {
                 this.loggedInAccount = null;        // Clear the logged-in account.
                 this.pageIndex = 0;                 // Reset to the login page.
             }
-            default ->
+            case 4 -> {
+                // Confirmation first, in case na misclick ni user.
+                System.out.print("Are you sure you want to deactivate your account? (yes/no): ");
+                String confirmation = scanner.nextLine().trim().toLowerCase();
+
+                if (confirmation.equals("yes")) {
+                    this.loggedInAccount.deactivateAccount();
+                    System.out.println("Account deactivated. Logging out...");
+                    System.out.println("\n");
+                    this.loggedInAccount = null;
+                    this.pageIndex = 0;     // Sends the user back to the login page.
+                } else {
+                    System.out.println("Deactivation cancelled.");
+                    System.out.println("\n");
+                }
+            }
+            default -> {
                 System.out.println("Invalid option. Please try again.");
+                System.out.println("\n");
+            }
         }
     }
 
@@ -89,7 +108,8 @@ public class TextInterface {
                 if (validLogin) {
                     tempAccount = new Account();
                     if (!tempAccount.authenticate(username, password)) {
-                        System.out.println("Invalid username or password. Please try again.");
+                        System.out.println("Invalid username or password. or the account is deactivated. Please try again.");
+                        System.out.println("\n");
                         validLogin = false;
                     }
                 }
@@ -375,6 +395,7 @@ public class TextInterface {
         System.out.println("|--------[    1. View Today    ]--------|");
         System.out.println("|--------[  2. Select Calendar ]--------|");
         System.out.println("|--------[       3. Logout     ]--------|");
+        System.out.println("|--------[  4. Delete Account  ]--------|");
         System.out.println("+---------------------------------------+");
     }
 

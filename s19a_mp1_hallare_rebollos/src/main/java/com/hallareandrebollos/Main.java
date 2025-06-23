@@ -11,10 +11,14 @@ public class Main {
                 // Main Page.
                 case 1 -> {
                     ui.MenuPage();
+                    ui.loadCalendarList();
                     ui.MenuPageLogic();
                 }
                 // Display Calendar.
-                case 2 -> ui.CalendarDisplayController();
+                case 2 -> {
+                    ui.loadCalendarList();
+                    ui.CalendarDisplayController();
+                }
                 // Login Page.
                 default -> {
                     ui.LoginPage();

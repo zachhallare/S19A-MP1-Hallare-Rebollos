@@ -90,6 +90,7 @@ public class Account {
         return false;
     }
 
+
     public boolean authenticate(String username, String password) {
         // Authenticates the account by checking the provided username and password in data/accounts.txt.
         // Per line format is "accountID, isActive, username, password".
@@ -123,13 +124,12 @@ public class Account {
         return found; // Returns true if the account was found and authenticated, false otherwise.
     }
 
+    
     public void deactivateAccount() {
-        File tempFile = new File("data/accounts_temp.txt");
-        File originalFile = new File(ACCOUNT_FILE_PATH);
+        File file = new File(ACCOUNT_FILE_PATH);
+        StringBuilder updatedContent = new StringBuilder();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(originalFile));
-            FileWriter writer = new FileWriter(tempFile)) {
-            
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(", ");
@@ -140,15 +140,17 @@ public class Account {
                         line = parts[0] + ", false, " + parts[2] + ", " + parts[3];
                     }
                 }
-                writer.write(line + "\n");
+                updatedContent.append(line).append(System.lineSeparator());
             }
-
-            originalFile.delete();
-            tempFile.renameTo(originalFile);
-            this.isActive = false;
-            
         } catch (IOException e) {
             System.out.println("Error updating account status: " + e.getMessage());
+        }
+
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(updatedContent.toString());
+            this.isActive = false;
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
         }
     }
 
