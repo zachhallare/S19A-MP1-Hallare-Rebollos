@@ -96,7 +96,7 @@ public class TextInterface {
                         if (created) {
                             validSignup = true;
                         } else {
-                            System.out.println("Failed to create account. Please try again.");
+                            System.out.println("Failed to create account. Please try again.\n");
                         }
                     }
                 }

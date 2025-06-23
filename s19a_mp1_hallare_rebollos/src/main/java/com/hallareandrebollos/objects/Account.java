@@ -36,7 +36,7 @@ public class Account {
         // Automatically saves the details to data/accounts.txt.
         boolean isCreated = false;
 
-        boolean validPassword = isValidPassword(inputPassword);
+        boolean validPassword = !inputPassword.contains(" ");       // Is valid as long as it doesn't contain space.
         if (validPassword) {
              // Ensure the data directory exists
             File dataDir = new File("data");
@@ -90,11 +90,11 @@ public class Account {
                     System.out.println("Error in writing new account: " + e.getMessage());
                 }
             } else {
-                System.out.println("Username already exists.");
+                System.out.println("Username already exists.\n");
 
             }
         } else {
-            System.out.println("Password must have at least one uppercase, one lowercase, one number, and no spaces.");
+            System.out.println("Password cannot contain spaces.");
         }
 
         return isCreated;
@@ -163,26 +163,6 @@ public class Account {
         } catch (IOException e) {
             System.out.println("Error writing file: " + e.getMessage());
         }
-    }
-
-    private boolean isValidPassword(String password) {
-        boolean hasUpper = false;
-        boolean hasLower = false;
-        boolean hasDigit = false;
-
-        for (char c : password.toCharArray()) {
-            if (Character.isUpperCase(c)) {
-                hasUpper = true;
-            } else if (Character.isLowerCase(c)) {
-                hasLower = true;
-            } else if (Character.isDigit(c)) {
-                hasDigit = true;
-            } else if (Character.isWhitespace(c)) {
-                return false;
-            }
-        }
-
-        return hasUpper && hasLower && hasDigit;
     }
 
 
