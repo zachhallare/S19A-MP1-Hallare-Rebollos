@@ -30,54 +30,6 @@ public class TextInterface {
     }
 
 
-    // Main logic for the main menu page.
-    public void MenuPageLogic() {
-        System.out.print("Enter number: ");
-        int selectedOption = scanner.nextInt();     // Read user input for the selected option.
-        scanner.nextLine();     // For safety measures (if may extra newline).
-
-        switch (selectedOption) {
-            case 1 -> {
-                System.out.println("+---------------------------------------+");
-                System.out.println("|--------[ Loading Today's Date ]-------|");
-                System.out.println("+---------------------------------------+");
-                loadTodayCalendar();
-            }
-            case 2 -> {
-                loadCalendarList();     // Load the calendar list for the logged-in user.
-                CalendarListPage();     // Display the calendar list page.
-                calendarSelector();     // Allow the user to select a calendar.
-            }
-            case 3 -> {
-                System.out.println("Logging out...");
-                System.out.println("\n");
-                this.loggedInAccount = null;        // Clear the logged-in account.
-                this.pageIndex = 0;                 // Reset to the login page.
-            }
-            case 4 -> {
-                // Confirmation first, in case na misclick ni user.
-                System.out.print("Are you sure you want to deactivate your account? (yes/no): ");
-                String confirmation = scanner.nextLine().trim().toLowerCase();
-
-                if (confirmation.equals("yes")) {
-                    this.loggedInAccount.deactivateAccount();
-                    System.out.println("Account deactivated. Logging out...");
-                    System.out.println("\n");
-                    this.loggedInAccount = null;
-                    this.pageIndex = 0;     // Sends the user back to the login page.
-                } else {
-                    System.out.println("Deactivation cancelled.");
-                    System.out.println("\n");
-                }
-            }
-            default -> {
-                System.out.println("Invalid option. Please try again.");
-                System.out.println("\n");
-            }
-        }
-    }
-
-
     // Main logic for the user login page.
     public void LoginPageLogic() {
         System.out.print("Enter number: ");
@@ -127,34 +79,32 @@ public class TextInterface {
                 System.out.println("|-------[   Sign Up Page   ]-------|");
                 System.out.println("+----------------------------------+");
 
-                System.out.print("Enter Username: ");
-                String username = scanner.nextLine();
-                System.out.print("Enter Password: ");
-                String password = scanner.nextLine();
+                boolean validSignup = false;
+                Account tempAccount = new Account();
 
-                // Attempt to create a new account.
-                boolean validSignup = true;
-                Account tempAccount = null;
+                while (!validSignup) {
+                    System.out.print("Enter Username: ");
+                    String username = scanner.nextLine().trim();
+                    
+                    System.out.print("Enter Password: ");
+                    String password = scanner.nextLine().trim();
 
-                if (username.isEmpty() || password.isEmpty()) {
-                    System.out.println("Username and Password cannot be empty. Please try again.");
-                    validSignup = false;
-                }
-
-                if (validSignup) {
-                    tempAccount = new Account();   
-                    if (!tempAccount.createAccount(username, password)) {
-                        System.out.println("Failed to create account. Please try again.");
-                        validSignup = false;
+                    if (username.isEmpty() || password.isEmpty()) {
+                        System.out.println("Username and Password cannot be empty. Please try again.");
+                    } else {
+                        boolean created = tempAccount.createAccount(username, password);
+                        if (created) {
+                            validSignup = true;
+                        } else {
+                            System.out.println("Failed to create account. Please try again.");
+                        }
                     }
                 }
 
-                if (validSignup) {
-                    this.loggedInAccount = tempAccount;
-                    System.out.println("Account created successfully!");
-                    System.out.println("\n");
-                    this.pageIndex = 1;         // Set the page index to the main menu.
-                }
+                this.loggedInAccount = tempAccount;
+                System.out.println("Account created successfully!");
+                System.out.println("\n");
+                this.pageIndex = 1;         // Set the page index to the main menu.
             }
             // Exit the program.
             case 3 -> {
@@ -164,6 +114,54 @@ public class TextInterface {
             // If invalid option.
             default ->
                 System.out.println("Invalid option. Please try again.");
+        }
+    }
+
+
+    // Main logic for the main menu page.
+    public void MenuPageLogic() {
+        System.out.print("Enter number: ");
+        int selectedOption = scanner.nextInt();     // Read user input for the selected option.
+        scanner.nextLine();     // For safety measures (if may extra newline).
+
+        switch (selectedOption) {
+            case 1 -> {
+                System.out.println("+---------------------------------------+");
+                System.out.println("|--------[ Loading Today's Date ]-------|");
+                System.out.println("+---------------------------------------+");
+                loadTodayCalendar();
+            }
+            case 2 -> {
+                loadCalendarList();     // Load the calendar list for the logged-in user.
+                CalendarListPage();     // Display the calendar list page.
+                calendarSelector();     // Allow the user to select a calendar.
+            }
+            case 3 -> {
+                System.out.println("Logging out...");
+                System.out.println("\n");
+                this.loggedInAccount = null;        // Clear the logged-in account.
+                this.pageIndex = 0;                 // Reset to the login page.
+            }
+            case 4 -> {
+                // Confirmation first, in case na misclick ni user.
+                System.out.print("Are you sure you want to deactivate your account? (yes/no): ");
+                String confirmation = scanner.nextLine().trim().toLowerCase();
+
+                if (confirmation.equals("yes")) {
+                    this.loggedInAccount.deactivateAccount();
+                    System.out.println("Account deactivated. Logging out...");
+                    System.out.println("\n");
+                    this.loggedInAccount = null;
+                    this.pageIndex = 0;     // Sends the user back to the login page.
+                } else {
+                    System.out.println("Deactivation cancelled.");
+                    System.out.println("\n");
+                }
+            }
+            default -> {
+                System.out.println("Invalid option. Please try again.");
+                System.out.println("\n");
+            }
         }
     }
 

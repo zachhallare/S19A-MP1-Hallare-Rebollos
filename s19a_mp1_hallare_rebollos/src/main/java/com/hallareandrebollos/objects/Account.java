@@ -30,68 +30,78 @@ public class Account {
         this.isActive = isActive;
     }
 
-    public boolean createAccount(String username, String password) {
+    public boolean createAccount(String inputUsername, String inputPassword) {
         // Creates a new account with the specified username and password.
         // The account is initially inactive and has no owned calendars.
         // Automatically saves the details to data/accounts.txt.
+        boolean isCreated = false;
 
-        // Ensure the data directory exists
-        File dataDir = new File("data");
-        if (!dataDir.exists()) {
-            dataDir.mkdirs();
-        }
-
-        // Create the file if it doesn't exist
-        File file = new File(ACCOUNT_FILE_PATH);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                System.out.println("Error creating accounts file: " + e.getMessage());
-                return false;
+        boolean validPassword = isValidPassword(inputPassword);
+        if (validPassword) {
+             // Ensure the data directory exists
+            File dataDir = new File("data");
+            if (!dataDir.exists()) {
+                dataDir.mkdirs();
             }
-        }
 
-        boolean exists = false;
-        int maxID = 0;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(ACCOUNT_FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(", ");
-                if (parts.length >= 4) {
-                    int id = Integer.parseInt(parts[0]);
-                    if (id > maxID) {
-                        maxID = id;
-                    }
-                    if (parts[2].equals(username)) {
-                        exists = true;
-                    }
+            // Create the file if it doesn't exist
+            File file = new File(ACCOUNT_FILE_PATH);
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    System.out.println("Error creating accounts file: " + e.getMessage());
                 }
             }
-        } catch (Exception e) {
-            System.out.println("Error in reading accounts file: " + e.getMessage());
-        }
 
-        if (!exists) {
-            this.accountID = maxID + 1;
-            this.username = username;
-            this.password = password;
-            this.isActive = true;
-            String newAccountLine = this.accountID + ", " + this.isActive + ", " + this.username + ", " + this.password + "\n";
-            try (FileWriter writer = new FileWriter(ACCOUNT_FILE_PATH, true)) {
-                writer.write(newAccountLine);
-                return true;
-            } catch (IOException e) {
-                System.out.println("Error in writing new account: " + e.getMessage());
+            boolean exists = false;
+            int maxID = 0;
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(ACCOUNT_FILE_PATH))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(", ");
+                    if (parts.length >= 4) {
+                        int id = Integer.parseInt(parts[0]);
+                        if (id > maxID) {
+                            maxID = id;
+                        }
+                        if (parts[2].equalsIgnoreCase(inputUsername)) {
+                            exists = true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Error reading accounts file: " + e.getMessage());
             }
+        
+            if (!exists) {
+                this.accountID = maxID + 1;
+                this.username = inputUsername;
+                this.password = inputPassword;
+                this.isActive = true;
+
+                String newAccountLine = this.accountID + ", " + this.isActive + ", " + this.username + ", " + this.password + "\n";
+            
+                try (FileWriter writer = new FileWriter(ACCOUNT_FILE_PATH, true)) {
+                    writer.write(newAccountLine);
+                    isCreated = true;
+                } catch (IOException e) {
+                    System.out.println("Error in writing new account: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Username already exists.");
+
+            }
+        } else {
+            System.out.println("Password must have at least one uppercase, one lowercase, one number, and no spaces.");
         }
 
-        return false;
+        return isCreated;
     }
 
 
-    public boolean authenticate(String username, String password) {
+    public boolean authenticate(String inputUsername, String inputPassword) {
         // Authenticates the account by checking the provided username and password in data/accounts.txt.
         // Per line format is "accountID, isActive, username, password".
         // Every integer after password is a Calendar ID owned by the account.
@@ -100,7 +110,7 @@ public class Account {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(ACCOUNT_FILE_PATH))) {
             String line;
-            while (((line = reader.readLine()) != null) && !found) {
+            while ((line = reader.readLine()) != null && !found) {
                 String[] parts = line.split(", ");
                 if (parts.length >= 4) { // Only process lines that have enough parts.
                     int id = Integer.parseInt(parts[0]);
@@ -108,7 +118,7 @@ public class Account {
                     String fileUsername = parts[2];
                     String filePassword = parts[3];
 
-                    if (fileUsername.equals(username) && filePassword.equals(password) && active) {
+                    if (fileUsername.equals(inputUsername) && filePassword.equals(inputPassword) && active) {
                         this.accountID = id;
                         this.username = fileUsername;
                         this.password = filePassword;
@@ -124,14 +134,14 @@ public class Account {
         return found; // Returns true if the account was found and authenticated, false otherwise.
     }
 
-    
+
     public void deactivateAccount() {
         File file = new File(ACCOUNT_FILE_PATH);
         StringBuilder updatedContent = new StringBuilder();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
+            String line = reader.readLine();
+            while (line != null) {
                 String[] parts = line.split(", ");
                 if (parts.length >= 4) {
                     int id = Integer.parseInt(parts[0]);
@@ -141,6 +151,7 @@ public class Account {
                     }
                 }
                 updatedContent.append(line).append(System.lineSeparator());
+                line = reader.readLine();
             }
         } catch (IOException e) {
             System.out.println("Error updating account status: " + e.getMessage());
@@ -152,6 +163,26 @@ public class Account {
         } catch (IOException e) {
             System.out.println("Error writing file: " + e.getMessage());
         }
+    }
+
+    private boolean isValidPassword(String password) {
+        boolean hasUpper = false;
+        boolean hasLower = false;
+        boolean hasDigit = false;
+
+        for (char c : password.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                hasUpper = true;
+            } else if (Character.isLowerCase(c)) {
+                hasLower = true;
+            } else if (Character.isDigit(c)) {
+                hasDigit = true;
+            } else if (Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+
+        return hasUpper && hasLower && hasDigit;
     }
 
 
