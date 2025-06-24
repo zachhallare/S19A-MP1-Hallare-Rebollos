@@ -8,19 +8,19 @@ public class Main {
 
         while (ui.getPageIndex() != -1) {
             switch (ui.getPageIndex()) {
-                // Main Page.
                 case 1 -> {
+                    // Main Page.
                     ui.MenuPage();
                     ui.loadCalendarList();
                     ui.MenuPageLogic();
                 }
-                // Display Calendar.
                 case 2 -> {
+                    // Display Calendar.
                     ui.loadCalendarList();
                     ui.CalendarDisplayController();
                 }
-                // Login Page.
                 default -> {
+                    // Login Page.
                     ui.LoginPage();
                     ui.LoginPageLogic();
                 }

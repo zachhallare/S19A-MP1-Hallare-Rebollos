@@ -35,6 +35,8 @@ public class MonthCalendar {
         this.currentDay = (today.getMonthValue() == this.monthNumber && today.getYear() == this.yearNumber) 
                             ? today.getDayOfMonth() : -1;     // Check if today is in the current month.
         this.selectedDay = -1;
+        this.ownerUsername = "";
+        this.calendarName = "";
     }
 
     // Constructor: Initializes the month calendar with specified month and year. Assumes that selected month and year are not today.
@@ -46,6 +48,8 @@ public class MonthCalendar {
         this.startDay = convertStartDay(LocalDate.of(yearNumber, monthNumber, 1).getDayOfWeek().getValue());
         this.currentDay = -1;       // No current day set for specified month/year.
         this.selectedDay = -1;
+        this.ownerUsername = "";
+        this.calendarName = "";
     }
 
 
@@ -121,8 +125,7 @@ public class MonthCalendar {
 
 
     public void displayEntries() {
-        System.out.println();
-
+        System.out.println();   // space so it looks good.
         if (this.selectedDay == -1) {
             System.out.println("No day has been selected.");
         } else {
@@ -157,7 +160,7 @@ public class MonthCalendar {
         // Adds an entry to the calendar.
         if (entry != null && entry.getDate().getYear() == this.yearNumber && 
             entry.getDate().getMonthValue() == this.monthNumber) {
-                this.entries.add(entry);
+            this.entries.add(entry);
         } 
         else {
             System.out.println("Entry date does not match the calendar month/year.");
@@ -297,6 +300,10 @@ public class MonthCalendar {
 
 
     // Getters.
+    public ArrayList<Entry> getEntries() {
+        return this.entries;
+    }
+
     public int getMonthNumber() {
         return this.monthNumber;
     }
@@ -313,8 +320,25 @@ public class MonthCalendar {
         return this.selectedDay;
     }
 
+    public String getCalendarName() {
+        return this.calendarName;
+    }
+
+    public String getOwnerUsername() {
+        return this.ownerUsername;
+    }
+
+
     // Setters.
     public void setSelectedDay(int selectedDay) {
         this.selectedDay = selectedDay;
+    }
+
+    public void setCalendarName(String calendarName) {
+        this.calendarName = calendarName;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 }
