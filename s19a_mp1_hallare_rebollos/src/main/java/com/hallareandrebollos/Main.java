@@ -10,19 +10,19 @@ public class Main {
             switch (ui.getPageIndex()) {
                 case 1 -> {
                     // Main Page.
-                    ui.MenuPage();
+                    ui.menuPage();
                     ui.loadCalendarList();
-                    ui.MenuPageLogic();
+                    ui.menuPageLogic();
                 }
                 case 2 -> {
                     // Display Calendar.
                     ui.loadCalendarList();
-                    ui.CalendarDisplayController();
+                    ui.calendarDisplayController();
                 }
                 default -> {
                     // Login Page.
-                    ui.LoginPage();
-                    ui.LoginPageLogic();
+                    ui.loginPage();
+                    ui.loginPageLogic();
                 }
             }
         }

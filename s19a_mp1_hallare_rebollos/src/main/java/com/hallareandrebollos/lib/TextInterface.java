@@ -11,23 +11,18 @@ import com.hallareandrebollos.objects.Entry;
 import com.hallareandrebollos.objects.MonthCalendar;
 
 public class TextInterface {
-
     private Scanner scanner;                        // Scanner for user input.
     private Account loggedInAccount;                // The currently logged-in account.
-    private int currentCalendarID;                  // The ID of the currently selected calendar.
     private int pageIndex;                          // Page index to track the current page in the interface.
-    private ArrayList<String> calendarIDs;          // List of calendar IDs associated with the logged-in account.
-    private ArrayList<String> publicCalendarIDs;    // List of public calendar IDs.
-    private MonthCalendar currentCalendar;          // The currently loaded calendar object.
+    private CalendarManager calendarManager;
+
 
     // Constructor.
     public TextInterface() {
         this.scanner = new Scanner(System.in);      // Initialize the scanner for user input.
         this.loggedInAccount = null;                // Initially, no account is logged in.
-        this.currentCalendarID = -1;                // No calendar is selected initially.
         this.pageIndex = 0;                         // Start at the first page.
-        this.calendarIDs = new ArrayList<>();
-        this.publicCalendarIDs = new ArrayList<>();
+        this.calendarManager = new CalendarManager(scanner);
 
         // Ensure the needed folders exist.
         createFolder("data");
@@ -54,7 +49,7 @@ public class TextInterface {
 
     // LOGICS
     // Main logic for the user login page.
-    public void LoginPageLogic() {
+    public void loginPageLogic() {
         System.out.print("Enter number: ");
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
         scanner.nextLine();     // For safety measures (if may extra newline).
@@ -82,16 +77,14 @@ public class TextInterface {
                 if (validLogin) {
                     tempAccount = new Account();
                     if (!tempAccount.authenticate(username, password)) {
-                        System.out.println("Invalid username or password. or the account is deactivated. Please try again.");
-                        System.out.println("\n");
+                        System.out.println("Invalid username or password. or the account is deactivated. Please try again.\n\n");
                         validLogin = false;
                     }
                 }
 
                 if (validLogin) {
                     this.loggedInAccount = tempAccount;
-                    System.out.println("Login successful!");
-                    System.out.println("\n");
+                    System.out.println("Login successful!\n\n");
                     this.pageIndex = 1;         // Set the page index to the main menu.
                 }
             }
@@ -124,8 +117,7 @@ public class TextInterface {
                     }
                 }
 
-                System.out.println("Account created successfully!");
-                System.out.println("\n");
+                System.out.println("Account created successfully!\n\n");
                 this.pageIndex = 1;         // Set the page index to the main menu.
             }
             case 3 -> {
@@ -142,7 +134,7 @@ public class TextInterface {
 
 
     // Main logic for the main menu page.
-    public void MenuPageLogic() {
+    public void menuPageLogic() {
         System.out.print("Enter number: ");
         int selectedOption = scanner.nextInt();     // Read user input for the selected option.
         scanner.nextLine();     // For safety measures (if may extra newline).
@@ -153,14 +145,15 @@ public class TextInterface {
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[ Loading Today's Date ]-------|");
                 System.out.println("+---------------------------------------+");
-                loadTodayCalendar();
+                calendarManager.loadCalendarList(loggedInAccount.getUsername());
+                calendarManager.loadTodayCalendar(loggedInAccount.getUsername());
             }
             case 2 -> {
                 // 2. Select Calendar.
-                loadCalendarList();     // Load the calendar list for the logged-in user.
-                CalendarListPage();     // Display the calendar list page.
-                calendarSelector();     // Allow the user to select a calendar.
-                CalendarDisplayController();
+                calendarManager.loadCalendarList(loggedInAccount.getUsername());     // Load the calendar list for the logged-in user.
+                calendarListPage();     // Display the calendar list page.
+                calendarManager.calendarSelector(loggedInAccount.getUsername());     // Allow the user to select a calendar.
+                calendarManager.calendarDisplayController(this::calendarMenuPage);
             }
             case 3 -> {
                 // 3. Add Calendar.
@@ -169,26 +162,28 @@ public class TextInterface {
                 System.out.println("+---------------------------------------+");
                 System.out.println("1. Add from Public Calendars");
                 System.out.println("2. Create a New Calendar");
-                int calendarOption = scanner.nextInt();
+                int option = scanner.nextInt();
                 scanner.nextLine();     // in case may new line.
 
                 // User can choose from the list of publicly available Calendars.
-                if (calendarOption == 1) {
-                    loadCalendarList();
-                    for (int i = 0; i < publicCalendarIDs.size(); i++) {
-                        System.out.println((i + 1) + ". " + publicCalendarIDs.get(i));
+                if (option == 1) {
+                    calendarManager.loadCalendarList(loggedInAccount.getUsername());
+                    ArrayList<String> publicIDs = calendarManager.getPublicCalendarIDs();
+
+                    for (int i = 0; i < publicIDs.size(); i++) {
+                        System.out.println((i + 1) + ". " + publicIDs.get(i));
                     }
 
                     System.out.print("Enter the name of public calendar to add: ");
                     String selectedName = scanner.nextLine();
 
-                    if (publicCalendarIDs.contains(selectedName) && !calendarIDs.contains(selectedName)) {
+                    if (publicIDs.contains(selectedName) && !calendarManager.getCalendarIDs().contains(selectedName)) {
                         // Copy public calendar file into user's folder.
-                        File source = new File("data/calendars/public/" + selectedName + ".txt");
-                        File dest = new File("data/calendars/" + loggedInAccount.getUsername() + "/" + selectedName + ".txt");
+                        File src = new File("data/calendars/public/" + selectedName + ".txt");
+                        File dst = new File("data/calendars/" + loggedInAccount.getUsername() + "/" + selectedName + ".txt");
 
                         try {
-                            java.nio.file.Files.copy(source.toPath(), dest.toPath());
+                            java.nio.file.Files.copy(src.toPath(), dst.toPath());
                             System.out.println("Calendar added successfully!");
                         } catch (IOException e) {
                             System.out.println("Failed to add calendar: " + e.getMessage());
@@ -199,18 +194,16 @@ public class TextInterface {
                 }
 
                 // User can create an new calendar and decide if it's private or public.
-                else if (calendarOption == 2) {
+                else if (option == 2) {
                     System.out.print("Enter new calendar name: ");
                     String newCalendarName = scanner.nextLine();
                     System.out.print("Make it public? (yes/no): ");
                     String visibility = scanner.nextLine().trim().toLowerCase();
 
                     MonthCalendar newCalendar = new MonthCalendar(new ArrayList<>());
-                    newCalendar.setSelectedDay(LocalDate.now().getDayOfMonth());
-
-                    // Set calendar name and owner before saving.
                     newCalendar.setCalendarName(newCalendarName);
                     newCalendar.setOwnerUsername(loggedInAccount.getUsername());
+                    newCalendar.setSelectedDay(LocalDate.now().getDayOfMonth());
 
                     boolean saved = newCalendar.saveCalendar(visibility.equals("yes") ? "" : loggedInAccount.getUsername());
                     if (saved) {
@@ -230,8 +223,8 @@ public class TextInterface {
                 } else {
                     MonthCalendar temp = new MonthCalendar(new ArrayList<>());
                     if (temp.deleteCalendar(loggedInAccount.getUsername(), toDelete)) {
-                        System.out.println("Calendar deleted.");
-                        calendarIDs.remove(toDelete);
+                        System.out.println("Calendar has been deleted.");
+                        calendarManager.getCalendarIDs().remove(toDelete);
                     } else {
                         System.out.println("Calendar could not be deleted.");
                     }
@@ -244,10 +237,10 @@ public class TextInterface {
                 String confirmation = scanner.nextLine().trim().toLowerCase();
 
                 if (confirmation.equals("yes")) {
-                    this.loggedInAccount.deactivateAccount();
+                    loggedInAccount.deactivateAccount();
                     System.out.println("Account deactivated. Logging out...\n\n");
-                    this.loggedInAccount = null;
-                    this.pageIndex = 0;     // Sends the user back to the login page.
+                    loggedInAccount = null;
+                    pageIndex = 0;     // Sends the user back to the login page.
                 } else {
                     System.out.println("Deactivation cancelled.\n\n");
                 }
@@ -265,7 +258,9 @@ public class TextInterface {
     }
 
 
-    public void CalendarPageLogic(int selectedOption) {
+    public void calendarPageLogic(int selectedOption) {
+        MonthCalendar currentCalendar = calendarManager.getCurrentCalendar();
+        
         System.out.print("Enter number: ");
         selectedOption = scanner.nextInt();     // Read user input for the selected option.
         scanner.nextLine();         // For safety measures (if may extra newline).
@@ -276,15 +271,15 @@ public class TextInterface {
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[   Viewing Entries   ]--------|");
                 System.out.println("+---------------------------------------+");
-                if (this.currentCalendar != null) {
-                    this.currentCalendar.displayEntries();
+                if (currentCalendar != null) {
+                    currentCalendar.displayEntries();
                 } else {
                     System.out.println("No calendar is currently selected.");
                 }
             }
             case 2 -> {
                 // 2. Add Entry.
-                if (this.currentCalendar != null && this.currentCalendar.getSelectedDay() != -1) {
+                if (currentCalendar != null && currentCalendar.getSelectedDay() != -1) {
                     System.out.println("+---------------------------------------+");
                     System.out.println("|--------[   Adding New Entry   ]-------|");
                     System.out.println("+---------------------------------------+");
@@ -299,9 +294,9 @@ public class TextInterface {
                     System.out.println("End Time (HH:mm): ");
                     String endTime = scanner.nextLine();
 
-                    String date = this.currentCalendar.getYearNumber() + "-" + 
-                                this.currentCalendar.getMonthNumber() + "-" + 
-                                this.currentCalendar.getSelectedDay();
+                    String date = currentCalendar.getYearNumber() + "-" + 
+                                currentCalendar.getMonthNumber() + "-" + 
+                                currentCalendar.getSelectedDay();
 
                     Entry entry = new Entry(title, description);
                     if (entry.setStartTime(startTime) && entry.setEndTime(endTime) && entry.setDate(date)) {
@@ -363,10 +358,10 @@ public class TextInterface {
 
                 if (title.isEmpty()) {
                     System.out.println("Title cannot be empty. Please try again.");
-                } else if (!this.currentCalendar.entryExists(title)) {
+                } else if (!currentCalendar.entryExists(title)) {
                     System.out.println("No entry found with the title: " + title);
                 } else {
-                    this.currentCalendar.deleteEntry(title);
+                    currentCalendar.deleteEntry(title);
                     System.out.println("Entry"+ title + "deleted successfully!");
                 }
             }
@@ -380,129 +375,8 @@ public class TextInterface {
     }
 
 
-    public void loadCalendarList() {
-        // This method should load the calendar IDs associated with the given username.
-        // looks into the directory data/calendars/username/ and retrieves each file name as a calendar ID.
-        this.calendarIDs.clear();
-        this.publicCalendarIDs.clear();
-        
-        File userDir = new File("data/calendars/" + this.loggedInAccount.getUsername() + "/");
-        if (userDir.exists() && userDir.isDirectory()) {
-            File[] userFiles = userDir.listFiles((d, name) -> name.endsWith(".txt"));
-            if (userFiles != null) {
-                for (File file : userFiles) {
-                    String id = file.getName().replace(".txt", "");
-                    this.calendarIDs.add(id);
-                }
-            }
-        }
-
-        File publicDir = new File("data/calendars/public/");
-        if (publicDir.exists() && publicDir.isDirectory()) {
-            File[] publicFiles = publicDir.listFiles((d, name) -> name.endsWith(".txt"));
-            if (publicFiles != null) {
-                for (File file : publicFiles) {
-                    String id = file.getName().replace(".txt", "");
-                    this.publicCalendarIDs.add(id);
-                }
-            }
-        }
-    }
-
-
-    public void loadTodayCalendar() {
-        // This method should load the calendar for today.
-        // checks each calendar ID in the calendarIDs list and loads the one that matches today's date.
-        LocalDate today = LocalDate.now();
-        boolean found = false;
-
-        for (String calendarID : calendarIDs) {
-            MonthCalendar temp = new MonthCalendar(new ArrayList<>());
-
-            if (temp.loadCalendar(loggedInAccount.getUsername(), calendarID)) {
-                if (temp.getMonthNumber() == today.getMonthValue() &&
-                    temp.getYearNumber() == today.getYear()) {
-
-                    if (!found) {  // Only assign the first valid one
-                        this.currentCalendar = temp;
-                        this.currentCalendar.setSelectedDay(today.getDayOfMonth());
-                        this.currentCalendar.displayCalendar();
-                        this.currentCalendar.displayEntries();
-                        found = true;
-                    }
-                }
-            }
-        }
-
-        if (!found) {
-            System.out.println("No calendar matches today's date.\n\n");
-        }
-    }
-
-    public void calendarSelector() {
-        boolean loopLock = false; // Loop lock to ensure valid input.
-        while (!loopLock) {
-            System.out.println("Enter Calendar ID: ");
-            String input = scanner.nextLine();
-
-            if (input.isEmpty()) {
-                System.out.println("Calendar ID cannot be empty. Please try again.");
-            } else if (calendarIDs.contains(input)){
-                this.currentCalendar = new MonthCalendar(new ArrayList<>());
-                if (this.currentCalendar.loadCalendar(this.loggedInAccount.getUsername(), input)) {
-                    this.currentCalendarID = Integer.parseInt(input);
-                    loopLock = true; // Valid input, exit the loop.
-                } else {
-                    System.out.println("Failed to load calendar with ID: " + input);
-                }
-            } else if (this.publicCalendarIDs.contains(input)) {
-                    this.currentCalendar = new MonthCalendar(new ArrayList<>());
-                    if (this.currentCalendar.loadCalendar("public", input)) {
-                        this.currentCalendarID = Integer.parseInt(input);
-                        loopLock = true; // Valid input, exit the loop.
-                    } else {
-                        System.out.println("Failed to load public calendar with ID: " + input);
-                    }
-            } else {
-                System.out.println("Invalid Calendar ID. Please try again.");
-            }
-        }
-    }
-
-
-    public void DaySelector() {
-        boolean loopLock = false;       // Loop lock to ensure valid input.
-        while (!loopLock) {
-            System.out.println("Select a Date to view (Enter 0 to return):");
-            int input = scanner.nextInt();
-            scanner.nextLine();
-
-            if (input == 0) {
-                loopLock = true;        // Exit the loop if user enters 0.
-            } else if (input >= 1 && input <= this.currentCalendar.getDaysInMonth()) {
-                this.currentCalendar.setSelectedDay(input);
-                loopLock = true;
-            } else {
-                System.out.println("Invalid date. Please try again.");
-            }
-        }
-    }
-
-    public void CalendarDisplayController() {
-        // This method should display the current calendar and allow the user to select a day.
-        if (this.currentCalendar != null) {
-            this.currentCalendar.displayCalendar();     // Display the calendar.
-            DaySelector();                              // Allow the user to select a day.
-            CalendarMenuPage();                         // Show the calendar menu page.
-        } else {
-            System.out.println("No calendar is currently selected.");
-        }
-    }
-
-
-
-    // ASCII Art for Each Pages.
-    public void LoginPage() {
+    // ASCII Display Pages.
+    public void loginPage() {
         System.out.println("+----------------------------------------+");
         System.out.println("|--------[   Digital Calendar   ]--------|");
         System.out.println("|----------------------------------------|");
@@ -512,7 +386,7 @@ public class TextInterface {
         System.out.println("+----------------------------------------+");
     }
 
-    public void MenuPage() {
+    public void menuPage() {
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
@@ -525,7 +399,7 @@ public class TextInterface {
         System.out.println("+---------------------------------------+");
     }
 
-    public void CalendarMenuPage() {
+    public void calendarMenuPage() {
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
@@ -537,19 +411,21 @@ public class TextInterface {
         System.out.println("+---------------------------------------+");
     }
 
-    public void CalendarListPage() {
+    public void calendarListPage() {
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
-        System.out.println("|--------[   Select a Calendar ]--------|");
+        System.out.println("|--------[    Calendar List    ]--------|");
         System.out.println("|---------------------------------------|");
+        ArrayList<String> publicIDs = calendarManager.getPublicCalendarIDs();
+        ArrayList<String> privateIDs = calendarManager.getCalendarIDs();
 
-        for (int i = 0; i < this.publicCalendarIDs.size(); i++) {
-            System.out.printf("| %2d. Public ID: %s |\n", (i + 1), this.publicCalendarIDs.get(i));
+        for (int i = 0; i < publicIDs.size(); i++) {
+            System.out.printf("| %2d. Public ID: %s |\n", (i + 1), publicIDs.get(i));
         }
         System.out.println("+---------------------------------------+");
-        for (int i = 0; i < this.calendarIDs.size(); i++) {
-            System.out.printf("| %2d. Private ID: %s |\n" + (i + 1) + this.calendarIDs.get(i));
+        for (int i = 0; i < privateIDs.size(); i++) {
+            System.out.printf("| %2d. Private ID: %s |\n", (i + 1), privateIDs.get(i));
         }
         System.out.println("+---------------------------------------+");
     }
@@ -558,10 +434,6 @@ public class TextInterface {
     // Getters and Setters.
     public Scanner getScanner() {
         return this.scanner;
-    }
-
-    public MonthCalendar getCurrentCalendar() {
-        return this.currentCalendar;
     }
 
     public void setPageIndex(int pageIndex) {

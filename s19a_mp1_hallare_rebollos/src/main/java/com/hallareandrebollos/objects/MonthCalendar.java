@@ -215,12 +215,26 @@ public class MonthCalendar {
         // Third line is the year number.
         // Fourth line and beyond are the entries in the format:
         // "Date(uuuu-MM-dd), Title, Start Time(HH:mm:ss), End Time(HH:mm:ss), Description(Anything beyond this point)".
-        String filePath = (ownerUsername.isEmpty()) ? 
-            "data/calendars/public/" + this.calendarName + ".txt" : 
-            "data/calendars/" + this.ownerUsername + "/" + this.calendarName + ".txt";
+        String folderPath;
+
+        // Decide path based on whether it's public or private.
+        if (ownerUsername.isEmpty()) {
+            folderPath = "data/calendars/public/";
+        } else {
+            folderPath = "data/calendars/" + this.ownerUsername + "/";
+        }
+
+        // Ensure directory exists
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        // Create file
+        String filePath = folderPath + this.calendarName + ".txt";
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            writer.write(ownerUsername);        // it's already a string.
+            writer.write(this.ownerUsername);  // First line: owner username
             writer.newLine();
             writer.write(String.valueOf(this.monthNumber));
             writer.newLine();
@@ -228,15 +242,16 @@ public class MonthCalendar {
             writer.newLine();
 
             for (Entry entry : this.entries) {
-                writer.write(entry.getDateString() + ", " + entry.getTitle() + ", " + 
-                             entry.getTimeStartString() + ", " + entry.getTimeEndString() + ", " + 
-                             entry.getDescription());
+                writer.write(entry.getDateString() + ", " + entry.getTitle() + ", " +
+                         entry.getTimeStartString() + ", " + entry.getTimeEndString() + ", " +
+                         entry.getDescription());
                 writer.newLine();
             }
-            return true;    // Successfully saved.
+
+            return true;
         } catch (IOException e) {
             System.out.println("Error saving calendar: " + e.getMessage());
-            return false;   // Failed to save.
+            return false;
         }
     }
 
