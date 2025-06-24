@@ -157,11 +157,13 @@ public class TextInterface {
             }
             case 3 -> {
                 // 3. Add Calendar.
+                System.out.println("\n");
                 System.out.println("+---------------------------------------+");
                 System.out.println("|--------[     Add Calendar     ]-------|");
                 System.out.println("+---------------------------------------+");
                 System.out.println("1. Add from Public Calendars");
                 System.out.println("2. Create a New Calendar");
+                System.out.print("Enter number: ");
                 int option = scanner.nextInt();
                 scanner.nextLine();     // in case may new line.
 
@@ -421,11 +423,11 @@ public class TextInterface {
         ArrayList<String> privateIDs = calendarManager.getCalendarIDs();
 
         for (int i = 0; i < publicIDs.size(); i++) {
-            System.out.printf("| %2d. Public ID: %s |\n", (i + 1), publicIDs.get(i));
+            System.out.printf("   %2d. Public ID: %s \n", (i + 1), publicIDs.get(i));
         }
         System.out.println("+---------------------------------------+");
         for (int i = 0; i < privateIDs.size(); i++) {
-            System.out.printf("| %2d. Private ID: %s |\n", (i + 1), privateIDs.get(i));
+            System.out.printf("   %2d. Private ID: %s \n", (i + 1), privateIDs.get(i));
         }
         System.out.println("+---------------------------------------+");
     }

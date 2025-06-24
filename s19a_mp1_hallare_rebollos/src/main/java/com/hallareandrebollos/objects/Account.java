@@ -163,6 +163,28 @@ public class Account {
         } catch (IOException e) {
             System.out.println("Error writing file: " + e.getMessage());
         }
+
+        // Delete all of the user's private calendars.
+        File userCalendarFolder = new File("data/calendars/" + this.username + "/");
+        if (userCalendarFolder.exists() && userCalendarFolder.isDirectory()) {
+            File[] files = userCalendarFolder.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile()) {
+                        boolean deleted = f.delete();
+                        if (!deleted) {
+                            System.out.println("Failed to delete calendar: " + f.getName());
+                        }
+                    }
+                }
+            }
+
+            // Attempt to delete the folder itself.
+            if (!userCalendarFolder.delete()) {
+                System.out.println("Could not delete user calendar folder." + userCalendarFolder.getName());
+            }
+        }
+
     }
 
 
