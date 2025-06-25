@@ -5,13 +5,11 @@ public class CalendarObject {
     private String calendarName;
     private boolean isPublic; // Indicates if the calendar is public or private
     private ArrayList<Entry> entries; // List of entries in the calendar
-    private int monthIdentifier; // Current month of the calendar
     private int yearIdentifier; // Current year of the calendar
 
-    public CalendarObject(String calendarName, boolean isPublic, int monthIdentifier, int yearIdentifier) {
+    public CalendarObject(String calendarName, boolean isPublic, int yearIdentifier) {
         this.calendarName = calendarName;
         this.isPublic = isPublic;
-        this.monthIdentifier = monthIdentifier;
         this.yearIdentifier = yearIdentifier;
         this.entries = new ArrayList<>();
     }
@@ -35,6 +33,10 @@ public class CalendarObject {
         this.isPublic = isPublic;
     }
 
+    public void setTitle(String title) {
+        this.calendarName = title;
+    }
+
     public ArrayList<Entry> getEntries() {
         return this.entries;
     }
@@ -45,10 +47,6 @@ public class CalendarObject {
 
     public boolean isPublic() {
         return this.isPublic;
-    }
-
-    public int getMonthIdentifier() {
-        return this.monthIdentifier;
     }
 
     public int getYearIdentifier() {

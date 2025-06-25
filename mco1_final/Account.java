@@ -14,6 +14,12 @@ public class Account {
         this.ownedCalendars = new ArrayList<>();
     }
 
+    public void addOwnedCalendar(String calendarName) {
+        if (!ownedCalendars.contains(calendarName)) {
+            ownedCalendars.add(calendarName);
+        }
+    }
+
     public ArrayList<String> getOwnedCalendars() {
         return this.ownedCalendars;
     }

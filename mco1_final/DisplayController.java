@@ -1,14 +1,10 @@
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import s19a_mp1_hallare_rebollos.src.main.java.com.hallareandrebollos.objects.MonthCalendar;
 
 public class DisplayController {
 
@@ -20,15 +16,15 @@ public class DisplayController {
         this.scanner = new Scanner(System.in);
     }
 
-    public void displayCalendar() {
-        CalendarObject calendarObject = logicController.getCurrentCalendarObject();
+    public void displayCalendar(int monthidx) {
+        CalendarObject calendarObject = this.logicController.getCurrentCalendarObject();
         System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
         System.out.println("|   Sunday  |   Monday  |  Tuesday  | Wednesday |  Thursday |   Friday  | Saturday  |");
         System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
 
         int currentDayPosition = 1;
-        int startDay = ((LocalDate.of(calendarObject.getYearIdentifier(), calendarObject.getMonthIdentifier(), currentDayPosition).getDayOfWeek().getValue()) % 7) + 1;
-        int daysInMonth = YearMonth.of(calendarObject.getYearIdentifier(), calendarObject.getMonthIdentifier()).lengthOfMonth();
+        int startDay = ((LocalDate.of(calendarObject.getYearIdentifier(), monthidx, currentDayPosition).getDayOfWeek().getValue()) % 7) + 1;
+        int daysInMonth = YearMonth.of(calendarObject.getYearIdentifier(), monthidx).lengthOfMonth();
 
         // Empty cells before the start day.
         for (int i = 1; i < startDay; i++) {
@@ -38,19 +34,14 @@ public class DisplayController {
 
         // Print each day.
         for (int day = 1; day <= daysInMonth; day++) {
-            long dayStartCheckRange = LocalDateTime.of(calendarObject.getYearIdentifier(), calendarObject.getMonthIdentifier(), day, 0, 0)
+            long dayStartCheckRange = LocalDateTime.of(calendarObject.getYearIdentifier(), monthidx, day, 0, 0)
                     .toInstant(ZoneOffset.UTC).toEpochMilli();
-            long dayEndCheckRange = LocalDateTime.of(calendarObject.getYearIdentifier(), calendarObject.getMonthIdentifier(), day, 23, 59, 59)
+            long dayEndCheckRange = LocalDateTime.of(calendarObject.getYearIdentifier(), monthidx, day, 23, 59, 59)
                     .toInstant(ZoneOffset.UTC).toEpochMilli();
             boolean hasEntry = calendarObject.getEntries().stream()
                     .anyMatch(entry -> entry.getStartTime() >= dayStartCheckRange && entry.getEndTime() <= dayEndCheckRange);
 
-            if (day == LocalDate.now().getDayOfMonth()
-                    && calendarObject.getMonthIdentifier() == LocalDate.now().getMonthValue()
-                    && calendarObject.getYearIdentifier() == LocalDate.now().getYear()) {
-                // Displays the current day with brackets.
-                System.out.printf("|[%2d]       ", day);
-            } else if (hasEntry) {
+            if (hasEntry) {
                 // Displays if the day has an entry.
                 System.out.printf("| %2d   *    ", day);
             } else {
@@ -79,22 +70,30 @@ public class DisplayController {
     }
 
     public void displayEntries() {
-        CalendarObject calendarObject = logicController.getCurrentCalendarObject();
+        CalendarObject calendarObject = this.logicController.getCurrentCalendarObject();
+        System.out.println("+------------------+------------------+------------------+------------------+");
+        System.out.println("|       Calendar: " + calendarObject.getCalendarName() + "\t\t|");
         System.out.println("+------------------+------------------+------------------+------------------+");
         System.out.println("|       Title      |     Description  |      Start       |       End        |");
         System.out.println("+------------------+------------------+------------------+------------------+");
 
-        for (Entry entry : calendarObject.getEntries()) {
-            String title = entry.getTitle();
-            String description = entry.getDescription();
-            String startTime = LocalDateTime.ofEpochSecond(entry.getStartTime() / 1000, 0, ZoneOffset.UTC).toString();
-            String endTime = LocalDateTime.ofEpochSecond(entry.getEndTime() / 1000, 0, ZoneOffset.UTC).toString();
+        if (calendarObject.getEntries().isEmpty()) {
+            System.out.println("|      No entries found! You are free at this specified time! Enjoy!        |");
+            System.out.println("+------------------+------------------+------------------+------------------+");
 
-            System.out.printf("| %-16s | %-16s | %-16s | %-16s |\n", title, description, startTime, endTime);
+        } else {
+            for (Entry entry : calendarObject.getEntries()) {
+                String title = entry.getTitle();
+                String description = entry.getDescription();
+                String startTime = LocalDateTime.ofEpochSecond(entry.getStartTime() / 1000, 0, ZoneOffset.UTC).toString();
+                String endTime = LocalDateTime.ofEpochSecond(entry.getEndTime() / 1000, 0, ZoneOffset.UTC).toString();
+
+                System.out.printf("| %-16s | %-16s | %-16s | %-16s |\n", title, description, startTime, endTime);
+                System.out.println("+------------------+------------------+------------------+------------------+");
+            }
+
             System.out.println("+------------------+------------------+------------------+------------------+");
         }
-
-        System.out.println("+------------------+------------------+------------------+------------------+");
     }
 
     public String displayLandingPage() {
@@ -139,10 +138,10 @@ public class DisplayController {
             return "landing";
         }
 
-        logicController.authenticateAccount(username, password);
+        this.logicController.authenticateAccount(username, password);
 
-        if (logicController.getCurrentAccount() != null) {
-            return "calendar";
+        if (this.logicController.getCurrentAccount() != null) {
+            return "menu";
         } else {
             return "login";
         }
@@ -162,8 +161,11 @@ public class DisplayController {
             return "landing";
         }
 
-        if (!logicController.existingUsername(username)) {
-            logicController.addAccount(username, password);
+        if (!this.logicController.existingUsername(username)) {
+            this.logicController.addAccount(username, password);
+            // create a default calendar for the user
+            // using the current year
+
             System.out.println("Account created successfully. Please log in.");
             return "login";
         } else {
@@ -173,15 +175,15 @@ public class DisplayController {
     }
 
     public String displayMenuPage() {
-        ArrayList<CalendarObject> calendarList = logicController.getPrivateCalendarObjects();
-        ArrayList<CalendarObject> sharedCalendars = logicController.getPublicCalendarObjects();
+        ArrayList<CalendarObject> calendarList = this.logicController.getPrivateCalendarObjects();
+        ArrayList<CalendarObject> sharedCalendars = this.logicController.getPublicCalendarObjects();
 
         System.out.println("+---------------------------------------+");
         System.out.println("|--------[   Digital Calendar  ]--------|");
         System.out.println("|---------------------------------------|");
         System.out.println("|--------[  1. Select Calendar ]--------|");
         System.out.println("|--------[  2. Add Calendar    ]--------|");
-        System.out.println("|--------[  3. Remove Calendar ]--------|");
+        System.out.println("|--------[  3. View Today      ]--------|");
         System.out.println("|--------[  4. Delete Account  ]--------|");
         System.out.println("|--------[  5. Logout          ]--------|");
         System.out.println("+---------------------------------------+");
@@ -208,6 +210,34 @@ public class DisplayController {
                         System.out.printf("|   Private    %s \t\t|\n", calendarList.get(i));
                     }
                     System.out.println("+---------------------------------------+");
+                    System.out.println("If there are duplicates, kindly input \"public calendar_name\" to select a public calendar.");
+                    System.out.print("Enter the name of the calendar to select: ");
+                    String calendarName = scanner.nextLine();
+
+                    CalendarObject selectedCalendar;
+                    boolean isPublic = false;
+
+                    if (calendarName.toLowerCase().startsWith("public ")) {
+                        String publicCalendarName = calendarName.substring(7).trim();
+                        selectedCalendar = sharedCalendars.stream()
+                                .filter(calendar -> calendar.getCalendarName().equalsIgnoreCase(publicCalendarName))
+                                .findFirst()
+                                .orElse(null);
+                        isPublic = true;
+                    } else {
+                        selectedCalendar = calendarList.stream()
+                                .filter(calendar -> calendar.getCalendarName().equalsIgnoreCase(calendarName))
+                                .findFirst()
+                                .orElse(null);
+                    }
+
+                    if (selectedCalendar != null) {
+                        int calendarIndex = this.logicController.getCalendarFromName(selectedCalendar.getCalendarName(), isPublic);
+                        this.logicController.setCalendarObjectIndex(calendarIndex);
+                        System.out.printf("Selected %s calendar: %s\n", isPublic ? "public" : "private", selectedCalendar.getCalendarName());
+                    } else {
+                        System.out.printf("%s calendar not found.\n", isPublic ? "Public" : "Private");
+                    }
                 }
                 return "menu";
             case 2:
@@ -219,65 +249,77 @@ public class DisplayController {
                 System.out.println("+---------------------------------------+");
                 System.out.print("Enter number: ");
                 int option = scanner.nextInt();
-                scanner.nextLine();     // in case may new line.
-                // The following variables and logic are placeholders; you should replace them with your actual implementation.
-                ArrayList<String> publicIDs = new ArrayList<>(); // Placeholder: populate with actual public calendar IDs
-                // Example: publicIDs = logicController.getPublicCalendarIDs();
-                // Example: calendarManager and loggedInAccount should be replaced with your actual objects
+                scanner.nextLine();
+
                 if (option == 1) {
-                    for (int i = 0; i < publicIDs.size(); i++) {
-                        System.out.println((i + 1) + ". " + publicIDs.get(i));
+                    for (int i = 0; i < sharedCalendars.size(); i++) {
+                        System.out.println((i + 1) + ". " + sharedCalendars.get(i).getCalendarName());
                     }
 
-                    System.out.print("Enter the name of public calendar to add: ");
+                    System.out.println("Enter the name of public calendar to add: ");
                     String selectedName = scanner.nextLine();
 
-                    // Placeholder: replace calendarManager and loggedInAccount with your actual objects
-                    // Example: if (publicIDs.contains(selectedName) && !calendarManager.getCalendarIDs().contains(selectedName)) {
-                    if (publicIDs.contains(selectedName)) {
-                        File src = new File("data/calendars/public/" + selectedName + ".txt");
-                        File dst = new File("data/calendars/USERNAME/" + selectedName + ".txt"); // Replace USERNAME appropriately
+                    CalendarObject selectedCalendar = sharedCalendars.stream()
+                            .filter(calendar -> calendar.isPublic() && calendar.getCalendarName().equalsIgnoreCase(selectedName))
+                            .findFirst()
+                            .orElse(null);
 
-                        try {
-                            java.nio.file.Files.copy(src.toPath(), dst.toPath());
-                            System.out.println("Calendar added successfully!");
-                        } catch (IOException e) {
-                            System.out.println("Failed to add calendar: " + e.getMessage());
-                        }
+                    if (selectedCalendar != null) {
+                        selectedCalendar.setIsPublic(false);
+                        this.logicController.addCalendarInstance(selectedCalendar);
+                        this.logicController.getCurrentAccount().addOwnedCalendar(selectedCalendar.getCalendarName());
+                        System.out.printf("Calendar %s copied successfully added successfully.\n", selectedCalendar.getCalendarName());
                     } else {
-                        System.out.println("Invalid selection or calendar already added.");
+                        System.out.printf("Calendar %s not found.\n", selectedName);
                     }
-                } // User can create a new calendar and decide if it's private or public.
-                else if (option == 2) {
+                } else if (option == 2) {
                     System.out.print("Enter new calendar name: ");
                     String newCalendarName = scanner.nextLine();
+                    System.out.println("Select the year for the new calendar: ");
+                    System.out.print("Enter year (e.g., 2023): ");
+                    int yearidx = scanner.nextInt();
+                    scanner.nextLine();
                     System.out.print("Make it public? (yes/no): ");
                     String visibility = scanner.nextLine().trim().toLowerCase();
 
-                    CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false, choice, option);
-                    newCalendar.setCalendarName(newCalendarName);
-                    // Placeholder: replace with actual username
-                    newCalendar.setOwnerUsername("USERNAME");
-                    newCalendar.setSelectedDay(LocalDate.now().getDayOfMonth());
-
-                    boolean saved = newCalendar.saveCalendar(visibility.equals("yes") ? "" : "USERNAME");
-                    if (saved) {
-                        System.out.println("Calendar created and saved as " + newCalendarName + ".txt");
-                    } else {
-                        System.out.println("Failed to save calendar.");
+                    CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false, yearidx);
+                    switch (visibility) {
+                        case "yes" ->
+                            newCalendarObject.setIsPublic(true);
+                        case "no" ->
+                            newCalendarObject.setIsPublic(false);
+                        default ->
+                            System.out.println("Invalid input. Calendar will be created as private.");
                     }
                 }
                 return "menu";
             case 3:
-                // Implement remove calendar logic here
-                System.out.println("Remove calendar functionality not implemented yet.");
+                LocalDate today = LocalDate.now();
+                CalendarObject currentCalendar = this.logicController.getCurrentCalendarObject();
+                if (currentCalendar != null
+                        && currentCalendar.getYearIdentifier() == today.getYear()) {
+                    System.out.println("Today's Date: " + today.toString());
+                    displayEntries();
+                }
                 return "menu";
             case 4:
-                // Implement delete account logic here
-                System.out.println("Delete account functionality not implemented yet.");
+                System.out.println("+---------------------------------------+");
+                System.out.println("|--------[   Delete Account   ]---------|");
+                System.out.println("+---------------------------------------+");
+                System.out.print("Are you sure you want to delete your account? (yes/no): ");
+                String confirmation = scanner.nextLine().trim().toLowerCase();
+                if (confirmation.equals("yes")) {
+                    this.logicController.deactivateAccount();
+                    return "landing";
+                } else {
+                    System.out.println("Deactivation cancelled.\n\n");
+                }
                 return "menu";
             case 5:
-                logicController.logoutAccount();
+                System.out.println("+---------------------------------------+");
+                System.out.println("|--------[    Logging Out     ]---------|");
+                System.out.println("+---------------------------------------+");
+                this.logicController.logoutAccount();
                 return "landing";
             default:
                 return "menu";

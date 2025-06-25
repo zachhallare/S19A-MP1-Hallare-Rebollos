@@ -54,7 +54,7 @@ public class LogicController {
 
     public void addAccount(String username, String password) {
         Account account = new Account(username, password);
-        addCalendarObject(username, false, getCurrentMonth(), getCurrentYear());
+        addCalendarObject(username, false, getCurrentYear());
         accounts.add(account);
     }
 
@@ -78,9 +78,17 @@ public class LogicController {
         return isUsernameExisting;
     }
 
-    public void addCalendarObject(String CalendarObjectName, boolean isPublic, int monthIdentifier, int yearIdentifier) {
-        CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic, monthIdentifier, yearIdentifier);
+    public void addCalendarObject(String CalendarObjectName, boolean isPublic, int yearIdentifier) {
+        CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic, yearIdentifier);
         CalendarObjects.add(CalendarObject);
+    }
+
+    public boolean addCalendarInstance(CalendarObject calendarObject) {
+        if (calendarObject != null) {
+            CalendarObjects.add(calendarObject);
+            return true;
+        }
+        return false;
     }
 
     public void removeCurrentCalendarObject() {
@@ -178,5 +186,16 @@ public class LogicController {
             return CalendarObjects.get(this.CalendarObjectIndex);
         }
         return null; // No CalendarObject is selected
+    }
+
+    public int getCalendarFromName(String CalendarObjectName, boolean isPublic) {
+        int foundIdx = -1;
+        for (int i = 0; i < this.CalendarObjects.size(); i++) {
+            if (this.CalendarObjects.get(i).getCalendarName().equals(CalendarObjectName) && this.CalendarObjects.get(i).isPublic() == isPublic) {
+                foundIdx = i;
+                i += this.CalendarObjects.size();
+            }
+        }
+        return foundIdx;
     }
 }
