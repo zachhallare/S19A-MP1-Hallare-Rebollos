@@ -69,7 +69,7 @@ public class DisplayController {
         }
     }
 
-    public void displayEntries() {
+    public void displayEntriesOfDay(int monthNumber, int dayNumber) {
         CalendarObject calendarObject = this.logicController.getCurrentCalendarObject();
         System.out.println("+------------------+------------------+------------------+------------------+");
         System.out.println("|       Calendar: " + calendarObject.getCalendarName() + "\t\t|");
@@ -77,23 +77,25 @@ public class DisplayController {
         System.out.println("|       Title      |     Description  |      Start       |       End        |");
         System.out.println("+------------------+------------------+------------------+------------------+");
 
-        if (calendarObject.getEntries().isEmpty()) {
-            System.out.println("|      No entries found! You are free at this specified time! Enjoy!        |");
-            System.out.println("+------------------+------------------+------------------+------------------+");
-
-        } else {
-            for (Entry entry : calendarObject.getEntries()) {
-                String title = entry.getTitle();
-                String description = entry.getDescription();
-                String startTime = LocalDateTime.ofEpochSecond(entry.getStartTime() / 1000, 0, ZoneOffset.UTC).toString();
-                String endTime = LocalDateTime.ofEpochSecond(entry.getEndTime() / 1000, 0, ZoneOffset.UTC).toString();
-
-                System.out.printf("| %-16s | %-16s | %-16s | %-16s |\n", title, description, startTime, endTime);
-                System.out.println("+------------------+------------------+------------------+------------------+");
+        LocalDate date = LocalDate.of(calendarObject.getYearIdentifier(), monthNumber, dayNumber);
+        long dayStartCheckRange = date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
+        long dayEndCheckRange = date.atTime(23, 59, 59).toInstant(ZoneOffset.UTC).toEpochMilli();
+        ArrayList<Entry> entries = calendarObject.getEntries();
+        boolean hasEntries = false;
+        for (Entry entry : entries) {
+            if (entry.getStartTime() >= dayStartCheckRange && entry.getEndTime() <= dayEndCheckRange) {
+                hasEntries = true;
+                System.out.printf("| %-16s | %-16s | %-16s | %-16s |\n",
+                        entry.getTitle(),
+                        entry.getDescription(),
+                        LocalDateTime.ofEpochSecond(entry.getStartTime() / 1000, 0, ZoneOffset.UTC),
+                        LocalDateTime.ofEpochSecond(entry.getEndTime() / 1000, 0, ZoneOffset.UTC));
             }
-
-            System.out.println("+------------------+------------------+------------------+------------------+");
         }
+        if (!hasEntries) {
+            System.out.println("| No entries found for this day.                                      |");
+        }
+        System.out.println("+------------------+------------------+------------------+------------------+");
     }
 
     public String displayLandingPage() {
@@ -299,7 +301,7 @@ public class DisplayController {
                 if (currentCalendar != null
                         && currentCalendar.getYearIdentifier() == today.getYear()) {
                     System.out.println("Today's Date: " + today.toString());
-                    displayEntries();
+                    displayEntriesOfDay(today.getMonthValue(), today.getDayOfMonth());
                 }
                 return "menu";
             case 4:
@@ -324,5 +326,169 @@ public class DisplayController {
             default:
                 return "menu";
         }
+    }
+
+    public void displayEntryOptions(int monthidx) {
+        System.out.println("+---------------------------------------+");
+        System.out.println("|--------[   Entry Options   ]----------|");
+        System.out.println("+---------------------------------------+");
+        System.out.println("| 1. View Entries                       |");
+        System.out.println("| 2. Add Entry                          |");
+        System.out.println("| 3. Edit Entry                         |");
+        System.out.println("| 4. Remove Entry                       |");
+        System.out.println("| 5. Back to Menu                       |");
+        System.out.println("+---------------------------------------+");
+        System.out.print("Please select an option: ");
+        int choice = this.scanner.nextInt();
+        this.scanner.nextLine();
+        switch (choice) {
+            case 1:
+                System.out.println("Select a day to view entries:");
+                System.out.print("Enter day (1-31): ");
+                int day = this.scanner.nextInt();
+                this.scanner.nextLine();
+                if (day < 1 || day > 31) {
+                    System.out.println("Invalid day selection. Please try again.");
+                } else {
+                    displayEntriesOfDay(monthidx, day);
+                }
+                break;
+            case 2:
+                System.out.println("Enter Title of the entry: ");
+                String title = this.scanner.nextLine();
+                System.out.println("Enter Description of the entry: ");
+                String description = this.scanner.nextLine();
+                System.out.println("Enter Day of the Month for the entry: ");
+                int entryDay = this.scanner.nextInt();
+                this.scanner.nextLine();
+                int maximumDaysInMonth = YearMonth.of(this.logicController.getCurrentCalendarObject().getYearIdentifier(), monthidx).lengthOfMonth();
+                if (entryDay < 1 || entryDay > maximumDaysInMonth) {
+                    System.out.println("Invalid day selection. Please try again.");
+                } else {
+                    System.out.println("Enter Start Time (HH:MM): ");
+                    String startTimeInput = this.scanner.nextLine();
+                    System.out.println("Enter End Time (HH:MM): ");
+                    String endTimeInput = this.scanner.nextLine();
+                    try {
+                        LocalDateTime startTime = LocalDateTime.of(
+                                this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                monthidx, entryDay,
+                                Integer.parseInt(startTimeInput.split(":")[0]),
+                                Integer.parseInt(startTimeInput.split(":")[1])
+                        );
+                        LocalDateTime endTime = LocalDateTime.of(
+                                this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                monthidx, entryDay,
+                                Integer.parseInt(endTimeInput.split(":")[0]),
+                                Integer.parseInt(endTimeInput.split(":")[1])
+                        );
+
+                        if (endTime.isBefore(startTime)) {
+                            System.out.println("End time cannot be before start time. Please try again.");
+                        } else {
+                            long startMillis = startTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+                            long endMillis = endTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+                            this.logicController.addEntryToCurrentCalendarObject(title, description, startMillis, endMillis);
+                            System.out.println("Entry added successfully.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid time format. Please use HH:MM format.");
+                    }
+                }
+                break;
+            case 3:
+                System.out.println("Select a day to view entries:");
+                System.out.print("Enter day (1-31): ");
+                int dayInMonth = this.scanner.nextInt();
+                this.scanner.nextLine();
+                if (dayInMonth < 1 || dayInMonth > 31) {
+                    System.out.println("Invalid day selection. Please try again.");
+                } else {
+                    displayEntriesOfDay(monthidx, dayInMonth);
+                    System.out.println("Enter the title of the entry you want to edit: ");
+                    String entryTitle = this.scanner.nextLine();
+                    Entry entryToEdit = this.logicController.getCurrentCalendarObject().getEntries().stream()
+                            .filter(entry -> entry.getTitle().equalsIgnoreCase(entryTitle))
+                            .findFirst()
+                            .orElse(null);
+                    if (entryToEdit != null) {
+                        // CREATE EDIT OPTION HERE THING MENU
+                        // THEN CHECK FOR BLANKS
+                        // IF BLANK IGNORE THAT VARIABLE
+                        System.out.println("Enter new Title (leave blank to keep current): ");
+                        String newTitle = this.scanner.nextLine();
+                        System.out.println("Enter new Description (leave blank to keep current): ");
+                        String newDescription = this.scanner.nextLine();
+                        System.out.println("Enter new Start Time (HH:MM, leave blank to keep current): ");
+                        String newStartTimeInput = this.scanner.nextLine();
+                        System.out.println("Enter new End Time (HH:MM, leave blank to keep current): ");
+                        String newEndTimeInput = this.scanner.nextLine();
+                        Entry newEntry = new Entry(
+                                newTitle.isEmpty() ? entryToEdit.getTitle() : newTitle,
+                                newDescription.isEmpty() ? entryToEdit.getDescription() : newDescription
+                        );
+                        if (!newStartTimeInput.isEmpty()) {
+                            try {
+                                LocalDateTime newStartTime = LocalDateTime.of(
+                                        this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                        monthidx, dayInMonth,
+                                        Integer.parseInt(newStartTimeInput.split(":")[0]),
+                                        Integer.parseInt(newStartTimeInput.split(":")[1])
+                                );
+                                newEntry.setStartTime(newStartTime.toInstant(ZoneOffset.UTC).toEpochMilli());
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid start time format. Keeping current start time.");
+                            }
+                        } else {
+                            newEntry.setStartTime(entryToEdit.getStartTime());
+                        }
+                        if (!newEndTimeInput.isEmpty()) {
+                            try {
+                                LocalDateTime newEndTime = LocalDateTime.of(
+                                        this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                        monthidx, dayInMonth,
+                                        Integer.parseInt(newEndTimeInput.split(":")[0]),
+                                        Integer.parseInt(newEndTimeInput.split(":")[1])
+                                );
+                                newEntry.setEndTime(newEndTime.toInstant(ZoneOffset.UTC).toEpochMilli());
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid end time format. Keeping current end time.");
+                            }
+                        } else {
+                            newEntry.setEndTime(entryToEdit.getEndTime());
+                        }
+                        this.logicController.editEntryInCurrentCalendarObject(entryToEdit, newEntry);
+                        System.out.println("Entry edited successfully.");
+                    }
+                }
+                break;
+            case 4:
+                System.out.println("Remove Entry functionality WIP");
+                break;
+            case 5:
+                return; // Go back to the menu
+            default:
+                System.out.println("Invalid option. Please try again.");
+        }
+    }
+
+    public void displayMonthSelection() {
+        System.out.println("+---------------------------------------+");
+        System.out.println("|--------[   Select Month   ]-----------|");
+        System.out.println("+---------------------------------------+");
+        System.out.println("| 1. January   | 2. February  | 3. March |");
+        System.out.println("| 4. April     | 5. May      | 6. June   |");
+        System.out.println("| 7. July      | 8. August    | 9. September |");
+        System.out.println("| 10. October  | 11. November | 12. December |");
+        System.out.println("+---------------------------------------+");
+        System.out.print("Please select a month (1-12): ");
+        int monthChoice = this.scanner.nextInt();
+        this.scanner.nextLine();
+        if (monthChoice < 1 || monthChoice > 12) {
+            System.out.println("Invalid month selection. Please try again.");
+        } else {
+            displayCalendar(monthChoice);
+        }
+
     }
 }
