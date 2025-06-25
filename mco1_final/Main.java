@@ -19,7 +19,7 @@ public class Main {
                     currentPage = displayController.displayMenuPage();
                     break;
                 case "calendar":
-                    displayController.displayCalendar();
+                    //displayController.displayCalendar();
                     break;
                 default:
                     System.out.println("Unknown page. Returning to portal page...");
