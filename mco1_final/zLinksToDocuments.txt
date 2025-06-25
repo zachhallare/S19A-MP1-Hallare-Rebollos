@@ -1,6 +1,11 @@
-1. Declaration of Original Work:
+1. UML Class Diagram
+https://drive.google.com/file/d/1fJ2_SmVY-wFjxO53dIqt4evJAU5HE9Hu/view?usp=sharing
+
+
+2. Declaration of Original Work:
 https://docs.google.com/document/d/1Th93YYBjt-nx6z5t7v9jR9MDQGs4wwl3wPCUzNioCZY/edit?usp=sharing
 
-2. Test Cases:
+
+3. Test Script:
 https://docs.google.com/document/d/1pnBtmlphljFEPJQ-U6QBj575jq00iIImv_ecjfwnXfo/edit?usp=sharing
 
