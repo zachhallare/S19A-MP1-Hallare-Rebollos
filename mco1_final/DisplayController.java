@@ -415,52 +415,123 @@ public class DisplayController {
                         // CREATE EDIT OPTION HERE THING MENU
                         // THEN CHECK FOR BLANKS
                         // IF BLANK IGNORE THAT VARIABLE
-                        System.out.println("Enter new Title (leave blank to keep current): ");
-                        String newTitle = this.scanner.nextLine();
-                        System.out.println("Enter new Description (leave blank to keep current): ");
-                        String newDescription = this.scanner.nextLine();
-                        System.out.println("Enter new Start Time (HH:MM, leave blank to keep current): ");
-                        String newStartTimeInput = this.scanner.nextLine();
-                        System.out.println("Enter new End Time (HH:MM, leave blank to keep current): ");
-                        String newEndTimeInput = this.scanner.nextLine();
-                        Entry newEntry = new Entry(
-                                newTitle.isEmpty() ? entryToEdit.getTitle() : newTitle,
-                                newDescription.isEmpty() ? entryToEdit.getDescription() : newDescription
-                        );
-                        if (!newStartTimeInput.isEmpty()) {
-                            try {
-                                LocalDateTime newStartTime = LocalDateTime.of(
-                                        this.logicController.getCurrentCalendarObject().getYearIdentifier(),
-                                        monthidx, dayInMonth,
-                                        Integer.parseInt(newStartTimeInput.split(":")[0]),
-                                        Integer.parseInt(newStartTimeInput.split(":")[1])
-                                );
-                                newEntry.setStartTime(newStartTime.toInstant(ZoneOffset.UTC).toEpochMilli());
-                            } catch (NumberFormatException e) {
-                                System.out.println("Invalid start time format. Keeping current start time.");
+                        // gotchu -zach
+
+                        System.out.println("+---------------------------------------+");
+                        System.out.println("|-------[   Edit Entry Options  ]-------|");
+                        System.out.println("+---------------------------------------+");
+                        System.out.println("| 1. Edit Title                         |");
+                        System.out.println("| 2. Edit Description                   |");
+                        System.out.println("| 3. Edit Start Time (HH:MM)            |");
+                        System.out.println("| 4. Edit End Time (HH:MM)              |");
+                        System.out.println("| 5. Edit All Fields                    |");
+                        System.out.println("+---------------------------------------+");
+                        System.out.println("Choose what you want to edit: ");
+                        int editOption = this.scanner.nextInt();
+                        this.scanner.nextLine();
+
+                        String newTitle = entryToEdit.getTitle();
+                        String newDescription = entryToEdit.getDescription();
+                        long newStartTime = entryToEdit.getStartTime();
+                        long newEndTime = entryToEdit.getEndTime();
+
+                        switch (editOption) {
+                            case 1 -> {
+                                System.out.print("Enter new title: ");
+                                String input = this.scanner.nextLine();
+                                if (!input.isBlank()) newTitle = input;
                             }
-                        } else {
-                            newEntry.setStartTime(entryToEdit.getStartTime());
-                        }
-                        if (!newEndTimeInput.isEmpty()) {
-                            try {
-                                LocalDateTime newEndTime = LocalDateTime.of(
-                                        this.logicController.getCurrentCalendarObject().getYearIdentifier(),
-                                        monthidx, dayInMonth,
-                                        Integer.parseInt(newEndTimeInput.split(":")[0]),
-                                        Integer.parseInt(newEndTimeInput.split(":")[1])
-                                );
-                                newEntry.setEndTime(newEndTime.toInstant(ZoneOffset.UTC).toEpochMilli());
-                            } catch (NumberFormatException e) {
-                                System.out.println("Invalid end time format. Keeping current end time.");
+                            case 2 -> {
+                                System.out.print("Enter new description: ");
+                                String input = this.scanner.nextLine();
+                                if (!input.isBlank()) newDescription = input;
                             }
-                        } else {
-                            newEntry.setEndTime(entryToEdit.getEndTime());
+                            case 3 -> {
+                                System.out.print("Enter new start time (HH:MM): ");
+                                String input = this.scanner.nextLine();
+                                try {
+                                    if (!input.isBlank()) {
+                                        LocalDateTime start = LocalDateTime.of(
+                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(), 
+                                            monthidx, dayInMonth, Integer.parseInt(input.split(":")[0]),
+                                            Integer.parseInt(input.split(":")[1])
+                                        );
+                                        newStartTime = start.toInstant(ZoneOffset.UTC).toEpochMilli();
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Invalid start time format.");
+                                }
+                            }
+                            case 4 -> {
+                                System.out.println("Enter new End Time (HH:MM): ");
+                                String input = this.scanner.nextLine();
+                                try {
+                                    if (!input.isBlank()) {
+                                        LocalDateTime end = LocalDateTime.of(
+                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(), 
+                                            monthidx, dayInMonth, Integer.parseInt(input.split(":")[0]),
+                                            Integer.parseInt(input.split(":")[1])
+                                        );
+                                        newEndTime = end.toInstant(ZoneOffset.UTC).toEpochMilli();
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Invalid start time format.");
+                                }
+                            }
+                            case 5 -> {
+                                System.out.println("Enter new Title (blank to keep current): ");
+                                String inputTitle = this.scanner.nextLine();
+                                if (!inputTitle.isBlank()) newTitle = inputTitle;
+
+                                System.out.println("Enter new Description (blank to keep current): ");
+                                String inputDesc = this.scanner.nextLine();
+                                if (!inputDesc.isBlank()) newDescription = inputDesc;
+
+                                System.out.println("Enter new Start Time (HH:MM, blank to keep current): ");
+                                String inputStart = this.scanner.nextLine();
+                                if (!inputStart.isBlank()) {
+                                    try {
+                                        LocalDateTime start = LocalDateTime.of(
+                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                            monthidx, dayInMonth, Integer.parseInt(inputStart.split(":")[0]),
+                                            Integer.parseInt(inputStart.split(":")[1])
+                                        );
+                                        newStartTime = start.toInstant(ZoneOffset.UTC).toEpochMilli();
+                                    } catch (Exception e) {
+                                        System.out.println("Invalid start time format.");
+                                    }
+                                }
+
+                                System.out.println("Enter new End Time (HH:MM, blank to keep current): ");
+                                String inputEnd = this.scanner.nextLine();
+                                if (!inputEnd.isBlank()) {
+                                    try {
+                                        LocalDateTime end = LocalDateTime.of(
+                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                            monthidx, dayInMonth, Integer.parseInt(inputEnd.split(":")[0]),
+                                            Integer.parseInt(inputEnd.split(":")[1])
+                                        );
+                                        newEndTime = end.toInstant(ZoneOffset.UTC).toEpochMilli();
+                                    } catch (Exception e) {
+                                        System.out.println("Invalid end time format.");
+                                    }
+                                }
+                            }
+                            default -> System.out.println("End time cannot be before start time. Edit cancelled.");
                         }
-                        this.logicController.editEntryInCurrentCalendarObject(entryToEdit, newEntry);
-                        System.out.println("Entry edited successfully.");
+
+                        if (newEndTime < newStartTime) {
+                            System.out.println("End time cannot be before start time.");
+                        } else {
+                            Entry updatedEntry = new Entry(newTitle, newDescription);
+                            updatedEntry.setStartTime(newStartTime);
+                            updatedEntry.setEndTime(newEndTime);
+                            this.logicController.editEntryInCurrentCalendarObject(entryToEdit, updatedEntry);
+                            System.out.println("Entry updated successfully.");
+                        }
                     }
                 }
+                
                 break;
             case 4:
                 System.out.println("Remove Entry functionality WIP");
