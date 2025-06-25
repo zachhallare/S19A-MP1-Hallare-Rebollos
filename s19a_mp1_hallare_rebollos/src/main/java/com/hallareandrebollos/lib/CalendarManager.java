@@ -11,6 +11,8 @@ public class CalendarManager {
     private MonthCalendar currentCalendar;
     private ArrayList<String> calendarIDs;
     private ArrayList<String> publicCalendarIDs;
+    private ArrayList<MonthCalendar> calendarList;
+    private ArrayList<MonthCalendar> publicCalendarList;
     private Scanner scanner;
 
     // Constructor.
@@ -18,6 +20,8 @@ public class CalendarManager {
         this.scanner = scanner;
         this.calendarIDs = new ArrayList<>();
         this.publicCalendarIDs = new ArrayList<>();
+        this.calendarList = new ArrayList<>();
+        this.publicCalendarList = new ArrayList<>();
     }
 
 
