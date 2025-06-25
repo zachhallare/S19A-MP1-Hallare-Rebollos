@@ -15,7 +15,7 @@ public class TextInterface {
     private Account loggedInAccount;                // The currently logged-in account.
     private int pageIndex;                          // Page index to track the current page in the interface.
     private CalendarManager calendarManager;
-
+    private boolean writeToFile;                    // Flag to determine if changes should be written to file.
 
     // Constructor.
     public TextInterface() {
@@ -23,6 +23,7 @@ public class TextInterface {
         this.loggedInAccount = null;                // Initially, no account is logged in.
         this.pageIndex = 0;                         // Start at the first page.
         this.calendarManager = new CalendarManager(scanner);
+        this.writeToFile = true;                    // Default to writing changes to file.
 
         // Ensure the needed folders exist.
         createFolder("data");
@@ -34,14 +35,14 @@ public class TextInterface {
     // Creates the folders if they don't exist yet.
     private void createFolder(String path) {
         File dir = new File(path);
-        if (!dir.exists()) {
+        if (!dir.exists() && this.writeToFile) {
             dir.mkdirs();
         }
     }
 
     // Call this after login/signup to ensure the folder of each user exists.
     private void ensureUserFolderExist() {
-        if (this.loggedInAccount != null) {
+        if (this.loggedInAccount != null && this.writeToFile) {
             createFolder("data/calendars/" + this.loggedInAccount.getUsername());
         }
     }
