@@ -568,7 +568,7 @@ public class DisplayController {
         System.out.println("| 4. April     | 5. May        | 6. June      |");
         System.out.println("| 7. July      | 8. August     | 9. September |");
         System.out.println("| 10. October  | 11. November  | 12. December |");
-        System.out.println("+---------------------------------------+");
+        System.out.println("+---------------------------------------------+");
         System.out.print("Please select a month (1-12): ");
         int monthChoice = this.scanner.nextInt();
         this.scanner.nextLine();
