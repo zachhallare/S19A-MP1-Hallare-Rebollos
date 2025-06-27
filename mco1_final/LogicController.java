@@ -309,7 +309,7 @@ public class LogicController {
     }
 
     public void setSelectedMonth(int month) {
-        if (month >= 0 && month < 12) {
+        if (month >= 1 && month <= 12) {
             this.selectedMonth = month;
         }
     }
