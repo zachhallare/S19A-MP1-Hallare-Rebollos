@@ -59,14 +59,17 @@ public class LogicController {
      * @param username The input username.
      * @param password The input password.
      */
-    public void authenticateAccount(String username, String password) {
+    public boolean authenticateAccount(String username, String password) {
+        boolean isAuthenticated = false;
         for (int i = 0; i < accounts.size(); i++) {
             Account account = accounts.get(i);
-            if (account.authenticate(username, password)) {
+            if (account.authenticate(username, password) && account.getIsActive()) {
                 this.accountIndex = i;
                 i += accounts.size();
+                isAuthenticated = true;
             }
         }
+        return isAuthenticated;
     }
 
     /**

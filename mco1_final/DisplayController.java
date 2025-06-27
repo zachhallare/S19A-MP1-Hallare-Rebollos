@@ -164,7 +164,10 @@ public class DisplayController {
             return "landing";
         }
 
-        this.logicController.authenticateAccount(username, password);
+        if (!this.logicController.authenticateAccount(username, password)) {
+            System.out.println("Invalid username or password. Please try again.");
+            return "login";
+        }
 
         if (this.logicController.getCurrentAccount() != null) {
             return "menu";
