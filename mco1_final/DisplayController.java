@@ -236,14 +236,15 @@ public class DisplayController {
                     System.out.println("|--------[    Calendar List    ]--------|");
                     System.out.println("|---------------------------------------|");
 
-                    for (int i = 0; i < sharedCalendars.size(); i++) {
-                        System.out.printf("|   Public    %s \t\t|\n", sharedCalendars.get(i));
+                    for (CalendarObject calendar : sharedCalendars) {
+                        System.out.printf("|   Public    %-22s|\n", calendar.getCalendarName());
                     }
                     System.out.println("+---------------------------------------+");
-                    for (int i = 0; i < calendarList.size(); i++) {
-                        System.out.printf("|   Private    %s \t\t|\n", calendarList.get(i));
+                    for (CalendarObject calendar : calendarList) {
+                        System.out.printf("|   Private    %-22s|\n", calendar.getCalendarName());
                     }
                     System.out.println("+---------------------------------------+");
+
                     System.out.println("If there are duplicates, kindly input \"public calendar_name\" to select a public calendar.");
                     System.out.print("Enter the name of the calendar to select: ");
                     String calendarName = scanner.nextLine();
@@ -269,6 +270,7 @@ public class DisplayController {
                         int calendarIndex = this.logicController.getCalendarFromName(selectedCalendar.getCalendarName(), isPublic);
                         this.logicController.setCalendarObjectIndex(calendarIndex);
                         System.out.printf("Selected %s calendar: %s\n", isPublic ? "public" : "private", selectedCalendar.getCalendarName());
+                        return "calendar";      // Views the calendar 
                     } else {
                         System.out.printf("%s calendar not found.\n", isPublic ? "Public" : "Private");
                     }
@@ -286,8 +288,9 @@ public class DisplayController {
                 scanner.nextLine();
 
                 if (option == 1) {
-                    for (int i = 0; i < sharedCalendars.size(); i++) {
-                        System.out.println((i + 1) + ". " + sharedCalendars.get(i).getCalendarName());
+                    ArrayList<CalendarObject> sharedCalendarList = logicController.getPublicCalendarObjects();
+                    for (CalendarObject cal : sharedCalendarList) {
+                        System.out.println("- " + cal.getCalendarName());
                     }
 
                     System.out.println("Enter the name of public calendar to add: ");
@@ -299,10 +302,10 @@ public class DisplayController {
                             .orElse(null);
 
                     if (selectedCalendar != null) {
-                        selectedCalendar.setIsPublic(false);
-                        this.logicController.addCalendarInstance(selectedCalendar);
-                        this.logicController.getCurrentAccount().addOwnedCalendar(selectedCalendar.getCalendarName());
-                        System.out.printf("Calendar %s copied successfully added successfully.\n", selectedCalendar.getCalendarName());
+                        CalendarObject copiedCalendar = new CalendarObject(selectedCalendar.getCalendarName(), false, selectedCalendar.getYearIdentifier());
+                        this.logicController.addCalendarInstance(copiedCalendar);
+                        this.logicController.getCurrentAccount().addOwnedCalendar(copiedCalendar.getCalendarName());
+                        System.out.printf("Calendar %s copied successfully.\n", copiedCalendar.getCalendarName());
                     } else {
                         System.out.printf("Calendar %s not found.\n", selectedName);
                     }
@@ -310,7 +313,7 @@ public class DisplayController {
                     System.out.print("Enter new calendar name: ");
                     String newCalendarName = scanner.nextLine();
                     System.out.println("Select the year for the new calendar: ");
-                    System.out.print("Enter year (e.g., 2023): ");
+                    System.out.print("Enter year (e.g., 2025): ");
                     int yearidx = scanner.nextInt();
                     scanner.nextLine();
                     System.out.print("Make it public? (yes/no): ");
@@ -318,13 +321,16 @@ public class DisplayController {
 
                     CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false, yearidx);
                     switch (visibility) {
-                        case "yes" ->
-                            newCalendarObject.setIsPublic(true);
-                        case "no" ->
-                            newCalendarObject.setIsPublic(false);
-                        default ->
-                            System.out.println("Invalid input. Calendar will be created as private.");
+                        case "yes" -> newCalendarObject.setIsPublic(true);
+                        case "no" -> newCalendarObject.setIsPublic(false);
+                        default -> System.out.println("Invalid input. Calendar will be created as private.");
                     }
+
+                    this.logicController.addCalendarInstance(newCalendarObject);
+                    if (!newCalendarObject.isPublic()) {
+                        this.logicController.getCurrentAccount().addOwnedCalendar(newCalendarObject.getCalendarName());
+                    }
+                    System.out.println("New calendar created successfully.");
                 }
                 return "menu";
             case 3:
