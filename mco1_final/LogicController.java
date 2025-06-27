@@ -1,25 +1,34 @@
+
 import java.util.ArrayList;
 
 /**
- * Controls the logic of the calendar application, including account
- * management, calendar management, and entry operations.
+ * Controls the logic of the calendar application, including account management,
+ * calendar management, and entry operations.
  */
 public class LogicController {
-    /** List of all user accounts. */
-    private ArrayList<Account> accounts; 
 
-    /** List of all calendar objects (both public and private). */
+    /**
+     * List of all user accounts.
+     */
+    private ArrayList<Account> accounts;
+
+    /**
+     * List of all calendar objects (both public and private).
+     */
     private ArrayList<CalendarObject> CalendarObjects;
 
-    /** Index of the currently logged-in account. */
+    /**
+     * Index of the currently logged-in account.
+     */
     private int accountIndex;
 
-    /** Index of the currently selected calendar object. */
-    private int CalendarObjectIndex; 
+    /**
+     * Index of the currently selected calendar object.
+     */
+    private int CalendarObjectIndex;
 
     private int selectedMonth;
     private int selectedYear;
-
 
     /**
      * Constructs a LogicController and initializes all lists and indices.
@@ -30,10 +39,10 @@ public class LogicController {
         this.accountIndex = -1; // No account is logged in initially
         this.CalendarObjectIndex = -1; // No CalendarObject is selected initially
     }
-    
 
     /**
      * Returns the current month (0–11) in the system's time zone.
+     *
      * @return The current month index.
      */
     public int getCurrentMonth() {
@@ -44,8 +53,9 @@ public class LogicController {
     }
 
     /**
-     * Authenticates the provided username and password.
-     * If matched, sets the accountIndex to the corresponding user.
+     * Authenticates the provided username and password. If matched, sets the
+     * accountIndex to the corresponding user.
+     *
      * @param username The input username.
      * @param password The input password.
      */
@@ -72,6 +82,7 @@ public class LogicController {
 
     /**
      * Adds a new account with a default calendar for the current year.
+     *
      * @param username The username for the new account.
      * @param password The password for the new account.
      */
@@ -92,6 +103,7 @@ public class LogicController {
 
     /**
      * Checks if a username already exists.
+     *
      * @param username The username to check.
      * @return true if username exists, false otherwise.
      */
@@ -108,23 +120,29 @@ public class LogicController {
 
     /**
      * Adds a new calendar object to the system.
+     *
      * @param CalendarObjectName The name of the calendar.
-     * @param isPublic           Whether the calendar is public.
+     * @param isPublic Whether the calendar is public.
      */
     public void addCalendarObject(String username, String CalendarObjectName, boolean isPublic) {
-        CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic);
-        CalendarObjects.add(CalendarObject);
-        int accountIndex = getAccountFromIndex(username);
-        if (accountIndex >= 0 && accountIndex < accounts.size()) {
-            Account account = accounts.get(accountIndex);
-            account.addOwnedCalendar(CalendarObjectName);
+        if (!checkCalendarDuplicate(CalendarObjectName)) {
+            CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic);
+            CalendarObjects.add(CalendarObject);
+            int accountIndex = getAccountFromIndex(username);
+            if (accountIndex >= 0 && accountIndex < accounts.size()) {
+                Account account = accounts.get(accountIndex);
+                account.addOwnedCalendar(CalendarObjectName);
+            } else {
+                System.out.println("Account not found: " + username);
+            }
         } else {
-            System.out.println("Account not found: " + username);
+            System.out.println("Duplicate Found. Ignoring creation of calendar.");
         }
     }
 
     /**
      * Adds an existing CalendarObject to the system.
+     *
      * @param calendarObject The CalendarObject to add.
      * @return true if successfully added, false if null.
      */
@@ -148,10 +166,11 @@ public class LogicController {
 
     /**
      * Adds a new entry to the currently selected calendar.
-     * @param title       Title of the entry.
+     *
+     * @param title Title of the entry.
      * @param description Description of the entry.
-     * @param startTime   Start time in milliseconds since epoch.
-     * @param endTime     End time in milliseconds since epoch.
+     * @param startTime Start time in milliseconds since epoch.
+     * @param endTime End time in milliseconds since epoch.
      */
     public void addEntryToCurrentCalendarObject(String title, String description, long startTime, long endTime) {
         if (this.CalendarObjectIndex >= 0 && this.CalendarObjectIndex < CalendarObjects.size()) {
@@ -165,6 +184,7 @@ public class LogicController {
 
     /**
      * Edits an existing entry in the currently selected calendar.
+     *
      * @param oldEntry The entry to replace.
      * @param newEntry The new entry data.
      */
@@ -177,6 +197,7 @@ public class LogicController {
 
     /**
      * Removes an entry from the currently selected calendar based on title.
+     *
      * @param title Title of the entry to remove.
      */
     public void removeEntryFromCurrentCalendarObject(String title) {
@@ -194,6 +215,7 @@ public class LogicController {
 
     /**
      * Converts a calendar to public visibility by name.
+     *
      * @param CalendarObjectName Name of the calendar to convert.
      */
     public void convertToPublic(String CalendarObjectName) {
@@ -208,6 +230,7 @@ public class LogicController {
 
     /**
      * Sets the current account index.
+     *
      * @param index Index to set as current account.
      */
     public void setAccountIndex(int index) {
@@ -220,6 +243,7 @@ public class LogicController {
 
     /**
      * Sets the current calendar object index.
+     *
      * @param index Index to set as current calendar.
      */
     public void setCalendarObjectIndex(int index) {
@@ -232,6 +256,7 @@ public class LogicController {
 
     /**
      * Returns the currently logged-in account.
+     *
      * @return The current Account or null if none.
      */
     public Account getCurrentAccount() {
@@ -243,6 +268,7 @@ public class LogicController {
 
     /**
      * Returns all public calendars in the system.
+     *
      * @return List of public CalendarObjects.
      */
     public ArrayList<CalendarObject> getPublicCalendarObjects() {
@@ -257,6 +283,7 @@ public class LogicController {
 
     /**
      * Returns all private calendars owned by the current account.
+     *
      * @return List of private CalendarObjects owned by the user.
      */
     public ArrayList<CalendarObject> getPrivateCalendarObjects() {
@@ -271,6 +298,7 @@ public class LogicController {
 
     /**
      * Returns the currently selected calendar object.
+     *
      * @return The selected CalendarObject or null if none.
      */
     public CalendarObject getCurrentCalendarObject() {
@@ -282,6 +310,7 @@ public class LogicController {
 
     /**
      * Returns the index of a calendar by name and visibility.
+     *
      * @param CalendarObjectName Name of the calendar.
      * @param isPublic Whether the calendar is public.
      * @return Index of the matching calendar or -1 if not found.
@@ -326,5 +355,22 @@ public class LogicController {
 
     public int getSelectedYear() {
         return this.selectedYear;
+    }
+
+    public boolean checkCalendarDuplicate(String calendarName) {
+        boolean duplicateFound = false;
+        for (int i = 0; i < this.CalendarObjects.size(); i++) {
+            CalendarObject obj = this.CalendarObjects.get(i);
+            if (obj.isPublic()) {
+                if (calendarName.equals(obj.getCalendarName())) {
+                    duplicateFound = true;
+                }
+            } else {
+                if (calendarName.equals(obj.getCalendarName())) {
+                    duplicateFound = true;
+                }
+            }
+        }
+        return duplicateFound;
     }
 }

@@ -411,7 +411,8 @@ public class DisplayController {
             System.out.println("|--------[   5. Add Entry      ]--------|");
             System.out.println("|--------[   6. Edit Entry     ]--------|");
             System.out.println("|--------[   7. Remove Entry   ]--------|");
-            System.out.println("|--------[   8. Back to Menu   ]--------|");
+            System.out.println("|--------[   8. Remove Calendar]--------|");
+            System.out.println("|--------[   9. Back to Menu   ]--------|");
             System.out.println("+---------------------------------------+");
             System.out.print("Please select an option: ");
             int choice = this.scanner.nextInt();
@@ -466,11 +467,11 @@ public class DisplayController {
                 case 5:
                     System.out.println("Enter Day of the Month for the entry: ");
                     int entryDay = this.scanner.nextInt();
+                    this.scanner.nextLine();
                     System.out.println("Enter Title of the entry: ");
                     String title = this.scanner.nextLine();
                     System.out.println("Enter Description of the entry: ");
                     String description = this.scanner.nextLine();
-                    this.scanner.nextLine();
                     int maximumDaysInMonth = YearMonth.of(yearidx, monthidx).lengthOfMonth();
                     if (entryDay < 1 || entryDay > maximumDaysInMonth) {
                         System.out.println("Invalid day selection. Please try again.");
@@ -653,6 +654,10 @@ public class DisplayController {
                     }
                     break;
                 case 8:
+                    this.logicController.removeCurrentCalendarObject();
+                    stayInEntryMenu = false;        // Exit loop and return to menu.
+                    System.out.println("Calendar Deleted.");
+                case 9:
                     stayInEntryMenu = false;        // Exit loop and return to menu.
                     break;
                 default:
