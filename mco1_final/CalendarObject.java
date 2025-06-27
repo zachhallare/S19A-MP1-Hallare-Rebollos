@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Represents a calendar that contains multiple entries.
