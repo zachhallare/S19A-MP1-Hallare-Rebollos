@@ -17,6 +17,8 @@ public class LogicController {
     /** Index of the currently selected calendar object. */
     private int CalendarObjectIndex; 
 
+    private int selectedMonth;
+
 
     /**
      * Constructs a LogicController and initializes all lists and indices.
@@ -82,7 +84,6 @@ public class LogicController {
      */
     public void addAccount(String username, String password) {
         Account account = new Account(username, password);
-        addCalendarObject(username, false, getCurrentYear());
         accounts.add(account);
     }
 
@@ -118,9 +119,16 @@ public class LogicController {
      * @param isPublic           Whether the calendar is public.
      * @param yearIdentifier     The year the calendar represents.
      */
-    public void addCalendarObject(String CalendarObjectName, boolean isPublic, int yearIdentifier) {
+    public void addCalendarObject(String username, String CalendarObjectName, boolean isPublic, int yearIdentifier) {
         CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic, yearIdentifier);
         CalendarObjects.add(CalendarObject);
+        int accountIndex = getAccountFromIndex(username);
+        if (accountIndex >= 0 && accountIndex < accounts.size()) {
+            Account account = accounts.get(accountIndex);
+            account.addOwnedCalendar(CalendarObjectName);
+        } else {
+            System.out.println("Account not found: " + username);
+        }
     }
 
     /**
@@ -247,7 +255,7 @@ public class LogicController {
      */
     public ArrayList<CalendarObject> getPublicCalendarObjects() {
         ArrayList<CalendarObject> publicCalendarObjects = new ArrayList<>();
-        for (CalendarObject calendarObject : CalendarObjects) {
+        for (CalendarObject calendarObject : this.CalendarObjects) {
             if (calendarObject.isPublic()) {
                 publicCalendarObjects.add(calendarObject);
             }
@@ -295,5 +303,26 @@ public class LogicController {
             }
         }
         return foundIdx;
+    }
+
+    public int getAccountFromIndex(String username) {
+        int foundIdx = -1;
+        for (int i = 0; i < this.accounts.size(); i++) {
+            if (this.accounts.get(i).getUsername().equals(username)) {
+                foundIdx = i;
+                i += this.accounts.size();
+            }
+        }
+        return foundIdx;
+    }
+
+    public void setSelectedMonth(int month) {
+        if (month >= 0 && month < 12) {
+            this.selectedMonth = month;
+        }
+    }
+
+    public int getSelectedMonth() {
+        return this.selectedMonth;
     }
 }

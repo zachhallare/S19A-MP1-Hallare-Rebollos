@@ -24,6 +24,9 @@ public class Main {
                     displayController.displayMonthSelection();
                     currentPage = "menu";       // Return to menu after calendar is shown.
                 }
+                case "entry" -> {
+                    currentPage = displayController.displayEntryOptions(logicController.getSelectedMonth());
+                }
                 case "exit" -> {
                     System.out.println("Thank you for using our Digital Calendar. Goodbye!");
                     isRunning = false;      // Exit the loop and terminate

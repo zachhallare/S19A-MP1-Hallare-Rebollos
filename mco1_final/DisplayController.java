@@ -193,11 +193,9 @@ public class DisplayController {
 
         if (!this.logicController.existingUsername(username)) {
             this.logicController.addAccount(username, password);
-            // create a default calendar for the user
-            // using the current year
-
+            this.logicController.addCalendarObject(username, username, false, this.logicController.getCurrentYear());
             System.out.println("Account created successfully. Please log in.");
-            return "login";
+            return "landing";
         } else {
             System.out.println("Username already exists. Please try again.");
             return "signup";
@@ -370,7 +368,7 @@ public class DisplayController {
      * Displays and handles options to view, add, edit, or remove entries in the selected calendar.
      * @param monthidx The selected month (1-12) for which entry operations apply.
      */
-    public void displayEntryOptions(int monthidx) {
+    public String displayEntryOptions(int monthidx) {
         boolean stayInEntryMenu = true;
 
         while (stayInEntryMenu) {
@@ -594,12 +592,14 @@ public class DisplayController {
                     System.out.println("Invalid option. Please try again.");
             }
         }
+        return "menu";
     }
     
     /**
      * Displays the month selection interface and renders the selected month's calendar.
      */
-    public void displayMonthSelection() {
+    public String displayMonthSelection() {
+        String nextPage = "menu";
         System.out.println("+---------------------------------------+");
         System.out.println("|----------[   Select Month   ]---------|");
         System.out.println("+---------------------------------------+");
@@ -608,14 +608,23 @@ public class DisplayController {
         System.out.println("|--[ 7. Jul   |  8. Aug   |  9. Sep  ]--|");
         System.out.println("|--[ 10. Oct  |  11. Nov  |  12. Dec ]--|");
         System.out.println("+---------------------------------------+");
+        System.out.println("|-----------[ 0. Back to Menu ]---------|");
+        System.out.println("+---------------------------------------+");
         System.out.print("Please select a month (1-12): ");
         int monthChoice = this.scanner.nextInt();
         this.scanner.nextLine();
-        if (monthChoice < 1 || monthChoice > 12) {
-            System.out.println("Invalid month selection. Please try again.");
+        if (monthChoice == 0) {
+            System.out.println("Returning to menu...");
+            nextPage = "menu";
+        }
+        else if (monthChoice < 1 || monthChoice > 12) {
+            System.out.println("Invalid month selection. Returning to menu.");
         } else {
             displayCalendar(monthChoice);
+            displayEntryOptions(monthChoice);
+            this.logicController.setSelectedMonth(monthChoice);
+            nextPage = "entry";
         }
-
+        return nextPage;
     }
 }
