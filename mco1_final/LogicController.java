@@ -124,7 +124,7 @@ public class LogicController {
      * @param isPublic Whether the calendar is public.
      */
     public void addCalendarObject(String username, String CalendarObjectName, boolean isPublic) {
-        if (!checkCalendarDuplicate(CalendarObjectName)) {
+        if (!checkCalendarDuplicate(CalendarObjectName, isPublic, username)) {
             CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic);
             CalendarObjects.add(CalendarObject);
             int accountIndex = getAccountFromIndex(username);
@@ -356,25 +356,19 @@ public class LogicController {
         return this.selectedYear;
     }
 
-    public boolean checkCalendarDuplicate(String calendarName) {
-    Account currentAccount = getCurrentAccount();
-    boolean duplicateFound = false;
-
-    for (int i = 0; i < CalendarObjects.size(); i++) {
-        CalendarObject obj = CalendarObjects.get(i);
-        if (obj.getCalendarName().equals(calendarName)) {
-            // If public calendar, name must be globally unique
-            if (obj.isPublic()) {
-                duplicateFound = true;
-                i += CalendarObjects.size();
-            }
-            // If private calendar, name must be unique for the current user
-            if (currentAccount.getOwnedCalendars().contains(calendarName)) {
-                duplicateFound = true;
-                i += CalendarObjects.size();
+    public boolean checkCalendarDuplicate(String calendarName, boolean isPublic, String username) {
+        for (CalendarObject obj : this.CalendarObjects) {
+            if (obj.getCalendarName().equals(calendarName)) {
+                if (isPublic && obj.isPublic()) {
+                    // Public calendars must be globally unique
+                    return true;
+                }
+                if (!isPublic && !obj.isPublic()) {
+                    // Private calendars must be unique among ALL private calendars
+                    return true;
+                }
             }
         }
+        return false;
     }
-    return duplicateFound;
-}
 }

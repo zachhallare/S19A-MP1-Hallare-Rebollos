@@ -81,4 +81,11 @@ public class Entry {
     public String getDescription() {
         return this.description;
     }
+
+    public Entry copy() {
+        Entry copiedEntry = new Entry(this.title, this.description);
+        copiedEntry.setStartTime(this.timeStart);
+        copiedEntry.setEndTime(this.timeEnd);
+        return copiedEntry;
+    }
 }

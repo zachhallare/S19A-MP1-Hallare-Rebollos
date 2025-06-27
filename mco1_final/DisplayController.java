@@ -1,3 +1,4 @@
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -324,7 +325,8 @@ public class DisplayController {
                             .orElse(null);
 
                     if (selectedCalendar != null) {
-                        CalendarObject copiedCalendar = new CalendarObject(selectedCalendar.getCalendarName(), false);
+                        CalendarObject copiedCalendar = selectedCalendar.copy();
+                        selectedCalendar.setIsPublic(false);
                         this.logicController.addCalendarInstance(copiedCalendar);
                         this.logicController.getCurrentAccount().addOwnedCalendar(copiedCalendar.getCalendarName());
                         System.out.printf("Calendar %s copied successfully.\n", copiedCalendar.getCalendarName());
@@ -337,20 +339,26 @@ public class DisplayController {
                     scanner.nextLine();
                     System.out.print("Make it public? (yes/no): ");
                     String visibility = scanner.nextLine().trim().toLowerCase();
-
-                    CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false);
+                    boolean isPublic = false;
                     switch (visibility) {
-                        case "yes" ->
-                            newCalendarObject.setIsPublic(true);
-                        case "no" ->
-                            newCalendarObject.setIsPublic(false);
-                        default ->
-                            System.out.println("Invalid input. Calendar will be created as private.");
-                    }
+                            case "yes" ->
+                                isPublic = true;
+                            case "no" ->
+                                isPublic = false;
+                            default ->
+                                System.out.println("Invalid input. Calendar will be created as private.");
+                        }
 
-                    this.logicController.addCalendarInstance(newCalendarObject);
-                    if (!newCalendarObject.isPublic()) {
-                        this.logicController.getCurrentAccount().addOwnedCalendar(newCalendarObject.getCalendarName());
+                    if (this.logicController.checkCalendarDuplicate(newCalendarName, isPublic, this.logicController.getCurrentAccount().getUsername())) {
+                        System.out.println("Calendar with this name already exists. Please choose a different name.");
+                        return "menu";
+                    } else {
+                        CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false);
+                        newCalendarObject.setIsPublic(isPublic);
+                        this.logicController.addCalendarInstance(newCalendarObject);
+                        if (!newCalendarObject.isPublic()) {
+                            this.logicController.getCurrentAccount().addOwnedCalendar(newCalendarObject.getCalendarName());
+                        }
                     }
                     System.out.println("New calendar created successfully.");
                 }

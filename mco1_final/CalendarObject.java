@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Represents a calendar that contains multiple entries.
@@ -94,5 +95,13 @@ public class CalendarObject {
      */
     public boolean isPublic() {
         return this.isPublic;
+    }
+
+    public CalendarObject copy() {
+        CalendarObject copiedCalendar = new CalendarObject(this.calendarName, this.isPublic);
+        for (Entry entry : this.entries) {
+            copiedCalendar.addEntry(entry.copy());
+        }
+        return copiedCalendar;
     }
 }
