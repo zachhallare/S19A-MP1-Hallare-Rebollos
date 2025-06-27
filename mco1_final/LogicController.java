@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 
 /**
@@ -358,19 +357,24 @@ public class LogicController {
     }
 
     public boolean checkCalendarDuplicate(String calendarName) {
-        boolean duplicateFound = false;
-        for (int i = 0; i < this.CalendarObjects.size(); i++) {
-            CalendarObject obj = this.CalendarObjects.get(i);
+    Account currentAccount = getCurrentAccount();
+    boolean duplicateFound = false;
+
+    for (int i = 0; i < CalendarObjects.size(); i++) {
+        CalendarObject obj = CalendarObjects.get(i);
+        if (obj.getCalendarName().equals(calendarName)) {
+            // If public calendar, name must be globally unique
             if (obj.isPublic()) {
-                if (calendarName.equals(obj.getCalendarName())) {
-                    duplicateFound = true;
-                }
-            } else {
-                if (calendarName.equals(obj.getCalendarName())) {
-                    duplicateFound = true;
-                }
+                duplicateFound = true;
+                i += CalendarObjects.size();
+            }
+            // If private calendar, name must be unique for the current user
+            if (currentAccount.getOwnedCalendars().contains(calendarName)) {
+                duplicateFound = true;
+                i += CalendarObjects.size();
             }
         }
-        return duplicateFound;
     }
+    return duplicateFound;
+}
 }
