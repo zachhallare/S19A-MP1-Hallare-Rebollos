@@ -15,20 +15,15 @@ public class CalendarObject {
     /** List of entries in the calendar. */
     private ArrayList<Entry> entries;
 
-    /** The year this calendar is associated with. */
-    private int yearIdentifier;
-
 
     /**
      * Constructs a new CalendarObject with the specified name, visibility, and year.
      * @param calendarName   The name of the calendar.
      * @param isPublic       true if the calendar is public; false if private.
-     * @param yearIdentifier The year the calendar is associated with.
      */
-    public CalendarObject(String calendarName, boolean isPublic, int yearIdentifier) {
+    public CalendarObject(String calendarName, boolean isPublic) {
         this.calendarName = calendarName;
         this.isPublic = isPublic;
-        this.yearIdentifier = yearIdentifier;
         this.entries = new ArrayList<>();
     }
 
@@ -99,13 +94,5 @@ public class CalendarObject {
      */
     public boolean isPublic() {
         return this.isPublic;
-    }
-
-    /**
-     * Returns the year the calendar is associated with.
-     * @return The year identifier.
-     */
-    public int getYearIdentifier() {
-        return this.yearIdentifier;
     }
 }

@@ -18,6 +18,7 @@ public class LogicController {
     private int CalendarObjectIndex; 
 
     private int selectedMonth;
+    private int selectedYear;
 
 
     /**
@@ -40,17 +41,6 @@ public class LogicController {
         java.util.Calendar CalendarLogic = java.util.Calendar.getInstance();
         CalendarLogic.setTimeInMillis(currentTimeMillis);
         return CalendarLogic.get(java.util.Calendar.MONTH);
-    }
-
-    /**
-     * Returns the current year (e.g., 2025) in the system's time zone.
-     * @return The current year.
-     */
-    public int getCurrentYear() {
-        long currentTimeMillis = System.currentTimeMillis();
-        java.util.Calendar CalendarLogic = java.util.Calendar.getInstance();
-        CalendarLogic.setTimeInMillis(currentTimeMillis);
-        return CalendarLogic.get(java.util.Calendar.YEAR);
     }
 
     /**
@@ -120,10 +110,9 @@ public class LogicController {
      * Adds a new calendar object to the system.
      * @param CalendarObjectName The name of the calendar.
      * @param isPublic           Whether the calendar is public.
-     * @param yearIdentifier     The year the calendar represents.
      */
-    public void addCalendarObject(String username, String CalendarObjectName, boolean isPublic, int yearIdentifier) {
-        CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic, yearIdentifier);
+    public void addCalendarObject(String username, String CalendarObjectName, boolean isPublic) {
+        CalendarObject CalendarObject = new CalendarObject(CalendarObjectName, isPublic);
         CalendarObjects.add(CalendarObject);
         int accountIndex = getAccountFromIndex(username);
         if (accountIndex >= 0 && accountIndex < accounts.size()) {
@@ -327,5 +316,15 @@ public class LogicController {
 
     public int getSelectedMonth() {
         return this.selectedMonth;
+    }
+
+    public void setSelectedYear(int year) {
+        if (year >= 1970 && year < 2999) {
+            this.selectedYear = year;
+        }
+    }
+
+    public int getSelectedYear() {
+        return this.selectedYear;
     }
 }

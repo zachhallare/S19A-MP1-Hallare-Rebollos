@@ -25,7 +25,7 @@ public class Main {
                     currentPage = "menu";       // Return to menu after calendar is shown.
                 }
                 case "entry" -> {
-                    currentPage = displayController.displayEntryOptions(logicController.getSelectedMonth());
+                    currentPage = displayController.displayEntryOptions();
                 }
                 case "exit" -> {
                     System.out.println("Thank you for using our Digital Calendar. Goodbye!");

@@ -1,4 +1,3 @@
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -7,20 +6,27 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Handles all console-based UI display and input logic for the digital calendar system.
- * Works in tandem with the {@link LogicController} to interact with accounts, calendars, and entries.
+ * Handles all console-based UI display and input logic for the digital calendar
+ * system. Works in tandem with the {@link LogicController} to interact with
+ * accounts, calendars, and entries.
  */
 public class DisplayController {
-    /** The controller responsible for managing core application logic. */
+
+    /**
+     * The controller responsible for managing core application logic.
+     */
     private LogicController logicController;
 
-    /** Scanner used for reading user input. */
+    /**
+     * Scanner used for reading user input.
+     */
     private Scanner scanner;
-
 
     /**
      * Constructs a DisplayController with a reference to the logic controller.
-     * @param logicController The logic controller used to interact with application state.
+     *
+     * @param logicController The logic controller used to interact with
+     * application state.
      */
     public DisplayController(LogicController logicController) {
         this.logicController = logicController;
@@ -28,18 +34,25 @@ public class DisplayController {
     }
 
     /**
-     * Displays the monthly calendar view with indicators for days that contain entries.
+     * Displays the monthly calendar view with indicators for days that contain
+     * entries.
+     *
      * @param monthidx The numeric month (1-12) to display.
      */
-    public void displayCalendar(int monthidx) {
+    public void displayCalendar() {
+        int monthidx = this.logicController.getSelectedMonth();
+        int yearidx = this.logicController.getSelectedYear();
         CalendarObject calendarObject = this.logicController.getCurrentCalendarObject();
+        System.out.println("+---------------------------------------+");
+        System.out.println("|       Calendar: " + monthidx + "/" + yearidx + " (" + calendarObject.getCalendarName() + ")" + "\t|");
+        System.out.println("+---------------------------------------+");
         System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
         System.out.println("|   Sunday  |   Monday  |  Tuesday  | Wednesday |  Thursday |   Friday  | Saturday  |");
         System.out.println("+-----------+-----------+-----------+-----------+-----------+-----------+-----------+");
 
         int currentDayPosition = 1;
-        int startDay = ((LocalDate.of(calendarObject.getYearIdentifier(), monthidx, currentDayPosition).getDayOfWeek().getValue()) % 7) + 1;
-        int daysInMonth = YearMonth.of(calendarObject.getYearIdentifier(), monthidx).lengthOfMonth();
+        int startDay = ((LocalDate.of(yearidx, monthidx, currentDayPosition).getDayOfWeek().getValue()) % 7) + 1;
+        int daysInMonth = YearMonth.of(yearidx, monthidx).lengthOfMonth();
 
         // Empty cells before the start day.
         for (int i = 1; i < startDay; i++) {
@@ -49,9 +62,9 @@ public class DisplayController {
 
         // Print each day.
         for (int day = 1; day <= daysInMonth; day++) {
-            long dayStartCheckRange = LocalDateTime.of(calendarObject.getYearIdentifier(), monthidx, day, 0, 0)
+            long dayStartCheckRange = LocalDateTime.of(yearidx, monthidx, day, 0, 0)
                     .toInstant(ZoneOffset.UTC).toEpochMilli();
-            long dayEndCheckRange = LocalDateTime.of(calendarObject.getYearIdentifier(), monthidx, day, 23, 59, 59)
+            long dayEndCheckRange = LocalDateTime.of(yearidx, monthidx, day, 23, 59, 59)
                     .toInstant(ZoneOffset.UTC).toEpochMilli();
             boolean hasEntry = calendarObject.getEntries().stream()
                     .anyMatch(entry -> entry.getStartTime() >= dayStartCheckRange && entry.getEndTime() <= dayEndCheckRange);
@@ -86,18 +99,21 @@ public class DisplayController {
 
     /**
      * Displays all entries for a specific day in a calendar.
+     *
      * @param monthNumber The month of the entries.
-     * @param dayNumber   The day to display entries for.
+     * @param dayNumber The day to display entries for.
      */
-    public void displayEntriesOfDay(int monthNumber, int dayNumber) {
+    public void displayEntriesOfDay(int dayNumber) {
         CalendarObject calendarObject = this.logicController.getCurrentCalendarObject();
+        int monthNumber = this.logicController.getSelectedMonth();
+        int yearidx = this.logicController.getSelectedYear();
         System.out.println("+------------------+------------------+------------------+------------------+");
         System.out.println("|       Calendar: " + calendarObject.getCalendarName() + "\t\t|");
         System.out.println("+------------------+------------------+------------------+------------------+");
         System.out.println("|       Title      |     Description  |      Start       |       End        |");
         System.out.println("+------------------+------------------+------------------+------------------+");
 
-        LocalDate date = LocalDate.of(calendarObject.getYearIdentifier(), monthNumber, dayNumber);
+        LocalDate date = LocalDate.of(yearidx, monthNumber, dayNumber);
         long dayStartCheckRange = date.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
         long dayEndCheckRange = date.atTime(23, 59, 59).toInstant(ZoneOffset.UTC).toEpochMilli();
         ArrayList<Entry> entries = calendarObject.getEntries();
@@ -120,6 +136,7 @@ public class DisplayController {
 
     /**
      * Displays the landing page where users can log in, sign up, or exit.
+     *
      * @return A string indicating the next page to navigate to.
      */
     public String displayLandingPage() {
@@ -148,6 +165,7 @@ public class DisplayController {
 
     /**
      * Displays the login page for user authentication.
+     *
      * @return A string indicating the next page to navigate to.
      */
     public String displayLoginPage() {
@@ -178,6 +196,7 @@ public class DisplayController {
 
     /**
      * Displays the sign-up page to create a new account.
+     *
      * @return A string indicating the next page to navigate to.
      */
     public String displaySignUpPage() {
@@ -196,7 +215,7 @@ public class DisplayController {
 
         if (!this.logicController.existingUsername(username)) {
             this.logicController.addAccount(username, password);
-            this.logicController.addCalendarObject(username, username, false, this.logicController.getCurrentYear());
+            this.logicController.addCalendarObject(username, username, false);
             System.out.println("Account created successfully. Please log in.");
             return "landing";
         } else {
@@ -206,7 +225,9 @@ public class DisplayController {
     }
 
     /**
-     * Displays the main menu after logging in. Provides access to calendar operations.
+     * Displays the main menu after logging in. Provides access to calendar
+     * operations.
+     *
      * @return A string indicating the next page to navigate to.
      */
     public String displayMenuPage() {
@@ -303,7 +324,7 @@ public class DisplayController {
                             .orElse(null);
 
                     if (selectedCalendar != null) {
-                        CalendarObject copiedCalendar = new CalendarObject(selectedCalendar.getCalendarName(), false, selectedCalendar.getYearIdentifier());
+                        CalendarObject copiedCalendar = new CalendarObject(selectedCalendar.getCalendarName(), false);
                         this.logicController.addCalendarInstance(copiedCalendar);
                         this.logicController.getCurrentAccount().addOwnedCalendar(copiedCalendar.getCalendarName());
                         System.out.printf("Calendar %s copied successfully.\n", copiedCalendar.getCalendarName());
@@ -313,18 +334,18 @@ public class DisplayController {
                 } else if (option == 2) {
                     System.out.print("Enter new calendar name: ");
                     String newCalendarName = scanner.nextLine();
-                    System.out.println("Select the year for the new calendar: ");
-                    System.out.print("Enter year (e.g., 2025): ");
-                    int yearidx = scanner.nextInt();
                     scanner.nextLine();
                     System.out.print("Make it public? (yes/no): ");
                     String visibility = scanner.nextLine().trim().toLowerCase();
 
-                    CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false, yearidx);
+                    CalendarObject newCalendarObject = new CalendarObject(newCalendarName, false);
                     switch (visibility) {
-                        case "yes" -> newCalendarObject.setIsPublic(true);
-                        case "no" -> newCalendarObject.setIsPublic(false);
-                        default -> System.out.println("Invalid input. Calendar will be created as private.");
+                        case "yes" ->
+                            newCalendarObject.setIsPublic(true);
+                        case "no" ->
+                            newCalendarObject.setIsPublic(false);
+                        default ->
+                            System.out.println("Invalid input. Calendar will be created as private.");
                     }
 
                     this.logicController.addCalendarInstance(newCalendarObject);
@@ -337,10 +358,9 @@ public class DisplayController {
             case 3:
                 LocalDate today = LocalDate.now();
                 CalendarObject currentCalendar = this.logicController.getCurrentCalendarObject();
-                if (currentCalendar != null
-                        && currentCalendar.getYearIdentifier() == today.getYear()) {
+                if (currentCalendar != null) {
                     System.out.println("Today's Date: " + today.toString());
-                    displayEntriesOfDay(today.getMonthValue(), today.getDayOfMonth());
+                    displayEntriesOfDay(today.getDayOfMonth());
                 }
                 return "menu";
             case 4:
@@ -368,21 +388,30 @@ public class DisplayController {
     }
 
     /**
-     * Displays and handles options to view, add, edit, or remove entries in the selected calendar.
-     * @param monthidx The selected month (1-12) for which entry operations apply.
+     * Displays and handles options to view, add, edit, or remove entries in the
+     * selected calendar.
+     *
+     * @param monthidx The selected month (1-12) for which entry operations
+     * apply.
      */
-    public String displayEntryOptions(int monthidx) {
+    public String displayEntryOptions() {
         boolean stayInEntryMenu = true;
 
         while (stayInEntryMenu) {
+            int monthidx = this.logicController.getSelectedMonth();
+            int yearidx = this.logicController.getSelectedYear();
+            displayCalendar();
             System.out.println("+---------------------------------------+");
             System.out.println("|--------[    Entry Options    ]--------|");
             System.out.println("+---------------------------------------+");
-            System.out.println("|--------[   1. View Entries   ]--------|");
-            System.out.println("|--------[   2. Add Entry      ]--------|");
-            System.out.println("|--------[   3. Edit Entry     ]--------|");
-            System.out.println("|--------[   4. Remove Entry   ]--------|");
-            System.out.println("|--------[   5. Back to Menu   ]--------|");
+            System.out.println("|--------[   1. Next Month     ]--------|");
+            System.out.println("|--------[   2. Previous Month ]--------|");
+            System.out.println("|--------[   3. Switch MM/YYYY ]--------|");
+            System.out.println("|--------[   4. View Entries   ]--------|");
+            System.out.println("|--------[   5. Add Entry      ]--------|");
+            System.out.println("|--------[   6. Edit Entry     ]--------|");
+            System.out.println("|--------[   7. Remove Entry   ]--------|");
+            System.out.println("|--------[   8. Back to Menu   ]--------|");
             System.out.println("+---------------------------------------+");
             System.out.print("Please select an option: ");
             int choice = this.scanner.nextInt();
@@ -390,6 +419,40 @@ public class DisplayController {
 
             switch (choice) {
                 case 1:
+                    if (monthidx == 12) {
+                        monthidx = 1;
+                        yearidx++;
+                    } else {
+                        monthidx++;
+                    }
+                    this.logicController.setSelectedMonth(monthidx);
+                    this.logicController.setSelectedYear(yearidx);
+                    break;
+                case 2:
+                    if (monthidx == 1) {
+                        monthidx = 12;
+                        yearidx--;
+                    } else {
+                        monthidx--;
+                    }
+                    this.logicController.setSelectedMonth(monthidx);
+                    this.logicController.setSelectedYear(yearidx);
+                    break;
+                case 3:
+                    System.out.print("Enter new month (1-12): ");
+                    monthidx = this.scanner.nextInt();
+                    this.scanner.nextLine();
+                    System.out.print("Enter new year: ");
+                    yearidx = this.scanner.nextInt();
+                    this.scanner.nextLine();
+                    if ((monthidx < 1 || monthidx > 12) || (yearidx < 1970 || yearidx > 2999)) {
+                        System.out.println("Invalid selection. Please try again.");
+                    } else {
+                        this.logicController.setSelectedMonth(monthidx);
+                        this.logicController.setSelectedYear(yearidx);
+                    }
+                    break;
+                case 4:
                     System.out.println("Select a day to view entries:");
                     System.out.print("Enter day (1-31): ");
                     int day = this.scanner.nextInt();
@@ -397,18 +460,18 @@ public class DisplayController {
                     if (day < 1 || day > 31) {
                         System.out.println("Invalid day selection. Please try again.");
                     } else {
-                        displayEntriesOfDay(monthidx, day);
+                        displayEntriesOfDay(day);
                     }
                     break;
-                case 2:
+                case 5:
+                    System.out.println("Enter Day of the Month for the entry: ");
+                    int entryDay = this.scanner.nextInt();
                     System.out.println("Enter Title of the entry: ");
                     String title = this.scanner.nextLine();
                     System.out.println("Enter Description of the entry: ");
                     String description = this.scanner.nextLine();
-                    System.out.println("Enter Day of the Month for the entry: ");
-                    int entryDay = this.scanner.nextInt();
                     this.scanner.nextLine();
-                    int maximumDaysInMonth = YearMonth.of(this.logicController.getCurrentCalendarObject().getYearIdentifier(), monthidx).lengthOfMonth();
+                    int maximumDaysInMonth = YearMonth.of(yearidx, monthidx).lengthOfMonth();
                     if (entryDay < 1 || entryDay > maximumDaysInMonth) {
                         System.out.println("Invalid day selection. Please try again.");
                     } else {
@@ -418,13 +481,13 @@ public class DisplayController {
                         String endTimeInput = this.scanner.nextLine();
                         try {
                             LocalDateTime startTime = LocalDateTime.of(
-                                    this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                    yearidx,
                                     monthidx, entryDay,
                                     Integer.parseInt(startTimeInput.split(":")[0]),
                                     Integer.parseInt(startTimeInput.split(":")[1])
                             );
                             LocalDateTime endTime = LocalDateTime.of(
-                                    this.logicController.getCurrentCalendarObject().getYearIdentifier(),
+                                    yearidx,
                                     monthidx, entryDay,
                                     Integer.parseInt(endTimeInput.split(":")[0]),
                                     Integer.parseInt(endTimeInput.split(":")[1])
@@ -443,7 +506,7 @@ public class DisplayController {
                         }
                     }
                     break;
-                case 3:
+                case 6:
                     System.out.println("Select a day to view entries:");
                     System.out.print("Enter day (1-31): ");
                     int dayInMonth = this.scanner.nextInt();
@@ -451,7 +514,7 @@ public class DisplayController {
                     if (dayInMonth < 1 || dayInMonth > 31) {
                         System.out.println("Invalid day selection. Please try again.");
                     } else {
-                        displayEntriesOfDay(monthidx, dayInMonth);
+                        displayEntriesOfDay(dayInMonth);
                         System.out.println("Enter the title of the entry you want to edit: ");
                         String entryTitle = this.scanner.nextLine();
                         Entry entryToEdit = this.logicController.getCurrentCalendarObject().getEntries().stream()
@@ -480,62 +543,64 @@ public class DisplayController {
                             if (editOption == 1) {
                                 System.out.print("Enter new title: ");
                                 String input = this.scanner.nextLine();
-                                if (!input.isBlank()) newTitle = input;
-                            }
-                            else if (editOption == 2) {
+                                if (!input.isBlank()) {
+                                    newTitle = input;
+                                }
+                            } else if (editOption == 2) {
                                 System.out.print("Enter new description: ");
                                 String input = this.scanner.nextLine();
-                                if (!input.isBlank()) newDescription = input;
-                            }
-                            else if (editOption == 3) {
+                                if (!input.isBlank()) {
+                                    newDescription = input;
+                                }
+                            } else if (editOption == 3) {
                                 System.out.print("Enter new start time (HH:MM): ");
                                 String input = this.scanner.nextLine();
                                 try {
                                     if (!input.isBlank()) {
                                         LocalDateTime start = LocalDateTime.of(
-                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(), 
-                                            monthidx, dayInMonth, Integer.parseInt(input.split(":")[0]),
-                                            Integer.parseInt(input.split(":")[1])
+                                                yearidx,
+                                                monthidx, dayInMonth, Integer.parseInt(input.split(":")[0]),
+                                                Integer.parseInt(input.split(":")[1])
                                         );
                                         newStartTime = start.toInstant(ZoneOffset.UTC).toEpochMilli();
                                     }
                                 } catch (Exception e) {
                                     System.out.println("Invalid start time format.");
                                 }
-                            }
-                            else if (editOption == 4) {
+                            } else if (editOption == 4) {
                                 System.out.println("Enter new End Time (HH:MM): ");
                                 String input = this.scanner.nextLine();
                                 try {
                                     if (!input.isBlank()) {
-                                        LocalDateTime end = LocalDateTime.of(
-                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(), 
-                                            monthidx, dayInMonth, Integer.parseInt(input.split(":")[0]),
-                                            Integer.parseInt(input.split(":")[1])
+                                        LocalDateTime end = LocalDateTime.of(yearidx,
+                                                monthidx, dayInMonth, Integer.parseInt(input.split(":")[0]),
+                                                Integer.parseInt(input.split(":")[1])
                                         );
                                         newEndTime = end.toInstant(ZoneOffset.UTC).toEpochMilli();
                                     }
                                 } catch (Exception e) {
                                     System.out.println("Invalid start time format.");
                                 }
-                            }
-                            else if (editOption == 5) {
+                            } else if (editOption == 5) {
                                 System.out.println("Enter new Title (blank to keep current): ");
                                 String inputTitle = this.scanner.nextLine();
-                                if (!inputTitle.isBlank()) newTitle = inputTitle;
+                                if (!inputTitle.isBlank()) {
+                                    newTitle = inputTitle;
+                                }
 
                                 System.out.println("Enter new Description (blank to keep current): ");
                                 String inputDesc = this.scanner.nextLine();
-                                if (!inputDesc.isBlank()) newDescription = inputDesc;
+                                if (!inputDesc.isBlank()) {
+                                    newDescription = inputDesc;
+                                }
 
                                 System.out.println("Enter new Start Time (HH:MM, blank to keep current): ");
                                 String inputStart = this.scanner.nextLine();
                                 if (!inputStart.isBlank()) {
                                     try {
-                                        LocalDateTime start = LocalDateTime.of(
-                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(),
-                                            monthidx, dayInMonth, Integer.parseInt(inputStart.split(":")[0]),
-                                            Integer.parseInt(inputStart.split(":")[1])
+                                        LocalDateTime start = LocalDateTime.of(yearidx,
+                                                monthidx, dayInMonth, Integer.parseInt(inputStart.split(":")[0]),
+                                                Integer.parseInt(inputStart.split(":")[1])
                                         );
                                         newStartTime = start.toInstant(ZoneOffset.UTC).toEpochMilli();
                                     } catch (Exception e) {
@@ -548,17 +613,16 @@ public class DisplayController {
                                 if (!inputEnd.isBlank()) {
                                     try {
                                         LocalDateTime end = LocalDateTime.of(
-                                            this.logicController.getCurrentCalendarObject().getYearIdentifier(),
-                                            monthidx, dayInMonth, Integer.parseInt(inputEnd.split(":")[0]),
-                                            Integer.parseInt(inputEnd.split(":")[1])
+                                                yearidx,
+                                                monthidx, dayInMonth, Integer.parseInt(inputEnd.split(":")[0]),
+                                                Integer.parseInt(inputEnd.split(":")[1])
                                         );
                                         newEndTime = end.toInstant(ZoneOffset.UTC).toEpochMilli();
                                     } catch (Exception e) {
                                         System.out.println("Invalid end time format.");
                                     }
                                 }
-                            }
-                            else {
+                            } else {
                                 System.out.println("End time cannot be before start time. Edit cancelled.");
                             }
 
@@ -574,21 +638,21 @@ public class DisplayController {
                         }
                     }
                     break;
-                case 4:
+                case 7:
                     System.out.println("Enter day of entry to remove (1-31): ");
                     int dayToRemove = this.scanner.nextInt();
                     this.scanner.nextLine();
                     if (dayToRemove < 1 || dayToRemove > 31) {
                         System.out.println("Invalid day. Try again.");
                     } else {
-                        displayEntriesOfDay(monthidx, dayToRemove);
+                        displayEntriesOfDay(dayToRemove);
                         System.out.print("Enter the title of the entry to remove: ");
                         String removeTitle = this.scanner.nextLine();
                         this.logicController.removeEntryFromCurrentCalendarObject(removeTitle);
                         System.out.println("Entry was removed successfully!");
                     }
                     break;
-                case 5:
+                case 8:
                     stayInEntryMenu = false;        // Exit loop and return to menu.
                     break;
                 default:
@@ -597,9 +661,10 @@ public class DisplayController {
         }
         return "menu";
     }
-    
+
     /**
-     * Displays the month selection interface and renders the selected month's calendar.
+     * Displays the month selection interface and renders the selected month's
+     * calendar.
      */
     public String displayMonthSelection() {
         String nextPage = "menu";
@@ -619,13 +684,13 @@ public class DisplayController {
         if (monthChoice == 0) {
             System.out.println("Returning to menu...");
             nextPage = "menu";
-        }
-        else if (monthChoice < 1 || monthChoice > 12) {
+        } else if (monthChoice < 1 || monthChoice > 12) {
             System.out.println("Invalid month selection. Returning to menu.");
         } else {
-            displayCalendar(monthChoice);
-            displayEntryOptions(monthChoice);
+            int yearidx = LocalDate.now().getYear();
             this.logicController.setSelectedMonth(monthChoice);
+            this.logicController.setSelectedYear(yearidx);
+            displayEntryOptions();
             nextPage = "entry";
         }
         return nextPage;
