@@ -52,7 +52,7 @@ public class Account {
 
     /**
      * Returns whether the account is currently active.
-     * @return {@code true} if the account is active, {@code false} otherwise.
+     * @return true if the account is active, false otherwise.
      */
     public boolean getIsActive() {
         return this.isActive;
@@ -78,7 +78,7 @@ public class Account {
 
     /**
      * Sets the active status of the account.
-     * @param isActive {@code true} to activate the account, {@code false} to deactivate it.
+     * @param isActive true to activate the account, false to deactivate it.
      */
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;

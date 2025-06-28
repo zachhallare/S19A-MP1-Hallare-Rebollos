@@ -82,6 +82,10 @@ public class Entry {
         return this.description;
     }
 
+    /**
+     * Creates and returns a deep copy of this entry.
+     * @return a new Entry object with the same title, description, start, and end times
+     */
     public Entry copy() {
         Entry copiedEntry = new Entry(this.title, this.description);
         copiedEntry.setStartTime(this.timeStart);

@@ -8,24 +8,19 @@ import java.util.Scanner;
 
 /**
  * Handles all console-based UI display and input logic for the digital calendar
- * system. Works in tandem with the {@link LogicController} to interact with
- * accounts, calendars, and entries.
+ * system. Works togather with the LogicController to interact with user accounts, 
+ * calendar objects, and entries.
  */
 public class DisplayController {
 
-    /**
-     * The controller responsible for managing core application logic.
-     */
+    /** Logic controller that manages the core state and operations of the application. */
     private LogicController logicController;
 
-    /**
-     * Scanner used for reading user input.
-     */
+    /** Scanner object for reading user input from the console. */
     private Scanner scanner;
 
     /**
      * Constructs a DisplayController with a reference to the logic controller.
-     *
      * @param logicController The logic controller used to interact with
      * application state.
      */
@@ -35,10 +30,8 @@ public class DisplayController {
     }
 
     /**
-     * Displays the monthly calendar view with indicators for days that contain
-     * entries.
-     *
-     * @param monthidx The numeric month (1-12) to display.
+     * Displays the monthly calendar grid for the currently selected calendar and date,
+     * including markers (*) on days with entries.
      */
     public void displayCalendar() {
         int monthidx = this.logicController.getSelectedMonth();
@@ -99,10 +92,8 @@ public class DisplayController {
     }
 
     /**
-     * Displays all entries for a specific day in a calendar.
-     *
-     * @param monthNumber The month of the entries.
-     * @param dayNumber The day to display entries for.
+     * Displays all entries that occur on a specific day of the currently selected calendar.
+     * @param dayNumber the numeric day of the month to display entries for (1–31).
      */
     public void displayEntriesOfDay(int dayNumber) {
         CalendarObject calendarObject = this.logicController.getCurrentCalendarObject();
@@ -137,7 +128,6 @@ public class DisplayController {
 
     /**
      * Displays the landing page where users can log in, sign up, or exit.
-     *
      * @return A string indicating the next page to navigate to.
      */
     public String displayLandingPage() {
@@ -166,7 +156,6 @@ public class DisplayController {
 
     /**
      * Displays the login page for user authentication.
-     *
      * @return A string indicating the next page to navigate to.
      */
     public String displayLoginPage() {
@@ -197,7 +186,6 @@ public class DisplayController {
 
     /**
      * Displays the sign-up page to create a new account.
-     *
      * @return A string indicating the next page to navigate to.
      */
     public String displaySignUpPage() {
@@ -226,9 +214,8 @@ public class DisplayController {
     }
 
     /**
-     * Displays the main menu after logging in. Provides access to calendar
-     * operations.
-     *
+     * Displays the main menu after login, allowing users to manage calendars and perform account actions.
+     * Available actions include selecting or adding calendars, viewing today's entries, and account deletion.
      * @return A string indicating the next page to navigate to.
      */
     public String displayMenuPage() {
@@ -397,10 +384,8 @@ public class DisplayController {
 
     /**
      * Displays and handles options to view, add, edit, or remove entries in the
-     * selected calendar.
-     *
-     * @param monthidx The selected month (1-12) for which entry operations
-     * apply.
+     * selected calendar. Includes input validation for dates and times.
+     * @return a navigation keyword indicating the next page.
      */
     public String displayEntryOptions() {
         boolean stayInEntryMenu = true;
@@ -676,8 +661,10 @@ public class DisplayController {
     }
 
     /**
-     * Displays the month selection interface and renders the selected month's
-     * calendar.
+     * Displays a month selection menu allowing the user to choose which month's calendar
+     * to view or edit. When a valid month is selected, the method redirects to the
+     * entry options interface for that month.
+     * @return a navigation keyword indicating the next page.
      */
     public String displayMonthSelection() {
         String nextPage = "menu";

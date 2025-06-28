@@ -18,8 +18,8 @@ public class CalendarObject {
 
     /**
      * Constructs a new CalendarObject with the specified name, visibility, and year.
-     * @param calendarName   The name of the calendar.
-     * @param isPublic       true if the calendar is public; false if private.
+     * @param calendarName the name of the calendar.
+     * @param isPublic true if the calendar is public; false if private.
      */
     public CalendarObject(String calendarName, boolean isPublic) {
         this.calendarName = calendarName;
@@ -96,6 +96,10 @@ public class CalendarObject {
         return this.isPublic;
     }
 
+    /**
+     * Creates a copy of this CalendarObject, including all of its entries.
+     * @return a new CalendarObject with the same name, visibility, and copied entries.
+     */
     public CalendarObject copy() {
         CalendarObject copiedCalendar = new CalendarObject(this.calendarName, this.isPublic);
         for (Entry entry : this.entries) {
