@@ -83,4 +83,8 @@ public class Account {
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
     }
+
+    public void removeOwnedCalendar(String calendarName) {
+        ownedCalendars.remove(calendarName);
+    }
 }

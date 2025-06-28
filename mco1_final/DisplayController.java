@@ -326,7 +326,7 @@ public class DisplayController {
 
                     if (selectedCalendar != null) {
                         CalendarObject copiedCalendar = selectedCalendar.copy();
-                        selectedCalendar.setIsPublic(false);
+                        copiedCalendar.setIsPublic(false);
                         this.logicController.addCalendarInstance(copiedCalendar);
                         this.logicController.getCurrentAccount().addOwnedCalendar(copiedCalendar.getCalendarName());
                         System.out.printf("Calendar %s copied successfully.\n", copiedCalendar.getCalendarName());

@@ -158,7 +158,12 @@ public class LogicController {
      */
     public void removeCurrentCalendarObject() {
         if (this.CalendarObjectIndex >= 0 && this.CalendarObjectIndex < CalendarObjects.size()) {
+            if (this.accountIndex >= 0 && this.accountIndex < accounts.size()) {
+                Account currentAccount = accounts.get(this.accountIndex);
+                String calendarName = CalendarObjects.get(this.CalendarObjectIndex).getCalendarName();
+                currentAccount.removeOwnedCalendar(calendarName);
             CalendarObjects.remove(this.CalendarObjectIndex);
+            }
             this.CalendarObjectIndex = -1;
         }
     }
@@ -357,18 +362,17 @@ public class LogicController {
     }
 
     public boolean checkCalendarDuplicate(String calendarName, boolean isPublic, String username) {
+        boolean isDuplicate = false;
         for (CalendarObject obj : this.CalendarObjects) {
             if (obj.getCalendarName().equals(calendarName)) {
-                if (isPublic && obj.isPublic()) {
-                    // Public calendars must be globally unique
-                    return true;
-                }
-                if (!isPublic && !obj.isPublic()) {
-                    // Private calendars must be unique among ALL private calendars
-                    return true;
-                }
+            if (isPublic && obj.isPublic()) {
+                isDuplicate = true;
+            }
+            if (!isPublic && !obj.isPublic()) {
+                isDuplicate = true;
+            }
             }
         }
-        return false;
+        return isDuplicate;
     }
 }
