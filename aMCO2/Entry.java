@@ -1,3 +1,5 @@
+package aMCO2;
+
 /**
  * Represents a single entry in a calendar with a title, description,
  * start time, and end time (measured in milliseconds since epoch).

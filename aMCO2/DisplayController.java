@@ -1,3 +1,4 @@
+package aMCO2;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +19,9 @@ public class DisplayController {
 
     /** Scanner object for reading user input from the console. */
     private Scanner scanner;
+
+    /** Route for GUI */
+    private String route;
 
     /**
      * Constructs a DisplayController with a reference to the logic controller.
@@ -694,5 +698,33 @@ public class DisplayController {
             nextPage = "entry";
         }
         return nextPage;
+    }
+    /*
+     * Adds a route on top of the existing route for GUI navigation.
+     * Example: "/login/"
+     * When updating the route, it becomes
+     * "/login/<account_name>/"
+     */
+    public void pushRoute(String route) {
+        if (this.route == null) {
+            this.route = route;
+        } else {
+            this.route += route;
+        }
+    }
+
+    /*
+     * Removes the last segment of the route.
+     * Example: If the current route is "/login/<account_name>/",
+     * it will remove "<account_name>" and
+     * the route will become "/login/".
+     */
+    public void popRoute() {
+        if (this.route != null && !this.route.isEmpty()) {
+            int lastSlashIndex = this.route.lastIndexOf('/');
+            if (lastSlashIndex != -1) {
+                this.route = this.route.substring(0, lastSlashIndex);
+            }
+        }
     }
 }
