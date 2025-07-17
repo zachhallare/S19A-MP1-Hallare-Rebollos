@@ -2,14 +2,18 @@ package aMCO2;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import java.awt.BorderLayout;
 
 public class Router {
     private JFrame frame;
+
+    private LandingPage landingPage;
     private LoginPage loginPage;
     private SignupPage signupPage;
     private MenuPage menuPage;
-    private CalendarPage calendarPage;
-    private EntryPage entryPage;
+    // private CalendarPage calendarPage;
+    // private EntryPage entryPage;
+
     private LogicController logic;
 
     public Router() {
@@ -27,8 +31,8 @@ public class Router {
         loginPage = new LoginPage(this, logic);
         signupPage = new SignupPage(this, logic);
         menuPage = new MenuPage(this, logic);
-        calendarPage = new CalendarPage(this, logic);
-        entryPage = new EntryPage(this, logic);
+        // calendarPage = new CalendarPage(this, logic);
+        // entryPage = new EntryPage(this, logic);
 
         setPage(landingPage);
         frame.setVisible(true);
@@ -58,11 +62,11 @@ public class Router {
         setPage(menuPage);
     }
 
-    public void showCalendarPage() {
-        setPage(calendarPage);
-    }
+    // public void showCalendarPage() {
+    //     setPage(calendarPage);
+    // }
 
-    public void showEntryPage() {
-        setPage(entryPage);
-    }
+    // public void showEntryPage() {
+    //     setPage(entryPage);
+    // }
 }
