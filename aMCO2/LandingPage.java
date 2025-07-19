@@ -1,11 +1,7 @@
 package aMCO2;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -13,40 +9,41 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class LandingPage extends JPanel {
+    private static final int BUTTON_WIDTH = 160;
+    private static final int BUTTON_HEIGHT = 40;
+    private static final int GAP = 60;
+
     public LandingPage(Router router, LogicController logic) {
-        setLayout(new BorderLayout());
+        setLayout(null);
+        setBackground(new Color(0xD3D3D3)); // Light grey
 
-        JLabel titleLabel = new JLabel("Welcome to the Digital Calendar!", SwingConstants.CENTER);
+        // Title Label.
+        JLabel titleLabel = new JLabel("Digital Calendar", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(50, 10, 30, 10));
-        add(titleLabel, BorderLayout.NORTH);
+        titleLabel.setForeground(new Color(0x36454F));
+        titleLabel.setBounds(50, 40, 400, 40);
+        add(titleLabel);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(2, 1, 10, 10));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 200, 20, 200));
-
+        // Login Button.
         JButton loginButton = new JButton("Login");
+        loginButton.setBounds(170, 170, BUTTON_WIDTH, BUTTON_HEIGHT);
+        styleButton(loginButton);
+        loginButton.addActionListener(e -> router.showLoginPage());
+        add(loginButton);
+        
+        // Signup Button.
         JButton signupButton = new JButton("Sign Up");
+        signupButton.setBounds(170, 170 + GAP, BUTTON_WIDTH, BUTTON_HEIGHT);
+        styleButton(signupButton);
+        signupButton.addActionListener(e -> router.showSignupPage());
+        add(signupButton);
+    }
 
-        loginButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        signupButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
-
-        buttonPanel.add(loginButton);
-        buttonPanel.add(signupButton);
-        add(buttonPanel, BorderLayout.CENTER);
-
-        // Login.
-        loginButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                router.showLoginPage();
-            }
-        });
-
-        // Sign Up.
-        signupButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                router.showSignupPage();
-            }
-        });
+    private void styleButton(JButton button) {
+        button.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        button.setBackground(Color.WHITE);
+        button.setForeground(Color.BLACK);
+        button.setFocusable(false);
+        button.setBorder(BorderFactory.createEtchedBorder());
     }
 }

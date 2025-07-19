@@ -4,69 +4,67 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
-public class Router {
-    private JFrame frame;
+public class Router extends JFrame {
+    private final LandingPage landingPage;
+    private final AccountPage loginPage;
+    private final AccountPage signupPage;
+    private final MenuPage menuPage;
+    // private final CalendarPage calendarPage;
+    private final LogicController controller;
 
-    private LandingPage landingPage;
-    private LoginPage loginPage;
-    private SignupPage signupPage;
-    private MenuPage menuPage;
-    // private CalendarPage calendarPage;
-    // private EntryPage entryPage;
-
-    private LogicController logic;
 
     public Router() {
-        logic = new LogicController();
+        setTitle("Digital Calendar");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        // Main Frame.
-        frame = new JFrame("Calendar App");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLocationRelativeTo(null); // center on screen
-        frame.setLayout(new BorderLayout());
-
-        // Pass the Router so pages can switch views.
-        landingPage = new LandingPage(this, logic);
-        loginPage = new LoginPage(this, logic);
-        signupPage = new SignupPage(this, logic);
-        menuPage = new MenuPage(this, logic);
+        // Individual pages.
+        controller = new LogicController();
+        landingPage = new LandingPage(this, controller);
+        loginPage = new AccountPage(this, controller, true);      // true = login mode.
+        signupPage = new AccountPage(this, controller, false);   // false = signup mode.
+        menuPage = new MenuPage(this, controller);
         // calendarPage = new CalendarPage(this, logic);
-        // entryPage = new EntryPage(this, logic);
 
-        setPage(landingPage);
-        frame.setVisible(true);
+        // Initial View.
+        showPage(landingPage, 500, 400);
+        setVisible(true);
     }
 
-    // Page switching method
-    public void setPage(JPanel page) {
-        frame.setContentPane(page);
-        frame.revalidate();
-        frame.repaint();
+
+    // Page Switching Method.
+    public void showPage(JPanel panel, int width, int height) {
+        setSize(width, height);
+        setResizable(false);
+        setContentPane(panel);
+        revalidate();     // recalculate component sizes and positions.
+        repaint();        // redraws the component on the screen.
+        setLocationRelativeTo(null);         // Puts in to the center screen.
     }
 
-    // Page getters (used by child pages to navigate)
+
+    // Navigation Methods.
     public void showLandingPage() {
-        setPage(landingPage);
+        showPage(landingPage, 500, 400);
     }
 
     public void showLoginPage() {
-        setPage(loginPage);
+        showPage(loginPage, 500, 400);
     }
 
     public void showSignupPage() {
-        setPage(signupPage);
+        showPage(signupPage, 500, 400);
     }
 
     public void showMenuPage() {
-        setPage(menuPage);
+        showPage(menuPage, 800, 600);
     }
 
     // public void showCalendarPage() {
-    //     setPage(calendarPage);
+    //     showPage(calendarPage, 800, 600);
     // }
 
     // public void showEntryPage() {
-    //     setPage(entryPage);
+    //     showPage(entryPage, 800, 600);
     // }
 }
