@@ -57,7 +57,7 @@ public class Router extends JFrame {
     }
 
     public void showMenuPage() {
-        showPage(menuPage, 800, 600);
+        showPage(menuPage, 500, 400);
     }
 
     // public void showCalendarPage() {
