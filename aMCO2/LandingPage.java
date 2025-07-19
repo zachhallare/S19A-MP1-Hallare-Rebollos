@@ -21,19 +21,19 @@ public class LandingPage extends JPanel {
         JLabel titleLabel = new JLabel("Digital Calendar", SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setForeground(new Color(0x36454F));
-        titleLabel.setBounds(50, 40, 400, 40);
+        titleLabel.setBounds(50, 60, 400, 40);
         add(titleLabel);
 
         // Login Button.
         JButton loginButton = new JButton("Login");
-        loginButton.setBounds(170, 170, BUTTON_WIDTH, BUTTON_HEIGHT);
+        loginButton.setBounds(170, 150, BUTTON_WIDTH, BUTTON_HEIGHT);
         styleButton(loginButton);
         loginButton.addActionListener(e -> router.showLoginPage());
         add(loginButton);
         
         // Signup Button.
         JButton signupButton = new JButton("Sign Up");
-        signupButton.setBounds(170, 170 + GAP, BUTTON_WIDTH, BUTTON_HEIGHT);
+        signupButton.setBounds(170, 150 + GAP, BUTTON_WIDTH, BUTTON_HEIGHT);
         styleButton(signupButton);
         signupButton.addActionListener(e -> router.showSignupPage());
         add(signupButton);

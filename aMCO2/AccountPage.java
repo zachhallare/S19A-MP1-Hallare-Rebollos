@@ -17,7 +17,7 @@ public class AccountPage extends JPanel {
     private static final int FIELD_HEIGHT = 30;
     private static final int BUTTON_WIDTH = 160;
     private static final int BUTTON_HEIGHT = 40;
-    private static final int START_Y = 100;
+    private static final int START_Y = 130;
     private static final int GAP_Y = 50;
 
     public AccountPage(Router router, LogicController logic, boolean isLogin) {
@@ -29,7 +29,7 @@ public class AccountPage extends JPanel {
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setForeground(new Color(0x36454F));
-        titleLabel.setBounds(50, 30, 400, 40);
+        titleLabel.setBounds(50, 60, 400, 40);
         add(titleLabel);
 
         // Username.
@@ -53,13 +53,13 @@ public class AccountPage extends JPanel {
         // Main Button Layout (Login or Signup).
         String mainButtonText = isLogin ? "Login" : "Sign Up";
         JButton mainButton = new JButton(mainButtonText);
-        mainButton.setBounds(70, START_Y + 2 * GAP_Y + 10, BUTTON_WIDTH, BUTTON_HEIGHT);
+        mainButton.setBounds(70, START_Y + 2 * GAP_Y + 20, BUTTON_WIDTH, BUTTON_HEIGHT);
         styleButton(mainButton);
         add(mainButton);
 
         // Back to Landing Page Button Layout.
         JButton backButton = new JButton("Back");
-        backButton.setBounds(250, START_Y + 2 * GAP_Y + 10, BUTTON_WIDTH, BUTTON_HEIGHT);
+        backButton.setBounds(250, START_Y + 2 * GAP_Y + 20, BUTTON_WIDTH, BUTTON_HEIGHT);
         styleButton(backButton);
         add(backButton);
 
