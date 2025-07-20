@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 public class CalendarPage extends JPanel {
     private final JComboBox<String> monthCombo;
@@ -24,12 +25,12 @@ public class CalendarPage extends JPanel {
     private final JPanel calendarGrid;
 
     public CalendarPage(Router router, LogicController logic) {
-        setLayout(new BorderLayout(10, 10));
-        setBackground(Color.WHITE);
+        setLayout(new BorderLayout());
+        setBackground(new Color(0xE0E0E0));
 
         // Top Panel.
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(Color.LIGHT_GRAY);
+        topPanel.setBackground(new Color(0xE0E0E0));
 
         // Top-Right: Previous and Next Buttons.
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -65,19 +66,18 @@ public class CalendarPage extends JPanel {
         // Center: Calendar Grid.
         calendarGrid = new JPanel();
         calendarGrid.setLayout(new GridLayout(0, 7));
+        calendarGrid.setBackground(new Color(0xD0D0D0));
+        calendarGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(calendarGrid, BorderLayout.CENTER);
 
         // Bottom Panel.
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomPanel.setBackground(Color.WHITE);
-        
+        bottomPanel.setBackground(new Color(0xE0E0E0));
         JButton backButton = new JButton("Back to Menu");
         backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
         backButton.addActionListener(e -> router.showMenuPage());
-
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
-
 
         // Action Listeners.
         monthCombo.addActionListener(e -> drawCalendar(router));
@@ -123,7 +123,7 @@ public class CalendarPage extends JPanel {
 
         for (DayOfWeek day : orderOfDays) {
             JLabel label = new JLabel(day.getDisplayName(TextStyle.FULL, Locale.ENGLISH), SwingConstants.CENTER);
-            label.setFont(new Font("SansSerif", Font.BOLD, 14));
+            label.setFont(new Font("SansSerif", Font.BOLD, 13));
             calendarGrid.add(label);
         }
 
@@ -131,7 +131,6 @@ public class CalendarPage extends JPanel {
         int selectedYear = (int) yearCombo.getSelectedItem();
         YearMonth yearMonth = YearMonth.of(selectedYear, selectedMonth);
         LocalDate firstOfMonth = yearMonth.atDay(1);
-
         int startDay = firstOfMonth.getDayOfWeek().getValue() % 7;
 
         // Fill Empty Cells Before the First Day of the Month.
@@ -139,13 +138,23 @@ public class CalendarPage extends JPanel {
             calendarGrid.add(new JLabel(""));
         }
 
-        int daysInMonth = yearMonth.lengthOfMonth();
+        LocalDate today = LocalDate.now(); 
+        int daysInMonth = yearMonth.lengthOfMonth();  
+
         for (int day = 1; day <= daysInMonth; day++) {
             JButton dayButton = new JButton(String.valueOf(day));
             dayButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
             dayButton.setHorizontalAlignment(SwingConstants.LEFT);
             dayButton.setVerticalAlignment(SwingConstants.TOP);
             dayButton.setMargin(new Insets(4, 6, 4, 4));
+            dayButton.setFocusPainted(false);
+            dayButton.setBackground(Color.WHITE);
+            dayButton.setOpaque(true);
+
+            // Highlight the Day Today.
+            if (selectedYear == today.getYear() && selectedMonth == today.getMonthValue() && day == today.getDayOfMonth()) {
+                dayButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+            } 
 
             int selectedDay = day;
             dayButton.addActionListener(e -> {
