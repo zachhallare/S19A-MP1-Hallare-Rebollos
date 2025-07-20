@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 
 public class LandingPage extends JPanel {
     private static final int BUTTON_WIDTH = 160;
@@ -43,7 +44,7 @@ public class LandingPage extends JPanel {
         button.setFont(new Font("SansSerif", Font.PLAIN, 16));
         button.setBackground(Color.WHITE);
         button.setForeground(Color.BLACK);
+        button.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
         button.setFocusable(false);
-        button.setBorder(BorderFactory.createEtchedBorder());
     }
 }

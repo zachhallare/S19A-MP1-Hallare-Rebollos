@@ -2,7 +2,6 @@ package aMCO2;
 
 import java.awt.Color;
 import java.awt.Font;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,12 +19,12 @@ public class AccountPage extends JPanel {
     private static final int START_Y = 130;
     private static final int GAP_Y = 50;
 
-    public AccountPage(Router router, LogicController logic, boolean isLogin) {
+    public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
         setLayout(null);
         setBackground(new Color(0xD3D3D3));
 
         // Title.
-        String title = isLogin ? "Login" : "Create an Account";
+        String title = isLoginPage ? "Login" : "Create an Account";
         JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setForeground(new Color(0x36454F));
@@ -51,7 +50,7 @@ public class AccountPage extends JPanel {
         add(passwordField);
 
         // Main Button Layout (Login or Signup).
-        String mainButtonText = isLogin ? "Login" : "Sign Up";
+        String mainButtonText = isLoginPage ? "Login" : "Sign Up";
         JButton mainButton = new JButton(mainButtonText);
         mainButton.setBounds(70, START_Y + 2 * GAP_Y + 20, BUTTON_WIDTH, BUTTON_HEIGHT);
         styleButton(mainButton);
@@ -71,11 +70,13 @@ public class AccountPage extends JPanel {
 
             if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Username and password cannot be empty.",
-                    isLogin ? "Login Failed" : "Signup Failed", JOptionPane.WARNING_MESSAGE);
+                    isLoginPage ? "Login Failed" : "Signup Failed", JOptionPane.WARNING_MESSAGE);
             } else {
-                if (isLogin) {
+                if (isLoginPage) {
                     if (logic.authenticateAccount(username, password)) {
                         JOptionPane.showMessageDialog(this, "Login successful!");
+                        usernameField.setText("");
+                        passwordField.setText("");
                         router.showMenuPage();
                     } else {
                         JOptionPane.showMessageDialog(this, "Invalid username or password.", 
@@ -95,7 +96,11 @@ public class AccountPage extends JPanel {
         });
 
         // Back Button Logic.
-        backButton.addActionListener(e -> router.showLandingPage());
+        backButton.addActionListener(e -> {
+            usernameField.setText("");
+            passwordField.setText("");
+            router.showLandingPage();
+        });
     }
 
 
@@ -107,4 +112,6 @@ public class AccountPage extends JPanel {
         button.setFocusable(false);
         button.setBorder(BorderFactory.createEtchedBorder());
     }
+
+
 }
