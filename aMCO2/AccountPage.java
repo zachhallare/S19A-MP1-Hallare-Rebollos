@@ -89,7 +89,7 @@ public class AccountPage extends JPanel {
                     } else {
                         logic.addAccount(username, password);
                         JOptionPane.showMessageDialog(this, "Account created successfully!");
-                        router.showLoginPage();
+                        router.showLandingPage();
                     }
                 }
             }

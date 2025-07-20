@@ -9,9 +9,8 @@ public class Router extends JFrame {
     private final AccountPage loginPage;
     private final AccountPage signupPage;
     private final MenuPage menuPage;
-    // private final CalendarPage calendarPage;
-    private final LogicController controller;
-
+    private final CalendarPage calendarPage;
+    private final LogicController logicController;
 
     public Router() {
         setTitle("Digital Calendar");
@@ -19,12 +18,12 @@ public class Router extends JFrame {
         setLayout(new BorderLayout());
 
         // Individual pages.
-        controller = new LogicController();
-        landingPage = new LandingPage(this, controller);
-        loginPage = new AccountPage(this, controller, true);      // true = login mode.
-        signupPage = new AccountPage(this, controller, false);   // false = signup mode.
-        menuPage = new MenuPage(this, controller);
-        // calendarPage = new CalendarPage(this, logic);
+        logicController = new LogicController();
+        landingPage = new LandingPage(this, logicController);
+        loginPage = new AccountPage(this, logicController, true);      // true = login mode.
+        signupPage = new AccountPage(this, logicController, false);   // false = signup mode.
+        menuPage = new MenuPage(this, logicController);
+        calendarPage = new CalendarPage(this, logicController);
 
         // Initial View.
         showPage(landingPage, 500, 400);
@@ -60,11 +59,7 @@ public class Router extends JFrame {
         showPage(menuPage, 500, 400);
     }
 
-    // public void showCalendarPage() {
-    //     showPage(calendarPage, 800, 600);
-    // }
-
-    // public void showEntryPage() {
-    //     showPage(entryPage, 800, 600);
-    // }
+    public void showCalendarPage() {
+        showPage(calendarPage, 800, 600);
+    }
 }

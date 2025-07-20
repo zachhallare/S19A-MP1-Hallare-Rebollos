@@ -52,7 +52,7 @@ public class MenuPage extends JPanel {
                     int index = logic.getCalendarFromName(calName, isPublic);
                     if (index != -1) {
                         logic.setCalendarObjectIndex(index);
-                        JOptionPane.showMessageDialog(this, "Selected: " + calName);
+                        router.showCalendarPage();
                     }
                 }
             }
