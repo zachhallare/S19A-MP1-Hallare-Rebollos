@@ -1,31 +1,44 @@
 package aMCO2;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 
 public class MenuPage extends JPanel {
+    private static final Color BACKGROUND_COLOR = new Color(0xE0E0E0);
+    private static final Color ACCENT_COLOR = new Color(0xFF9999);
+    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 24);
+    private static final Font BUTTON_FONT = new Font("SansSerif", Font.PLAIN, 16);
+
     public MenuPage(Router router, LogicController logic) {
-        setLayout(null);
-        setBackground(new Color(0xE0E0E0));     // Lighter grey.
+        setLayout(new BorderLayout());
+        setBackground(BACKGROUND_COLOR);   
 
-        // Title.
+        // Title Label.
         JLabel titleLabel = new JLabel("Main Menu", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(new Color(0x36454F));
-        titleLabel.setBounds(150, 20, 200, 40);
-        add(titleLabel);
+        add(titleLabel, BorderLayout.NORTH);
 
-        // Option 1: Select Calendar.
-        JButton selectButton = new JButton("Select Calendar");
-        selectButton.setBounds(150, 80, 200, 40);
+        // Vertical Button Panel (Center).
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Button 1: Select Calendar.
+        JButton selectButton = createStyledButton("Select Calendar");
         selectButton.addActionListener(e -> {
             ArrayList<CalendarObject> privateCalendars = logic.getPrivateCalendarObjects();
             ArrayList<CalendarObject> publicCalendars = logic.getPublicCalendarObjects();
@@ -57,12 +70,12 @@ public class MenuPage extends JPanel {
                 }
             }
         });
-        styleButton(selectButton);
-        add(selectButton);
+        buttonPanel.add(selectButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Option 2: Add Calendar.
-        JButton addButton = new JButton("Add Calendar");
-        addButton.setBounds(150, 130, 200, 40);
+
+        // Button 2: Add Calendar.
+        JButton addButton = createStyledButton("Add Calendar");
         addButton.addActionListener(e -> {
             String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
             if (name != null && !name.isBlank()) {
@@ -82,52 +95,47 @@ public class MenuPage extends JPanel {
                 }
             }
         });
-        styleButton(addButton);
-        add(addButton);
+        buttonPanel.add(addButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Option 3: View Today.
-        JButton viewTodayButton = new JButton("View Today");
-        viewTodayButton.setBounds(150, 180, 200, 40);
-        viewTodayButton.setBackground(new Color(0xFF9999));
-        viewTodayButton.addActionListener(e -> {
-            // idk yet lmao.
-        });
-        styleButton(viewTodayButton);
-        add(viewTodayButton);
 
-        // Option 4: Delete Account.
-        JButton deleteAccButton = new JButton("Delete Account");
-        deleteAccButton.setBounds(150, 230, 200, 40);
-        deleteAccButton.setBackground(new Color(0xFF9999));
+        // Button 3: Delete Account.
+        JButton deleteAccButton = createStyledButton("Delete Account");
+        deleteAccButton.setBackground(ACCENT_COLOR);
         deleteAccButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
-            "Delete your account?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+                "Delete your account?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 logic.deactivateAccount();
                 router.showLandingPage();
             }
         });
-        styleButton(deleteAccButton);
-        add(deleteAccButton);
+        buttonPanel.add(deleteAccButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Option 5: Logout.
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.setBounds(150, 280, 200, 40);
+
+        // Button 4: Logout.
+        JButton logoutButton = createStyledButton("Logout");
         logoutButton.addActionListener(e -> {
             logic.logoutAccount();
             router.showLandingPage();
         });
-        styleButton(logoutButton);
-        add(logoutButton);
+        buttonPanel.add(logoutButton);
+
+        add(buttonPanel, BorderLayout.CENTER);
+
     }
 
 
     // For aesthetics. 
-    private void styleButton(JButton button) {
-        button.setFont(new Font("SansSerif", Font.PLAIN, 16));
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(BUTTON_FONT);
         button.setBackground(Color.WHITE);
         button.setForeground(Color.BLACK);
         button.setFocusable(false);
-        button.setBorder(BorderFactory.createEtchedBorder());
+        button.setPreferredSize(new Dimension(160, 40));
+        button.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+        return button;
     }
 }
