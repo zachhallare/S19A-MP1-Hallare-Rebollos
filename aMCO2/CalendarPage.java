@@ -169,6 +169,9 @@ public class CalendarPage extends JPanel {
         for (DayOfWeek day : orderOfDays) {
             JLabel label = new JLabel(day.getDisplayName(TextStyle.FULL, Locale.ENGLISH), SwingConstants.CENTER);
             label.setFont(new Font("SansSerif", Font.BOLD, 13));
+            label.setOpaque(true);
+            label.setBackground(new Color(0xC0C0C0));
+            label.setPreferredSize(new Dimension(0, 24));
             calendarGrid.add(label);
         }
 
@@ -178,7 +181,10 @@ public class CalendarPage extends JPanel {
 
         // Fill Empty Cells Before the First Day of the Month.
         for (int i = 0; i < startDay; i++) {
-            calendarGrid.add(new JLabel(""));
+            JButton filler = new JButton();
+            filler.setEnabled(false);
+            filler.setBackground(Color.WHITE);
+            calendarGrid.add(filler);
         }
 
         int daysInMonth = yearMonth.lengthOfMonth();  
@@ -186,7 +192,7 @@ public class CalendarPage extends JPanel {
 
         for (int day = 1; day <= daysInMonth; day++) {
             JButton dayButton = new JButton(String.valueOf(day));
-            dayButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            dayButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
             dayButton.setHorizontalAlignment(SwingConstants.LEFT);
             dayButton.setVerticalAlignment(SwingConstants.TOP);
             dayButton.setMargin(new Insets(4, 6, 4, 4));
@@ -207,6 +213,16 @@ public class CalendarPage extends JPanel {
             });
 
             calendarGrid.add(dayButton);
+        }
+
+        // Fill remaining cells after last day to complete the week row.
+        int totalCells = startDay + daysInMonth;
+        int remainingCells = (7 - (totalCells % 7)) % 7;
+        for (int i = 0; i < remainingCells; i++) {
+            JButton filler = new JButton();
+            filler.setEnabled(false);
+            filler.setBackground(Color.WHITE);
+            calendarGrid.add(filler);
         }
 
         revalidate();
