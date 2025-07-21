@@ -1,21 +1,27 @@
 package aMCO2;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
 
-public class Router extends JFrame {
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public final class Router extends JFrame {
     private final LandingPage landingPage;
     private final AccountPage loginPage;
     private final AccountPage signupPage;
     private final MenuPage menuPage;
     private final CalendarPage calendarPage;
     private final LogicController logicController;
+    private final CalendarListPage calendarListPage;
+    private final JPanel contentPanel;
 
     public Router() {
         setTitle("Digital Calendar");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setSize(800, 600);
+        setResizable(false);
+        setLocationRelativeTo(null);
 
         // Individual pages.
         logicController = new LogicController();
@@ -24,42 +30,43 @@ public class Router extends JFrame {
         signupPage = new AccountPage(this, logicController, false);   // false = signup mode.
         menuPage = new MenuPage(this, logicController);
         calendarPage = new CalendarPage(this, logicController);
+        calendarListPage = new CalendarListPage(this, logicController);
+
+        // Main content panel
+        contentPanel = new JPanel(new BorderLayout());
+        setContentPane(contentPanel);
 
         // Initial View.
-        showPage(landingPage, 500, 400);
+        showPage(landingPage);
         setVisible(true);
     }
 
-
     // Page Switching Method.
-    public void showPage(JPanel panel, int width, int height) {
-        setSize(width, height);
-        setResizable(false);
-        setContentPane(panel);
-        revalidate();     // recalculate component sizes and positions.
-        repaint();        // redraws the component on the screen.
-        setLocationRelativeTo(null);         // Puts in to the center screen.
+    public void showPage(JPanel panel) {
+        contentPanel.removeAll();
+        contentPanel.add(panel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
-
 
     // Navigation Methods.
     public void showLandingPage() {
-        showPage(landingPage, 500, 400);
+        showPage(landingPage);
     }
 
     public void showLoginPage() {
-        showPage(loginPage, 500, 400);
+        showPage(loginPage);
     }
 
     public void showSignupPage() {
-        showPage(signupPage, 500, 400);
+        showPage(signupPage);
     }
 
     public void showMenuPage() {
-        showPage(menuPage, 500, 400);
+        showPage(menuPage);
     }
 
     public void showCalendarPage() {
-        showPage(calendarPage, 800, 600);
+        showPage(calendarPage);
     }
 }

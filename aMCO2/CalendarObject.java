@@ -16,6 +16,13 @@ public class CalendarObject {
     /** List of entries in the calendar. */
     private ArrayList<Entry> entries;
 
+    /**
+     * Returns the name of the calendar
+     * @return The calendar name.
+     */
+    public String getName() {
+        return this.calendarName;
+    }
 
     /**
      * Constructs a new CalendarObject with the specified name, visibility, and year.
