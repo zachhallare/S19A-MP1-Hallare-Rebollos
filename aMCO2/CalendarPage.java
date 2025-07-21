@@ -2,65 +2,112 @@ package aMCO2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.text.DateFormatSymbols;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.Arrays;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 public class CalendarPage extends JPanel {
-    private final JComboBox<String> monthCombo;
-    private final JComboBox<Integer> yearCombo;
     private final JPanel calendarGrid;
+    private final JButton datePickerButton;
+    private int selectedYear;
+    private int selectedMonth;
 
     public CalendarPage(Router router, LogicController logic) {
         setLayout(new BorderLayout());
         setBackground(new Color(0xE0E0E0));
+        selectedYear = LocalDate.now().getYear();
+        selectedMonth = LocalDate.now().getMonthValue();
 
         // Top Panel.
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(new Color(0xE0E0E0));
 
-        // Top-Right: Previous and Next Buttons.
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        navPanel.setOpaque(false);
-        JButton prevButton = new JButton("<");
-        JButton nextButton = new JButton(">");
-        navPanel.add(prevButton);
-        navPanel.add(nextButton);
+        // Top-Left: Previous Year and Month
+        JPanel navPanelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        navPanelLeft.setOpaque(false);
+        JButton prevYearButton = new JButton("<<");
+        JButton prevMonthButton = new JButton("<");
+        navPanelLeft.add(prevYearButton);
+        navPanelLeft.add(prevMonthButton);
 
-        // Top-Center: Month and Year ComboBox.
+        // Top-Right: Next Month and Year.
+        JPanel navPanelRight = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        navPanelRight.setOpaque(false);
+        JButton nextMonthButton = new JButton(">");
+        JButton nextYearButton = new JButton(">>");
+        navPanelRight.add(nextMonthButton);
+        navPanelRight.add(nextYearButton);
+
+        // Dimension and Font for the Buttons.
+        Dimension squareSize = new Dimension(50, 30);
+        Font buttonFont = new Font("SansSerif", Font.BOLD, 14);
+        JButton[] navButtons = {prevYearButton, prevMonthButton, nextMonthButton, nextYearButton};
+        for (JButton button : navButtons) {
+            button.setPreferredSize(squareSize);
+            button.setFont(buttonFont);
+            button.setFocusPainted(false);
+            button.setBackground(Color.WHITE);
+        }
+
+        // Top-Center: Date Picker Button.
         JPanel monthYearPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         monthYearPanel.setOpaque(false);
-        monthCombo = new JComboBox<>();
-        for (int i = 1; i <= 12; i++) {
-            String monthName = YearMonth.of(2000, i).getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-            monthCombo.addItem(monthName);
-        }
+        datePickerButton = new JButton();
+        datePickerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        datePickerButton.setFocusPainted(false);
+        datePickerButton.setBackground(Color.WHITE);
+        updateDatePickerLabel();
+        monthYearPanel.add(datePickerButton);
 
-        yearCombo = new JComboBox<>();
-        int currentYear = LocalDate.now().getYear();
-        for (int i = currentYear - 10; i <= currentYear + 10; i++) {
-            yearCombo.addItem(i);
-        }
+        // Date Picker Logic.
+        datePickerButton.addActionListener(e -> {
+            String[] months = new DateFormatSymbols().getMonths();
+            JComboBox<String> monthBox = new JComboBox<>(Arrays.copyOf(months, 12));
+            monthBox.setSelectedIndex(selectedMonth - 1);
+            SpinnerNumberModel yearModel = new SpinnerNumberModel(selectedYear, 1900, 2100, 1);
+            JSpinner yearSpinner = new JSpinner(yearModel);
 
-        monthYearPanel.add(monthCombo);
-        monthYearPanel.add(yearCombo);
+            JPanel panel = new JPanel(new GridLayout(2, 2));
+            panel.add(new JLabel("Month:"));
+            panel.add(monthBox);
+            panel.add(new JLabel("Year:"));
+            panel.add(yearSpinner);
+
+            int result = JOptionPane.showConfirmDialog(null, panel, "Select Month and Year",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                selectedMonth = monthBox.getSelectedIndex() + 1;
+                selectedYear = (int) yearSpinner.getValue();
+                updateDatePickerLabel();
+                drawCalendar(router);
+            }
+        });
+
 
         // Add to Top Panel.
+        topPanel.add(navPanelLeft, BorderLayout.WEST);
         topPanel.add(monthYearPanel, BorderLayout.CENTER);
-        topPanel.add(navPanel, BorderLayout.EAST);
+        topPanel.add(navPanelRight, BorderLayout.EAST);
         add(topPanel, BorderLayout.NORTH);
 
         // Center: Calendar Grid.
@@ -70,7 +117,7 @@ public class CalendarPage extends JPanel {
         calendarGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(calendarGrid, BorderLayout.CENTER);
 
-        // Bottom Panel.
+        // Bottom Panel: Back Button.
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(new Color(0xE0E0E0));
         JButton backButton = new JButton("Back to Menu");
@@ -79,39 +126,55 @@ public class CalendarPage extends JPanel {
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Action Listeners.
-        monthCombo.addActionListener(e -> drawCalendar(router));
-        yearCombo.addActionListener(e -> drawCalendar(router));
 
-        // Previous Button Logic.
-        prevButton.addActionListener(e -> {
-            int month = monthCombo.getSelectedIndex();
-            int year = (int) yearCombo.getSelectedItem();
-            if (month == 0) {
-                monthCombo.setSelectedIndex(11);
-                yearCombo.setSelectedItem(year - 1);
+        // Previous Month Button Logic.
+        prevMonthButton.addActionListener(e -> {
+            if (selectedMonth == 1) {
+                selectedMonth = 12;
+                selectedYear--;
             } else {
-                monthCombo.setSelectedIndex(month - 1);
+                selectedMonth--;
             }
+            updateDatePickerLabel();
+            drawCalendar(router);
         });
 
-        // Next Button Logic.
-        nextButton.addActionListener(e -> {
-            int month = monthCombo.getSelectedIndex();
-            int year = (int) yearCombo.getSelectedItem();
-            if (month == 11) {
-                monthCombo.setSelectedIndex(0);
-                yearCombo.setSelectedItem(year + 1);
+        // Next Month Button Logic.
+        nextMonthButton.addActionListener(e -> {
+            if (selectedMonth == 12) {
+                selectedMonth = 1;
+                selectedYear++;
             } else {
-                monthCombo.setSelectedIndex(month + 1);
+                selectedMonth++;
             }
+            updateDatePickerLabel();
+            drawCalendar(router);
         });
 
-        // Initialize Current Month by Default
-        monthCombo.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
-        yearCombo.setSelectedItem(LocalDate.now().getYear());
+        // Previous Year Button Logic.
+        prevYearButton.addActionListener(e -> {
+            selectedYear--;
+            updateDatePickerLabel();
+            drawCalendar(router);
+        });
+
+        // Previous Year Button Logic.
+        nextYearButton.addActionListener(e -> {
+            selectedYear++;
+            updateDatePickerLabel();
+            drawCalendar(router);
+        });
+
+        // Initialize.
         drawCalendar(router);
     }
+
+
+    private void updateDatePickerLabel() {
+        String monthName = Month.of(selectedMonth).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        datePickerButton.setText(monthName + " " + selectedYear);
+    }
+
 
     private void drawCalendar(Router router) {
         calendarGrid.removeAll();
@@ -127,8 +190,6 @@ public class CalendarPage extends JPanel {
             calendarGrid.add(label);
         }
 
-        int selectedMonth = monthCombo.getSelectedIndex() + 1;
-        int selectedYear = (int) yearCombo.getSelectedItem();
         YearMonth yearMonth = YearMonth.of(selectedYear, selectedMonth);
         LocalDate firstOfMonth = yearMonth.atDay(1);
         int startDay = firstOfMonth.getDayOfWeek().getValue() % 7;
@@ -138,8 +199,8 @@ public class CalendarPage extends JPanel {
             calendarGrid.add(new JLabel(""));
         }
 
-        LocalDate today = LocalDate.now(); 
         int daysInMonth = yearMonth.lengthOfMonth();  
+        LocalDate today = LocalDate.now(); 
 
         for (int day = 1; day <= daysInMonth; day++) {
             JButton dayButton = new JButton(String.valueOf(day));
