@@ -38,24 +38,19 @@ public class CalendarPage extends JPanel {
         selectedMonth = LocalDate.now().getMonthValue();
 
         // Top Panel.
-        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.setBackground(new Color(0xE0E0E0));
 
-        // Top-Left: Previous Year and Month
-        JPanel navPanelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        navPanelLeft.setOpaque(false);
         JButton prevYearButton = new JButton("<<");
         JButton prevMonthButton = new JButton("<");
-        navPanelLeft.add(prevYearButton);
-        navPanelLeft.add(prevMonthButton);
-
-        // Top-Right: Next Month and Year.
-        JPanel navPanelRight = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        navPanelRight.setOpaque(false);
         JButton nextMonthButton = new JButton(">");
         JButton nextYearButton = new JButton(">>");
-        navPanelRight.add(nextMonthButton);
-        navPanelRight.add(nextYearButton);
+
+        datePickerButton = new JButton();
+        datePickerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        datePickerButton.setFocusPainted(false);
+        datePickerButton.setBackground(Color.WHITE);
+        updateDatePickerLabel();
 
         // Dimension and Font for the Buttons.
         Dimension squareSize = new Dimension(50, 30);
@@ -68,15 +63,13 @@ public class CalendarPage extends JPanel {
             button.setBackground(Color.WHITE);
         }
 
-        // Top-Center: Date Picker Button.
-        JPanel monthYearPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        monthYearPanel.setOpaque(false);
-        datePickerButton = new JButton();
-        datePickerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        datePickerButton.setFocusPainted(false);
-        datePickerButton.setBackground(Color.WHITE);
-        updateDatePickerLabel();
-        monthYearPanel.add(datePickerButton);
+        // Add the Buttons to the Top Panel.
+        topPanel.add(prevYearButton);
+        topPanel.add(prevMonthButton);
+        topPanel.add(datePickerButton);
+        topPanel.add(nextMonthButton);
+        topPanel.add(nextYearButton);
+        add(topPanel, BorderLayout.NORTH);
 
         // Date Picker Logic.
         datePickerButton.addActionListener(e -> {
@@ -103,13 +96,6 @@ public class CalendarPage extends JPanel {
             }
         });
 
-
-        // Add to Top Panel.
-        topPanel.add(navPanelLeft, BorderLayout.WEST);
-        topPanel.add(monthYearPanel, BorderLayout.CENTER);
-        topPanel.add(navPanelRight, BorderLayout.EAST);
-        add(topPanel, BorderLayout.NORTH);
-
         // Center: Calendar Grid.
         calendarGrid = new JPanel();
         calendarGrid.setLayout(new GridLayout(0, 7));
@@ -126,8 +112,7 @@ public class CalendarPage extends JPanel {
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
 
-
-        // Previous Month Button Logic.
+        // Navigation Buttons Logic.
         prevMonthButton.addActionListener(e -> {
             if (selectedMonth == 1) {
                 selectedMonth = 12;
@@ -139,7 +124,6 @@ public class CalendarPage extends JPanel {
             drawCalendar(router);
         });
 
-        // Next Month Button Logic.
         nextMonthButton.addActionListener(e -> {
             if (selectedMonth == 12) {
                 selectedMonth = 1;
@@ -151,14 +135,12 @@ public class CalendarPage extends JPanel {
             drawCalendar(router);
         });
 
-        // Previous Year Button Logic.
         prevYearButton.addActionListener(e -> {
             selectedYear--;
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
-        // Previous Year Button Logic.
         nextYearButton.addActionListener(e -> {
             selectedYear++;
             updateDatePickerLabel();
