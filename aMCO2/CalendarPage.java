@@ -183,7 +183,7 @@ public class CalendarPage extends JPanel {
         for (int i = 0; i < startDay; i++) {
             JButton filler = new JButton();
             filler.setEnabled(false);
-            filler.setBackground(Color.WHITE);
+            filler.setBackground(new Color(0xD8D8D8));
             calendarGrid.add(filler);
         }
 
@@ -202,7 +202,7 @@ public class CalendarPage extends JPanel {
 
             // Highlight the Day Today.
             if (selectedYear == today.getYear() && selectedMonth == today.getMonthValue() && day == today.getDayOfMonth()) {
-                dayButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+                dayButton.setFont(new Font("SansSerif", Font.BOLD, 16));
             } 
 
             int selectedDay = day;
@@ -221,7 +221,7 @@ public class CalendarPage extends JPanel {
         for (int i = 0; i < remainingCells; i++) {
             JButton filler = new JButton();
             filler.setEnabled(false);
-            filler.setBackground(Color.WHITE);
+            filler.setBackground(new Color(0xD8D8D8));
             calendarGrid.add(filler);
         }
 
