@@ -2,11 +2,8 @@ package aMCO2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,14 +12,15 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
 
 public class AccountPage extends JPanel {
     private static final Color BACKGROUND_COLOR = new Color(0xD3D3D3);
     private static final Color FOREGROUND_COLOR = new Color(0x36454F);
-    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 24);
-    private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 14);
-    private static final Font BUTTON_FONT = new Font("SansSerif", Font.PLAIN, 16);
+    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
+    private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 20);
+
+    private JButton mainButton;
+    private JButton backButton;
 
     public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
         setLayout(new BorderLayout());
@@ -32,25 +30,39 @@ public class AccountPage extends JPanel {
         JLabel titleLabel = new JLabel(isLoginPage ? "Login" : "Create an Account", SwingConstants.CENTER);
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(FOREGROUND_COLOR);
-        titleLabel.setBorder(new EmptyBorder(40, 0, 20, 0));
+        titleLabel.setBorder(new EmptyBorder(80, 0, 20, 0));
         add(titleLabel, BorderLayout.NORTH);
 
         // Form Panel (Center).
-        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 50));
         formPanel.setOpaque(false);
-        formPanel.setBorder(new EmptyBorder(30, 200, 30, 200));
+        formPanel.setBorder(new EmptyBorder(30, 220, 30, 220));
         
         // Labels for Username and Password.
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(LABEL_FONT);
+        usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JTextField usernameField = new JTextField();
+        usernameField.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        usernameField.setBorder(new EmptyBorder(0, 10, 0, 10));
+
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(LABEL_FONT);
+        passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JPasswordField passwordField = new JPasswordField();
+        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        passwordField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         // Buttons Initialization.
-        JButton mainButton = createStyledButton(isLoginPage ? "Login" : "Sign Up");
-        JButton backButton = createStyledButton("Back");
+        mainButton = new JButton(isLoginPage ? "Login" : "Sign Up");
+        mainButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        mainButton.setFocusPainted(false);
+        mainButton.setBackground(Color.LIGHT_GRAY);
+
+        backButton = new JButton("Back");
+        backButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        backButton.setFocusPainted(false);
+        backButton.setBackground(Color.LIGHT_GRAY);
 
         // Form Panels Initialization.
         formPanel.add(usernameLabel);
@@ -102,19 +114,4 @@ public class AccountPage extends JPanel {
             router.showLandingPage();
         });
     }
-
-
-    // Make the Buttons Aesthetic.
-    private JButton createStyledButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(BUTTON_FONT);
-        button.setBackground(Color.WHITE);
-        button.setForeground(Color.BLACK);
-        button.setFocusable(false);
-        button.setPreferredSize(new Dimension(160, 40));
-        button.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        return button;
-    }
-
-
 }

@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.JSpinner.NumberEditor;
 import javax.swing.border.EmptyBorder;
 
 public class CalendarPage extends JPanel {
@@ -78,6 +79,8 @@ public class CalendarPage extends JPanel {
             monthBox.setSelectedIndex(selectedMonth - 1);
             SpinnerNumberModel yearModel = new SpinnerNumberModel(selectedYear, 1900, 2100, 1);
             JSpinner yearSpinner = new JSpinner(yearModel);
+            NumberEditor editor = new JSpinner.NumberEditor(yearSpinner, "#");    // removes the comma from the year.
+            yearSpinner.setEditor(editor);
 
             JPanel panel = new JPanel(new GridLayout(2, 2));
             panel.add(new JLabel("Month:"));
@@ -108,6 +111,8 @@ public class CalendarPage extends JPanel {
         bottomPanel.setBackground(new Color(0xE0E0E0));
         JButton backButton = new JButton("Back to Menu");
         backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        backButton.setFocusPainted(false);
+        backButton.setBackground(Color.WHITE);
         backButton.addActionListener(e -> router.showMenuPage());
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -202,7 +207,7 @@ public class CalendarPage extends JPanel {
 
             // Highlight the Day Today.
             if (selectedYear == today.getYear() && selectedMonth == today.getMonthValue() && day == today.getDayOfMonth()) {
-                dayButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+                dayButton.setFont(new Font("SansSerif", Font.BOLD, 15));
             } 
 
             int selectedDay = day;
