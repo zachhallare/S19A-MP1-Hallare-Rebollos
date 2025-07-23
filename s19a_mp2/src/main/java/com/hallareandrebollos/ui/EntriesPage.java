@@ -3,6 +3,11 @@ package com.hallareandrebollos.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -15,8 +20,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-
-import org.w3c.dom.events.MouseEvent;
 
 import com.hallareandrebollos.models.CalendarObject;
 
@@ -64,35 +67,5 @@ public class EntriesPage extends JPanel {
         buttonPanel.add(addEntryButton);
         buttonPanel.add(returnButton);
         add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private JPanel createPrivateCalendarTile(CalendarObject cal) {
-        JPanel tile = new JPanel(new BorderLayout());
-        tile.setPreferredSize(new Dimension(740, 40));
-        tile.setMaximumSize(new Dimension(740, 40));
-        tile.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        tile.setBackground(Color.WHITE);
-
-        JLabel nameLabel = new JLabel(cal.getName());
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
-        tile.add(nameLabel, BorderLayout.CENTER);
-
-        tile.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        tile.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                onPrivateCalendarClicked(cal);
-            }
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                tile.setBackground(new Color(220, 235, 255));
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                tile.setBackground(Color.WHITE);
-            }
-        });
-        return tile;
     }
 }
