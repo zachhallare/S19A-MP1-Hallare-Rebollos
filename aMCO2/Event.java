@@ -18,6 +18,22 @@ public class Event extends Entry {
         this.endTime = endTime;
     }
 
+    public String getVenue() { 
+        return this.venue; 
+    }
+    
+    public String getOrganizer() { 
+        return this.organizer; 
+    }
+
+    public LocalTime getStartTime() { 
+        return this.startTime; 
+    }
+    
+    public LocalTime getEndTime() { 
+        return this.endTime; 
+    }
+
     @Override
     public String getType() { 
         return "Event"; 
