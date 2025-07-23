@@ -80,6 +80,7 @@ public final class Router extends JFrame {
     }
 
     public void showCalendarListPage() {
+        this.calendarListPage.redrawContents();
         showPage(this.calendarListPage);
     }
 }

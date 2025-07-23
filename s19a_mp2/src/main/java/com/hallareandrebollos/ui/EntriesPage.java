@@ -3,34 +3,30 @@ package com.hallareandrebollos.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import com.hallareandrebollos.models.CalendarObject;
+import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.models.Event;
+import com.hallareandrebollos.models.Journal;
+import com.hallareandrebollos.models.Meeting;
+import com.hallareandrebollos.models.Task;
 
 public class EntriesPage extends JPanel {
 
     final private String day;
     final private String month;
     final private String year;
-    final private List<String> entries;
+    final private List<Entry> entries;
 
-    public EntriesPage(String day, String month, String year, List<String> entries) {
+    public EntriesPage(String day, String month, String year, List<Entry> entries) {
         this.day = day;
         this.month = month;
         this.year = year;
@@ -39,25 +35,38 @@ public class EntriesPage extends JPanel {
         setLayout(new BorderLayout(10, 10));
 
         // Title
-        JLabel titleLabel = new JLabel(day + " " + month + " " + year, SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel(this.day + " " + this.month + " " + this.year, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         add(titleLabel, BorderLayout.NORTH);
 
-        // Entries List
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        if (entries != null && !entries.isEmpty()) {
-            for (String entry : entries) {
-                listModel.addElement(entry);
+        // SOMEBODY SAVE ME FROM THIS ATROCITY OMDDDD
+        JPanel entriesPanel = new JPanel();
+        entriesPanel.setLayout(new BoxLayout(entriesPanel, BoxLayout.Y_AXIS));
+
+        for (Entry entry : this.entries) {
+            JPanel entryTile;
+            switch (entry.getType()) {
+                case "Event":
+                    entryTile = createEventListTile((Event) entry);
+                    break;
+                case "Journal":
+                    entryTile = createJournalListTile((Journal) entry);
+                    break;
+                case "Meeting":
+                    entryTile = createMeetingListTile((Meeting) entry);
+                    break;
+                case "Task":
+                    entryTile = createTaskListTile((Task) entry);
+                    break;
+                default:
+                    entryTile = new JPanel();
+                    entryTile.add(new JLabel("Unknown entry type"));
             }
-        } else {
-            listModel.addElement("Entry 1: Placeholder");
-            listModel.addElement("Entry 2: Placeholder");
-            listModel.addElement("Entry 3: Placeholder");
-            listModel.addElement("Entry 4: Placeholder");
+            entriesPanel.add(entryTile);
         }
-        JList<String> entryList = new JList<>(listModel);
-        entryList.setVisibleRowCount(6);
-        JScrollPane scrollPane = new JScrollPane(entryList);
+
+        JScrollPane scrollPane = new JScrollPane(entriesPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         add(scrollPane, BorderLayout.CENTER);
 
         // Buttons Panel
@@ -67,5 +76,56 @@ public class EntriesPage extends JPanel {
         buttonPanel.add(addEntryButton);
         buttonPanel.add(returnButton);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private JPanel createEventListTile(Event event) {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel(event.toDisplayString());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        JLabel detailsLabel = new JLabel("Organizer: " + event.getOrganizer() + " | Venue: " + event.getVenue());
+        detailsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(detailsLabel, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return panel;
+    }
+
+    private JPanel createJournalListTile(Journal journal) {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel(journal.toDisplayString());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        JLabel descLabel = new JLabel("Description: " + journal.getDescription());
+        descLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(descLabel, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return panel;
+    }
+
+    private JPanel createMeetingListTile(Meeting meeting) {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel(meeting.toDisplayString());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        String venueOrLink = (meeting.getVenue() != null ? "Venue: " + meeting.getVenue() : "")
+                + (meeting.getLink() != null ? " | Link: " + meeting.getLink() : "");
+        JLabel detailsLabel = new JLabel(venueOrLink);
+        detailsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(detailsLabel, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return panel;
+    }
+
+    private JPanel createTaskListTile(Task task) {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel titleLabel = new JLabel(task.toDisplayString());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        String finishedBy = (task.getFinishedBy() != null) ? " | Finished by: " + task.getFinishedBy() : "";
+        JLabel detailsLabel = new JLabel("Created by: " + task.getCreatedBy() + finishedBy);
+        detailsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(detailsLabel, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return panel;
     }
 }

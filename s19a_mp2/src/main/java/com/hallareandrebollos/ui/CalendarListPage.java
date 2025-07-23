@@ -33,16 +33,18 @@ import com.hallareandrebollos.services.Router;
  */
 public class CalendarListPage extends JPanel {
     private final LogicController logicController;
-    private final ArrayList<CalendarObject> privateCalendars;
-    private final ArrayList<CalendarObject> publicCalendars;
+    private Router router;
 
     public CalendarListPage(Router router, LogicController logicCon) {
         this.logicController = logicCon;
-        this.privateCalendars = logicController.getPrivateCalendarObjects();
-        this.publicCalendars = logicController.getPublicCalendarObjects();
+        this.router = router;
         setLayout(new BorderLayout(0, 10));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Add padding to the main panel
+    }
+
+    public void redrawContents() {
+        removeAll();
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -79,7 +81,7 @@ public class CalendarListPage extends JPanel {
         buttonPanel.setOpaque(false);
 
         JButton addCalendarBtn = new JButton("Add Calendar");
-        addCalendarBtn.addActionListener(e -> onAddCalendar(this.logicController, router));
+        addCalendarBtn.addActionListener(e -> onAddCalendar(this.logicController));
         JButton backBtn = new JButton("Back");
         backBtn.addActionListener(e -> onBack(router));
 
@@ -88,23 +90,26 @@ public class CalendarListPage extends JPanel {
 
         add(mainPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+        revalidate();
+        repaint();
     }
 
     /**
      * Creates a horizontal scrollable list of public calendars.
      */
     private JScrollPane createPublicCalendarList(Router router) {
+        ArrayList<CalendarObject> publicCalendars = logicController.getPublicCalendarObjects();
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.X_AXIS));
         listPanel.setOpaque(false);
 
-        if (this.publicCalendars.isEmpty()) {
+        if (publicCalendars.isEmpty()) {
             JLabel emptyLabel = new JLabel("No Calendars.");
             emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
             emptyLabel.setForeground(Color.GRAY);
             listPanel.add(emptyLabel);
         } else {
-            for (CalendarObject cal : this.publicCalendars) {
+            for (CalendarObject cal : publicCalendars) {
                 JPanel item = createPublicCalendarTile(cal, router);
                 listPanel.add(item);
                 listPanel.add(Box.createHorizontalStrut(10));
@@ -157,17 +162,18 @@ public class CalendarListPage extends JPanel {
      * Creates a vertical scrollable list of private calendars.
      */
     private JScrollPane createPrivateCalendarList() {
+        ArrayList<CalendarObject> privateCalendars = logicController.getPrivateCalendarObjects();
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
 
-        if (this.privateCalendars.isEmpty()) {
+        if (privateCalendars.isEmpty()) {
             JLabel emptyLabel = new JLabel("No Calendars.");
             emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
             emptyLabel.setForeground(Color.GRAY);
             listPanel.add(emptyLabel);
         } else {
-            for (CalendarObject cal : this.privateCalendars) {
+            for (CalendarObject cal : privateCalendars) {
                 JPanel item = createPrivateCalendarTile(cal);
                 listPanel.add(item);
                 listPanel.add(Box.createVerticalStrut(5));
@@ -222,28 +228,28 @@ public class CalendarListPage extends JPanel {
     }
 
     private void onPrivateCalendarClicked(CalendarObject cal) {
-        JOptionPane.showMessageDialog(this, "Clicked private calendar: " + cal.getName(), "Private Calendar", JOptionPane.INFORMATION_MESSAGE);
+        router.showCalendarPage(cal);
     }
 
-    private void onAddCalendar(LogicController logic, Router router) {
-            String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
-            if (name != null && !name.isBlank()) {
-                String[] options = {"Private", "Public"};
-                int type = JOptionPane.showOptionDialog(this,
-                        "Choose calendar type:", "Calendar Type",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                        null, options, options[0]);
+    private void onAddCalendar(LogicController logic) {
+        String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
+        if (name != null && !name.isBlank()) {
+            String[] options = {"Private", "Public"};
+            int type = JOptionPane.showOptionDialog(this,
+                    "Choose calendar type:", "Calendar Type",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                    null, options, options[0]);
 
-                boolean isPublic = (type == 1);
-                boolean exists = logic.checkCalendarDuplicate(name, isPublic, logic.getCurrentAccount().getUsername());
-                if (!exists) {
-                    logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, isPublic);
-                    JOptionPane.showMessageDialog(this, "Calendar added!");
-                    router.showCalendarListPage();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Calendar already exists.");
-                }
+            boolean isPublic = (type == 1);
+            boolean exists = logic.checkCalendarDuplicate(name, isPublic, logic.getCurrentAccount().getUsername());
+            if (!exists) {
+                logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, isPublic);
+                JOptionPane.showMessageDialog(this, "Calendar added!");
+                redrawContents();
+            } else {
+                JOptionPane.showMessageDialog(this, "Calendar already exists.");
             }
+        }
     }
 
     private void onBack(Router router) {

@@ -176,10 +176,6 @@ public class CalendarPage extends JPanel {
         drawCalendar(router);
     }
 
-
-
-
-
     private void updateDatePickerLabel() {
         String monthName = Month.of(logic.getSelectedMonth()).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         datePickerButton.setText(monthName + " " + logic.getSelectedYear());

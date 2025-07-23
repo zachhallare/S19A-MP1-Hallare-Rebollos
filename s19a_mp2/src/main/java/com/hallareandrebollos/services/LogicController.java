@@ -4,7 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-import com.hallareandrebollos.models.*;
+import com.hallareandrebollos.models.Account;
+import com.hallareandrebollos.models.CalendarObject;
+import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.models.Event;
+import com.hallareandrebollos.models.Journal;
+import com.hallareandrebollos.models.Meeting;
+import com.hallareandrebollos.models.Task;
 
 /**
  * Controls the logic of the calendar application, including account management,
@@ -475,5 +481,4 @@ public class LogicController {
         }
         return isDuplicate;
     }
-
 }
