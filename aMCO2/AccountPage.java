@@ -1,8 +1,9 @@
 package aMCO2;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.BorderFactory;
+import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -10,58 +11,67 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 public class AccountPage extends JPanel {
-    private static final int FIELD_WIDTH = 200;
-    private static final int FIELD_HEIGHT = 30;
-    private static final int BUTTON_WIDTH = 160;
-    private static final int BUTTON_HEIGHT = 40;
-    private static final int START_Y = 130;
-    private static final int GAP_Y = 50;
+    private static final Color BACKGROUND_COLOR = new Color(0xD3D3D3);
+    private static final Color FOREGROUND_COLOR = new Color(0x36454F);
+    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
+    private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 20);
+
+    private JButton mainButton;
+    private JButton backButton;
 
     public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
-        setLayout(null);
-        setBackground(new Color(0xD3D3D3));
+        setLayout(new BorderLayout());
+        setBackground(BACKGROUND_COLOR);
 
-        // Title.
-        String title = isLoginPage ? "Login" : "Create an Account";
-        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(0x36454F));
-        titleLabel.setBounds(50, 60, 400, 40);
-        add(titleLabel);
+        // Title Panel (North).
+        JLabel titleLabel = new JLabel(isLoginPage ? "Login" : "Create an Account", SwingConstants.CENTER);
+        titleLabel.setFont(TITLE_FONT);
+        titleLabel.setForeground(FOREGROUND_COLOR);
+        titleLabel.setBorder(new EmptyBorder(80, 0, 20, 0));
+        add(titleLabel, BorderLayout.NORTH);
 
-        // Username.
+        // Form Panel (Center).
+        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 50));
+        formPanel.setOpaque(false);
+        formPanel.setBorder(new EmptyBorder(30, 220, 30, 220));
+        
+        // Labels for Username and Password.
         JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setBounds(90, START_Y, 100, 30);
-        usernameLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        add(usernameLabel);
+        usernameLabel.setFont(LABEL_FONT);
+        usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JTextField usernameField = new JTextField();
-        usernameField.setBounds(190, START_Y, FIELD_WIDTH, FIELD_HEIGHT);
-        add(usernameField);
+        usernameField.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        usernameField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
-        // Password.
         JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setBounds(90, START_Y + GAP_Y, 100, 30);
-        passwordLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        add(passwordLabel);
+        passwordLabel.setFont(LABEL_FONT);
+        passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setBounds(190, START_Y + GAP_Y, FIELD_WIDTH, FIELD_HEIGHT);
-        add(passwordField);
+        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        passwordField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
-        // Main Button Layout (Login or Signup).
-        String mainButtonText = isLoginPage ? "Login" : "Sign Up";
-        JButton mainButton = new JButton(mainButtonText);
-        mainButton.setBounds(70, START_Y + 2 * GAP_Y + 20, BUTTON_WIDTH, BUTTON_HEIGHT);
-        styleButton(mainButton);
-        add(mainButton);
+        // Buttons Initialization.
+        mainButton = new JButton(isLoginPage ? "Login" : "Sign Up");
+        mainButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        mainButton.setFocusPainted(false);
+        mainButton.setBackground(Color.LIGHT_GRAY);
 
-        // Back to Landing Page Button Layout.
-        JButton backButton = new JButton("Back");
-        backButton.setBounds(250, START_Y + 2 * GAP_Y + 20, BUTTON_WIDTH, BUTTON_HEIGHT);
-        styleButton(backButton);
-        add(backButton);
+        backButton = new JButton("Back");
+        backButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        backButton.setFocusPainted(false);
+        backButton.setBackground(Color.LIGHT_GRAY);
 
+        // Form Panels Initialization.
+        formPanel.add(usernameLabel);
+        formPanel.add(usernameField);
+        formPanel.add(passwordLabel);
+        formPanel.add(passwordField);
+        formPanel.add(mainButton);
+        formPanel.add(backButton);
+        add(formPanel, BorderLayout.CENTER);
 
         // Main Button Logic.
         mainButton.addActionListener(e -> {
@@ -104,16 +114,4 @@ public class AccountPage extends JPanel {
             router.showLandingPage();
         });
     }
-
-
-    // Make the Buttons Aesthetic.
-    private void styleButton(JButton button) {
-        button.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        button.setBackground(Color.WHITE);
-        button.setForeground(Color.BLACK);
-        button.setFocusable(false);
-        button.setBorder(BorderFactory.createEtchedBorder());
-    }
-
-
 }

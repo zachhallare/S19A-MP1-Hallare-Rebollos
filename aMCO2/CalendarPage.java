@@ -10,9 +10,11 @@ import java.awt.Insets;
 import java.text.DateFormatSymbols;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import javax.swing.JButton;
@@ -23,19 +25,24 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.JSpinner.NumberEditor;
 import javax.swing.border.EmptyBorder;
 
 public class CalendarPage extends JPanel {
+    private final LogicController logic;
     private final JPanel calendarGrid;
     private final JButton datePickerButton;
-    private int selectedYear;
-    private int selectedMonth;
 
     public CalendarPage(Router router, LogicController logic) {
+        this.logic = logic;
         setLayout(new BorderLayout());
         setBackground(new Color(0xE0E0E0));
-        selectedYear = LocalDate.now().getYear();
-        selectedMonth = LocalDate.now().getMonthValue();
+
+        // Set Initial Month/Year Using LogicController.
+        if (logic.getSelectedMonth() == 0 || logic.getSelectedYear() == 0) {
+            logic.setSelectedMonth(LocalDate.now().getMonthValue());
+            logic.setSelectedYear(LocalDate.now().getYear());
+        }
 
         // Top Panel.
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -75,9 +82,11 @@ public class CalendarPage extends JPanel {
         datePickerButton.addActionListener(e -> {
             String[] months = new DateFormatSymbols().getMonths();
             JComboBox<String> monthBox = new JComboBox<>(Arrays.copyOf(months, 12));
-            monthBox.setSelectedIndex(selectedMonth - 1);
-            SpinnerNumberModel yearModel = new SpinnerNumberModel(selectedYear, 1900, 2100, 1);
+            monthBox.setSelectedIndex(logic.getSelectedMonth() - 1);
+            SpinnerNumberModel yearModel = new SpinnerNumberModel(logic.getSelectedYear(), 1900, 2100, 1);
             JSpinner yearSpinner = new JSpinner(yearModel);
+            NumberEditor editor = new JSpinner.NumberEditor(yearSpinner, "#");    // removes the comma from the year.
+            yearSpinner.setEditor(editor);
 
             JPanel panel = new JPanel(new GridLayout(2, 2));
             panel.add(new JLabel("Month:"));
@@ -89,8 +98,8 @@ public class CalendarPage extends JPanel {
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (result == JOptionPane.OK_OPTION) {
-                selectedMonth = monthBox.getSelectedIndex() + 1;
-                selectedYear = (int) yearSpinner.getValue();
+                logic.setSelectedMonth(monthBox.getSelectedIndex() + 1);
+                logic.setSelectedYear((int) yearSpinner.getValue());
                 updateDatePickerLabel();
                 drawCalendar(router);
             }
@@ -103,46 +112,53 @@ public class CalendarPage extends JPanel {
         calendarGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(calendarGrid, BorderLayout.CENTER);
 
+
         // Bottom Panel: Back Button.
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(new Color(0xE0E0E0));
         JButton backButton = new JButton("Back to Menu");
         backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        backButton.setFocusPainted(false);
+        backButton.setBackground(Color.WHITE);
         backButton.addActionListener(e -> router.showMenuPage());
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Navigation Buttons Logic.
         prevMonthButton.addActionListener(e -> {
-            if (selectedMonth == 1) {
-                selectedMonth = 12;
-                selectedYear--;
+            int month = logic.getSelectedMonth();
+            int year = logic.getSelectedYear();
+            if (month == 1) {
+                logic.setSelectedMonth(12);
+                logic.setSelectedYear(year - 1);
             } else {
-                selectedMonth--;
+                logic.setSelectedMonth(month - 1);
             }
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
         nextMonthButton.addActionListener(e -> {
-            if (selectedMonth == 12) {
-                selectedMonth = 1;
-                selectedYear++;
+            int month = logic.getSelectedMonth();
+            int year = logic.getSelectedYear();
+            if (month == 12) {
+                logic.setSelectedMonth(1);
+                logic.setSelectedYear(year + 1);
             } else {
-                selectedMonth++;
+                logic.setSelectedMonth(month + 1);
             }
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
         prevYearButton.addActionListener(e -> {
-            selectedYear--;
+            logic.setSelectedYear(logic.getSelectedYear() - 1);
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
         nextYearButton.addActionListener(e -> {
-            selectedYear++;
+            logic.setSelectedYear(logic.getSelectedYear() + 1);
             updateDatePickerLabel();
             drawCalendar(router);
         });
@@ -152,21 +168,24 @@ public class CalendarPage extends JPanel {
     }
 
 
+
+
+
     private void updateDatePickerLabel() {
-        String monthName = Month.of(selectedMonth).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-        datePickerButton.setText(monthName + " " + selectedYear);
+        String monthName = Month.of(logic.getSelectedMonth()).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+        datePickerButton.setText(monthName + " " + logic.getSelectedYear());
     }
 
 
     private void drawCalendar(Router router) {
         calendarGrid.removeAll();
 
-        DayOfWeek[] orderOfDays = {
+        DayOfWeek[] weekDays = {
             DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
             DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY
         };
 
-        for (DayOfWeek day : orderOfDays) {
+        for (DayOfWeek day : weekDays) {
             JLabel label = new JLabel(day.getDisplayName(TextStyle.FULL, Locale.ENGLISH), SwingConstants.CENTER);
             label.setFont(new Font("SansSerif", Font.BOLD, 13));
             label.setOpaque(true);
@@ -175,7 +194,9 @@ public class CalendarPage extends JPanel {
             calendarGrid.add(label);
         }
 
-        YearMonth yearMonth = YearMonth.of(selectedYear, selectedMonth);
+        int year = logic.getSelectedYear();
+        int month = logic.getSelectedMonth();
+        YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstOfMonth = yearMonth.atDay(1);
         int startDay = firstOfMonth.getDayOfWeek().getValue() % 7;
 
@@ -190,6 +211,7 @@ public class CalendarPage extends JPanel {
         int daysInMonth = yearMonth.lengthOfMonth();  
         LocalDate today = LocalDate.now(); 
 
+        // Displays Each Button for Each Day.
         for (int day = 1; day <= daysInMonth; day++) {
             JButton dayButton = new JButton(String.valueOf(day));
             dayButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
@@ -201,15 +223,129 @@ public class CalendarPage extends JPanel {
             dayButton.setOpaque(true);
 
             // Highlight the Day Today.
-            if (selectedYear == today.getYear() && selectedMonth == today.getMonthValue() && day == today.getDayOfMonth()) {
-                dayButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+            if (year == today.getYear() && month == today.getMonthValue() && day == today.getDayOfMonth()) {
+                dayButton.setFont(new Font("SansSerif", Font.BOLD, 15));
             } 
 
             int selectedDay = day;
             dayButton.addActionListener(e -> {
-                LocalDate selectedDate = LocalDate.of(selectedYear, selectedMonth, selectedDay);
-                JOptionPane.showMessageDialog(this, "Show entries for: " + selectedDate);
-                // To-Do: Add/edit/delete Entries here. 
+                // Entry System.
+                LocalDate selectedDate = LocalDate.of(year, month, selectedDay);
+                ArrayList<Entry> entries = logic.getEntriesForDate(selectedDate);
+
+                StringBuilder message = new StringBuilder("Entries for " + selectedDate + ":\n\n");
+                if (entries.isEmpty()) {
+                    message.append("No entries.\n");
+                } else {
+                    for (int i = 0; i < entries.size(); i++) {
+                        Entry entry = entries.get(i);
+                        message.append(i + 1).append(". ").append(entry.getType()).append("\n");
+                    }
+                }
+
+                Object[] options = {"Add", "Edit", "Delete", "Cancel"};
+                int choice = JOptionPane.showOptionDialog(this, message.toString(), "Manage Entries", 
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+                if (choice == 0) {
+                    // add entry.
+                    String type = JOptionPane.showInputDialog("Enter type (task, event, meeting, journal):");
+                    String title = JOptionPane.showInputDialog("Enter title:");
+                    String description = JOptionPane.showInputDialog("Enter description:");
+
+                    if (type != null && title != null && description != null) {
+                        type = type.toLowerCase();
+                        switch (type) {
+                            case "task" -> {
+                                String priority = JOptionPane.showInputDialog("Enter priority:");
+                                String status = JOptionPane.showInputDialog("Enter status:");
+                                String createdBy = JOptionPane.showInputDialog("Enter createdBy:");
+                                String finishedBy = JOptionPane.showInputDialog("Enter finishedBy (optional):");
+                                logic.addEntryToCurrentCalendarObject(type, title, description, selectedDate,
+                                        priority, status, createdBy, finishedBy,
+                                        null, null, null, null, null, null);
+                            }
+                            case "event" -> {
+                                String venue = JOptionPane.showInputDialog("Enter venue:");
+                                String organizer = JOptionPane.showInputDialog("Enter organizer:");
+                                String start = JOptionPane.showInputDialog("Enter start time (HH:mm):");
+                                String end = JOptionPane.showInputDialog("Enter end time (HH:mm):");
+                                try {
+                                    LocalTime startTime = LocalTime.parse(start);
+                                    LocalTime endTime = LocalTime.parse(end);
+                                    logic.addEntryToCurrentCalendarObject(type, title, description, selectedDate,
+                                            null, null, null, null,
+                                            venue, organizer, null, null, startTime, endTime);
+                                } catch (Exception ex) {
+                                    JOptionPane.showMessageDialog(this, "Invalid time format.");
+                                }
+                            }
+                            case "meeting" -> {
+                                String modality = JOptionPane.showInputDialog("Enter modality:");
+                                String venue = JOptionPane.showInputDialog("Enter venue (optional):");
+                                String link = JOptionPane.showInputDialog("Enter link (optional):");
+                                logic.addEntryToCurrentCalendarObject(type, title, description, selectedDate,
+                                        null, null, null, null,
+                                        venue, null, modality, link, null, null);
+                            }
+                            case "journal" -> {
+                                logic.addEntryToCurrentCalendarObject(type, title, description, selectedDate,
+                                        null, null, null, null,
+                                        null, null, null, null, null, null);
+                            }
+                        }
+                        drawCalendar(router);
+                    }
+
+                } else if (choice == 1 && !entries.isEmpty()) {
+                    // edit entry.
+                    String input = JOptionPane.showInputDialog("Enter entry number to edit:");
+                    if (input != null && input.matches("\\d+")) {
+                        int idx = Integer.parseInt(input) - 1;
+                        if (idx >= 0 && idx < entries.size()) {
+                            Entry oldEntry = entries.get(idx);
+                            String newTitle = JOptionPane.showInputDialog("New title:", oldEntry.getTitle());
+                            String newDesc = JOptionPane.showInputDialog("New description:", oldEntry.getDescription());
+                            Entry newEntry = null;
+
+                            // Build the correct entry subclass again
+                            switch (oldEntry.getType().toLowerCase()) {
+                                case "task" -> {
+                                    Task t = (Task) oldEntry;
+                                    newEntry = new Task(newTitle, t.getDate(), newDesc, t.getPriority(), t.getStatus(), t.getCreatedBy(), t.getFinishedBy());
+                                }
+                                case "event" -> {
+                                    Event ev = (Event) oldEntry;
+                                    newEntry = new Event(newTitle, ev.getDate(), newDesc, ev.getVenue(), ev.getOrganizer(), ev.getStartTime(), ev.getEndTime());
+                                }
+                                case "meeting" -> {
+                                    Meeting m = (Meeting) oldEntry;
+                                    newEntry = new Meeting(newTitle, m.getDate(), newDesc, m.getModality(), m.getVenue(), m.getLink());
+                                }
+                                case "journal" -> {
+                                    Journal j = (Journal) oldEntry;
+                                    newEntry = new Journal(newTitle, j.getDate(), newDesc);
+                                }
+                            }
+
+                            if (newEntry != null) {
+                                logic.editEntryInCurrentCalendarObject(oldEntry, newEntry);
+                                drawCalendar(router);
+                            }
+                        }
+                    }
+
+                } else if (choice == 2 && !entries.isEmpty()) {
+                    // delete entry.
+                    String input = JOptionPane.showInputDialog("Enter entry number to delete:");
+                    if (input != null && input.matches("\\d+")) {
+                        int idx = Integer.parseInt(input) - 1;
+                        if (idx >= 0 && idx < entries.size()) {
+                            logic.removeEntryFromCurrentCalendarObject(entries.get(idx).getTitle());
+                            drawCalendar(router); 
+                        }
+                    }
+                }
             });
 
             calendarGrid.add(dayButton);

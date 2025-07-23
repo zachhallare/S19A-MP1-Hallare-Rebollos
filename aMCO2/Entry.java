@@ -1,71 +1,37 @@
 package aMCO2;
 
+import java.time.LocalDate;
+
 /**
  * Represents a single entry in a calendar with a title, description,
  * start time, and end time (measured in milliseconds since epoch).
  */
-public class Entry {
-    /** Start time of the entry in milliseconds since epoch. */
-    private long timeStart;       
-    
-    /** End time of the entry in milliseconds since epoch. */
-    private long timeEnd;     
-    
+public abstract class Entry {
     /** Title of the calendar entry. */
-    private String title;
+    protected String title;
 
     /** Description of the calendar entry. */
-    private String description;
+    protected String description;       // Optional except for Journal.
 
+    /** Date of the calendar entry. */
+    protected LocalDate date;
+
+
+    public Entry(String title, LocalDate date) {
+        this.title = title;
+        this.date = date;
+        this.description = null;
+    }
 
     /**
      * Constructs a new Entry with the specified title and description.
      * @param title       The title of the entry.
      * @param description The description of the entry.
      */
-    public Entry(String title, String description) {
+    public Entry(String title, LocalDate date, String description) {
         this.title = title;
+        this.date = date;
         this.description = description;
-    }
-
-    /**
-     * Returns the duration of the entry in milliseconds.
-     * @return The difference between end time and start time.
-     */
-    public long getDuration() {
-        return this.timeEnd - this.timeStart; // Returns duration in milliseconds
-    }
-
-    /**
-     * Sets the start time of the entry.
-     * @param startTime The start time in milliseconds since epoch.
-     */
-    public void setStartTime(long startTime) {
-        this.timeStart = startTime;
-    }
-
-    /**
-     * Sets the end time of the entry.
-     * @param endTime The end time in milliseconds since epoch.
-     */
-    public void setEndTime(long endTime) {
-        this.timeEnd = endTime;
-    }
-
-    /**
-     * Gets the start time of the entry.
-     * @return Start time in milliseconds since epoch.
-     */
-    public long getStartTime() {
-        return this.timeStart;
-    }
-
-    /**
-     * Gets the end time of the entry.
-     * @return End time in milliseconds since epoch.
-     */
-    public long getEndTime() {
-        return this.timeEnd;
     }
 
     /**
@@ -84,14 +50,18 @@ public class Entry {
         return this.description;
     }
 
+    public LocalDate getDate() {
+        return this.date;
+    }
+
+
+    public abstract String getType();       
+
+    public abstract String toDisplayString();       // for ui.
+
     /**
      * Creates and returns a deep copy of this entry.
-     * @return a new Entry object with the same title, description, start, and end times
+     * @return a new Entry object.
      */
-    public Entry copy() {
-        Entry copiedEntry = new Entry(this.title, this.description);
-        copiedEntry.setStartTime(this.timeStart);
-        copiedEntry.setEndTime(this.timeEnd);
-        return copiedEntry;
-    }
+    public abstract Entry copy();
 }

@@ -69,4 +69,8 @@ public final class Router extends JFrame {
     public void showCalendarPage() {
         showPage(calendarPage);
     }
+
+    public void showCalendarListPage(){
+        showPage(calendarListPage);
+    }
 }
