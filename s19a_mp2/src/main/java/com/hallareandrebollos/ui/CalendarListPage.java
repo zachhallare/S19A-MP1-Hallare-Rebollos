@@ -1,13 +1,31 @@
 
 package com.hallareandrebollos.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.List;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+
 import com.hallareandrebollos.models.CalendarObject;
-import com.hallareandrebollos.services.Router;
 import com.hallareandrebollos.services.LogicController;
+import com.hallareandrebollos.services.Router;
 
 /**
  * CalendarListPage displays two list views: public calendars (horizontal) and private calendars (vertical).
@@ -15,11 +33,16 @@ import com.hallareandrebollos.services.LogicController;
  */
 public class CalendarListPage extends JPanel {
     private final LogicController logicController;
+    private final ArrayList<CalendarObject> privateCalendars;
+    private final ArrayList<CalendarObject> publicCalendars;
 
-    public CalendarListPage(Router router, LogicController logicController) {
-        this.logicController = logicController;
+    public CalendarListPage(Router router, LogicController logicCon) {
+        this.logicController = logicCon;
+        this.privateCalendars = logicController.getPrivateCalendarObjects();
+        this.publicCalendars = logicController.getPublicCalendarObjects();
         setLayout(new BorderLayout(0, 10));
         setBackground(Color.WHITE);
+        setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Add padding to the main panel
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -32,8 +55,9 @@ public class CalendarListPage extends JPanel {
         mainPanel.add(publicTitle);
 
         // Public Calendars Horizontal List
-        JScrollPane publicScrollPane = createPublicCalendarList();
+        JScrollPane publicScrollPane = createPublicCalendarList(router);
         publicScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        publicScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Padding above/below list
         mainPanel.add(publicScrollPane);
 
         // Private Calendars Title
@@ -46,6 +70,7 @@ public class CalendarListPage extends JPanel {
         // Private Calendars Vertical List
         JScrollPane privateScrollPane = createPrivateCalendarList();
         privateScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        privateScrollPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Padding above/below list
         mainPanel.add(privateScrollPane);
 
         // Bottom Buttons
@@ -54,9 +79,9 @@ public class CalendarListPage extends JPanel {
         buttonPanel.setOpaque(false);
 
         JButton addCalendarBtn = new JButton("Add Calendar");
-        addCalendarBtn.addActionListener(e -> onAddCalendar());
+        addCalendarBtn.addActionListener(e -> onAddCalendar(this.logicController, router));
         JButton backBtn = new JButton("Back");
-        backBtn.addActionListener(e -> onBack());
+        backBtn.addActionListener(e -> onBack(router));
 
         buttonPanel.add(addCalendarBtn);
         buttonPanel.add(backBtn);
@@ -68,16 +93,22 @@ public class CalendarListPage extends JPanel {
     /**
      * Creates a horizontal scrollable list of public calendars.
      */
-    private JScrollPane createPublicCalendarList() {
-        List<CalendarObject> publicCalendars = logicController.getPublicCalendarObjects();
+    private JScrollPane createPublicCalendarList(Router router) {
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.X_AXIS));
         listPanel.setOpaque(false);
 
-        for (CalendarObject cal : publicCalendars) {
-            JPanel item = createPublicCalendarTile(cal);
-            listPanel.add(item);
-            listPanel.add(Box.createHorizontalStrut(10));
+        if (this.publicCalendars.isEmpty()) {
+            JLabel emptyLabel = new JLabel("No Calendars.");
+            emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+            emptyLabel.setForeground(Color.GRAY);
+            listPanel.add(emptyLabel);
+        } else {
+            for (CalendarObject cal : this.publicCalendars) {
+                JPanel item = createPublicCalendarTile(cal, router);
+                listPanel.add(item);
+                listPanel.add(Box.createHorizontalStrut(10));
+            }
         }
 
         JScrollPane scrollPane = new JScrollPane(listPanel);
@@ -92,7 +123,7 @@ public class CalendarListPage extends JPanel {
     /**
      * Creates a tile for a public calendar (3:4 aspect ratio, name centered).
      */
-    private JPanel createPublicCalendarTile(CalendarObject cal) {
+    private JPanel createPublicCalendarTile(CalendarObject cal, Router router) {
         JPanel tile = new JPanel();
         tile.setLayout(new GridBagLayout());
         tile.setPreferredSize(new Dimension(75, 100)); // 3:4 aspect ratio
@@ -108,7 +139,7 @@ public class CalendarListPage extends JPanel {
         tile.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                onPublicCalendarClicked(cal);
+                onPublicCalendarClicked(cal, router);
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -126,15 +157,21 @@ public class CalendarListPage extends JPanel {
      * Creates a vertical scrollable list of private calendars.
      */
     private JScrollPane createPrivateCalendarList() {
-        List<CalendarObject> privateCalendars = logicController.getPrivateCalendarObjects();
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
 
-        for (CalendarObject cal : privateCalendars) {
-            JPanel item = createPrivateCalendarTile(cal);
-            listPanel.add(item);
-            listPanel.add(Box.createVerticalStrut(5));
+        if (this.privateCalendars.isEmpty()) {
+            JLabel emptyLabel = new JLabel("No Calendars.");
+            emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+            emptyLabel.setForeground(Color.GRAY);
+            listPanel.add(emptyLabel);
+        } else {
+            for (CalendarObject cal : this.privateCalendars) {
+                JPanel item = createPrivateCalendarTile(cal);
+                listPanel.add(item);
+                listPanel.add(Box.createVerticalStrut(5));
+            }
         }
 
         JScrollPane scrollPane = new JScrollPane(listPanel);
@@ -180,19 +217,36 @@ public class CalendarListPage extends JPanel {
     }
 
     // TODO: add functionality
-    private void onPublicCalendarClicked(CalendarObject cal) {
-        JOptionPane.showMessageDialog(this, "Clicked public calendar: " + cal.getName(), "Public Calendar", JOptionPane.INFORMATION_MESSAGE);
+    private void onPublicCalendarClicked(CalendarObject cal, Router router) {
+        router.showCalendarPage(cal);
     }
 
     private void onPrivateCalendarClicked(CalendarObject cal) {
         JOptionPane.showMessageDialog(this, "Clicked private calendar: " + cal.getName(), "Private Calendar", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void onAddCalendar() {
-        JOptionPane.showMessageDialog(this, "Add Calendar button clicked (placeholder)", "Add Calendar", JOptionPane.INFORMATION_MESSAGE);
+    private void onAddCalendar(LogicController logic, Router router) {
+            String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
+            if (name != null && !name.isBlank()) {
+                String[] options = {"Private", "Public"};
+                int type = JOptionPane.showOptionDialog(this,
+                        "Choose calendar type:", "Calendar Type",
+                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                        null, options, options[0]);
+
+                boolean isPublic = (type == 1);
+                boolean exists = logic.checkCalendarDuplicate(name, isPublic, logic.getCurrentAccount().getUsername());
+                if (!exists) {
+                    logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, isPublic);
+                    JOptionPane.showMessageDialog(this, "Calendar added!");
+                    router.showCalendarListPage();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Calendar already exists.");
+                }
+            }
     }
 
-    private void onBack() {
-        JOptionPane.showMessageDialog(this, "Back button clicked (placeholder)", "Back", JOptionPane.INFORMATION_MESSAGE);
+    private void onBack(Router router) {
+        router.showMenuPage();
     }
 }

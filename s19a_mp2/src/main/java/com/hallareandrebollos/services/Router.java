@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.hallareandrebollos.models.CalendarObject;
 import com.hallareandrebollos.ui.AccountPage;
 import com.hallareandrebollos.ui.CalendarListPage;
 import com.hallareandrebollos.ui.CalendarPage;
@@ -73,7 +74,8 @@ public final class Router extends JFrame {
         showPage(this.menuPage);
     }
 
-    public void showCalendarPage() {
+    public void showCalendarPage(CalendarObject calendar) {
+        this.logicController.setCurrentCalendar(calendar);
         showPage(this.calendarPage);
     }
 

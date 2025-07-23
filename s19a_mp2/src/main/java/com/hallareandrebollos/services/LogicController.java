@@ -1,10 +1,10 @@
 package com.hallareandrebollos.services;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
-import com.hallareandrebollos.models.Account;
-import com.hallareandrebollos.models.CalendarObject;
-import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.models.*;
 
 /**
  * Controls the logic of the calendar application, including account management,
@@ -175,13 +175,61 @@ public class LogicController {
      * @param startTime Start time in milliseconds since epoch.
      * @param endTime End time in milliseconds since epoch.
      */
-    public void addEntryToCurrentCalendarObject(String title, String description, long startTime, long endTime) {
+    public void addEntryToCurrentCalendarObject(String type, String title, String description, LocalDate date, 
+                                                String priority, String status, String createdBy, String finishedBy,
+                                                String venue, String organizer, String modality, String link, 
+                                                LocalTime startTime, LocalTime endTime) {
         if (this.CalendarObjectIndex >= 0 && this.CalendarObjectIndex < CalendarObjects.size()) {
             CalendarObject currentCalendarObject = CalendarObjects.get(this.CalendarObjectIndex);
-            Entry entry = new Entry(title, description);
-            entry.setStartTime(startTime);
-            entry.setEndTime(endTime);
-            currentCalendarObject.addEntry(entry);
+            Entry entry = null;
+            boolean canAdd = false;
+
+            if (type != null) {
+                type = type.toLowerCase();
+                
+                if (type.equals("task")) {
+                    if (priority != null && status != null && createdBy != null) {
+                        if (finishedBy != null && !finishedBy.isBlank()) {
+                            entry = new Task(title, date, description, priority, status, createdBy, finishedBy);
+                        } else {
+                            entry = new Task(title, date, description, priority, status, createdBy);
+                        }
+                        canAdd = true;
+                    }
+                    
+                } else if (type.equals("event")) {
+                    if (venue != null && organizer != null && startTime != null && endTime != null) {
+                        entry = new Event(title, date, description, venue, organizer, startTime, endTime);
+                        canAdd = true;
+                    }
+
+                } else if (type.equals("meeting")) {
+                    if (modality != null) {
+                        if ((venue == null || venue.isBlank()) && (link == null || link.isBlank())) {
+                            entry = new Meeting(title, date, description, modality);
+                        } else {
+                            entry = new Meeting(title, date, description, modality, venue, link);
+                        }
+                        canAdd = true;
+                    }
+
+                } else if (type.equals("journal")) {
+                    boolean journalExists = false;
+                    for (Entry e : currentCalendarObject.getEntries()) {
+                        if (e instanceof Journal && e.getDate().equals(date)) {
+                            journalExists = true;
+                        }
+                    }
+                    if (!journalExists && description != null && !description.isBlank()) {
+                        entry = new Journal(title, date, description);
+                        canAdd = true;
+                    }
+                }
+            }
+            
+            if (canAdd && entry != null) {
+                currentCalendarObject.addEntry(entry);
+            }
         }
     }
 
@@ -212,6 +260,23 @@ public class LogicController {
                 }
             }
         }
+    }
+
+    public ArrayList<Entry> getEntriesForDate(LocalDate date) {
+        ArrayList<Entry> result = new ArrayList<>();
+
+        if (CalendarObjectIndex >= 0 && CalendarObjectIndex < CalendarObjects.size()) {
+            CalendarObject current = CalendarObjects.get(CalendarObjectIndex);
+            ArrayList<Entry> entries = current.getEntries();
+
+            for (Entry e : entries) {
+                if (e.getDate().equals(date)) {
+                    result.add(e);
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -253,6 +318,18 @@ public class LogicController {
     }
 
     /**
+     * Sets the current calendar object.
+     * @param calendar The calendar object to set as current.
+     */
+    public void setCurrentCalendar(CalendarObject calendar) {
+        if (calendar != null) {
+            this.CalendarObjectIndex = CalendarObjects.indexOf(calendar);
+        } else {
+            this.CalendarObjectIndex = -1; // No calendar selected
+        }
+    }
+
+    /**
      * Returns the currently logged-in account.
      * @return The current Account or null if none.
      */
@@ -283,8 +360,10 @@ public class LogicController {
      */
     public ArrayList<CalendarObject> getPrivateCalendarObjects() {
         ArrayList<CalendarObject> privateCalendarObjects = new ArrayList<>();
+        Account currentAccount = getCurrentAccount();
+        if (currentAccount == null) return privateCalendarObjects;
         for (CalendarObject calendarObject : this.CalendarObjects) {
-            if (!calendarObject.isPublic() && this.getCurrentAccount().getOwnedCalendars().contains(calendarObject.getCalendarName())) {
+            if (!calendarObject.isPublic() && currentAccount.getOwnedCalendars().contains(calendarObject.getCalendarName())) {
                 privateCalendarObjects.add(calendarObject);
             }
         }
@@ -396,4 +475,5 @@ public class LogicController {
         }
         return isDuplicate;
     }
+
 }

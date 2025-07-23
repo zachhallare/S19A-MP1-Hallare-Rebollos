@@ -14,7 +14,7 @@ public class CalendarObject {
     private boolean isPublic;
 
     /** List of entries in the calendar. */
-    private ArrayList<Entry> entries;
+    final private ArrayList<Entry> entries;
 
     /**
      * Returns the name of the calendar
