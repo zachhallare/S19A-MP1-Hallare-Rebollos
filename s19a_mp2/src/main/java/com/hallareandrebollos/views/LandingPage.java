@@ -1,4 +1,4 @@
-package com.hallareandrebollos.ui;
+package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.hallareandrebollos.services.LogicController;
-import com.hallareandrebollos.services.Router;
+import com.hallareandrebollos.controls.LogicController;
+import com.hallareandrebollos.controls.Router;
 
 public class LandingPage extends JPanel {
     private static final Color BACKGROUND_COLOR = new Color(0xD3D3D3);

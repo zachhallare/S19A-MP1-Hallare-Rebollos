@@ -1,4 +1,4 @@
-package com.hallareandrebollos.ui;
+package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,9 +27,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.hallareandrebollos.controls.LogicController;
+import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
-import com.hallareandrebollos.services.LogicController;
-import com.hallareandrebollos.services.Router;
 
 
 public class CalendarPage extends JPanel {

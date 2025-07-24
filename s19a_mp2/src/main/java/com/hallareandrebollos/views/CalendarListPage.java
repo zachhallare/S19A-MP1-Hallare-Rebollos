@@ -1,5 +1,5 @@
 
-package com.hallareandrebollos.ui;
+package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,9 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
+import com.hallareandrebollos.controls.LogicController;
+import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.CalendarObject;
-import com.hallareandrebollos.services.LogicController;
-import com.hallareandrebollos.services.Router;
 
 /**
  * CalendarListPage displays two list views: public calendars (horizontal) and private calendars (vertical).

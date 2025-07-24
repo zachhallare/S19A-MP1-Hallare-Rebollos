@@ -1,4 +1,4 @@
-package com.hallareandrebollos.ui;
+package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -15,12 +15,12 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.models.Event;
 import com.hallareandrebollos.models.Journal;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
-import com.hallareandrebollos.services.Router;
 
 public class EntriesPage extends JPanel {
 

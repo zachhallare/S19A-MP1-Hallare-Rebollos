@@ -1,6 +1,6 @@
 package com.hallareandrebollos;
 
-import com.hallareandrebollos.services.Router;
+import com.hallareandrebollos.controls.Router;
 
 /**
  * Entry point of the Digital Calendar application.

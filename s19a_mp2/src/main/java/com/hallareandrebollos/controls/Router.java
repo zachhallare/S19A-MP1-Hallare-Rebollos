@@ -1,5 +1,5 @@
 
-package com.hallareandrebollos.services;
+package com.hallareandrebollos.controls;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -9,12 +9,12 @@ import javax.swing.JPanel;
 
 import com.hallareandrebollos.models.CalendarObject;
 import com.hallareandrebollos.models.Entry;
-import com.hallareandrebollos.ui.AccountPage;
-import com.hallareandrebollos.ui.CalendarListPage;
-import com.hallareandrebollos.ui.CalendarPage;
-import com.hallareandrebollos.ui.EntriesPage;
-import com.hallareandrebollos.ui.LandingPage;
-import com.hallareandrebollos.ui.MenuPage;
+import com.hallareandrebollos.views.AccountPage;
+import com.hallareandrebollos.views.CalendarListPage;
+import com.hallareandrebollos.views.CalendarPage;
+import com.hallareandrebollos.views.EntriesPage;
+import com.hallareandrebollos.views.LandingPage;
+import com.hallareandrebollos.views.MenuPage;
 
 public final class Router extends JFrame {
     // Main Controller.
