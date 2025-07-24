@@ -19,12 +19,17 @@ import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
@@ -254,11 +259,73 @@ public class CalendarPage extends JPanel {
                 String monthString = String.valueOf(month);
                 String yearString = String.valueOf(year);
 
-                // Get entries from Logic Controller.
-                ArrayList<Entry> entriesForDay = logic.getEntriesForDate(LocalDate.of(year, month, selectedDay));
+                // // Get entries from Logic Controller.
+                // ArrayList<Entry> entriesForDay = logic.getEntriesForDate(LocalDate.of(year, month, selectedDay));
 
-                // Create EntriesPage.
-                router.showEntriesPage(dayString, monthString, yearString, entriesForDay);
+                // // Create EntriesPage.
+                // router.showEntriesPage(dayString, monthString, yearString, entriesForDay);
+
+
+                LocalDate selectedDate = LocalDate.of(year, month, selectedDay);
+                ArrayList<Entry> entriesForDay = logic.getEntriesForDate(selectedDate);
+
+                StringBuilder message = new StringBuilder();
+                if (entriesForDay.isEmpty()) {
+                    message.append("No entries for this day.");
+                } else {
+                    for (int i = 0; i < entriesForDay.size(); i++) {
+                        Entry entry = entriesForDay.get(i);
+                        message.append(i + 1).append(". ").append(entry.getTitle()).append(" - ");
+                        message.append(entry.getClass().getSimpleName()).append("\n");
+                    }
+                }
+
+                JPanel panel = new JPanel();
+                panel.setLayout(new BorderLayout());
+
+                JTextArea textArea = new JTextArea(message.toString());
+                textArea.setEditable(false);
+                textArea.setFont(new Font("SansSerif", Font.PLAIN, 13));
+                panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JButton addBtn = new JButton("Add Entry");
+                JButton editBtn = new JButton("Edit Entry");
+                JButton deleteBtn = new JButton("Delete Entry");
+                JButton closeBtn = new JButton("Close");
+
+                buttonPanel.add(addBtn);
+                buttonPanel.add(editBtn);
+                buttonPanel.add(deleteBtn);
+                buttonPanel.add(closeBtn);
+
+                panel.add(buttonPanel, BorderLayout.SOUTH);
+
+                JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(calendarGrid), 
+                                            "Entries for " + selectedDate.toString(), true);
+                dialog.setContentPane(panel);
+                dialog.setSize(400, 300);
+                dialog.setLocationRelativeTo(calendarGrid);
+
+                // Action buttons
+                closeBtn.addActionListener(ae -> dialog.dispose());
+
+                addBtn.addActionListener(ae -> {
+                    dialog.dispose();
+                    router.showAddEntryPage(dayString, monthString, yearString);
+                });
+
+                editBtn.addActionListener(ae -> {
+                    dialog.dispose();
+                    // router.showEditEntryPage(dayString, monthString, yearString, entriesForDay); // You can customize this
+                });
+
+                deleteBtn.addActionListener(ae -> {
+                    dialog.dispose();
+                    // router.showDeleteEntryPage(dayString, monthString, yearString, entriesForDay); // You can customize this
+                });
+
+                dialog.setVisible(true);
             });
 
             calendarGrid.add(dayButton);
