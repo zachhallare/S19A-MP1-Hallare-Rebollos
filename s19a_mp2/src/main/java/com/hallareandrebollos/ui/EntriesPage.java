@@ -3,30 +3,35 @@ package com.hallareandrebollos.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.models.Event;
 import com.hallareandrebollos.models.Journal;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
+import com.hallareandrebollos.services.Router;
 
 public class EntriesPage extends JPanel {
 
-    final private String day;
-    final private String month;
-    final private String year;
-    final private List<Entry> entries;
+    private final String day;
+    private final String month;
+    private final String year;
+    private final ArrayList<Entry> entries;
+    private final JPanel entriesPanel;
+    
 
-    public EntriesPage(String day, String month, String year, List<Entry> entries) {
+    public EntriesPage(String day, String month, String year, ArrayList<Entry> entries, Router router) {
         this.day = day;
         this.month = month;
         this.year = year;
@@ -39,31 +44,10 @@ public class EntriesPage extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         add(titleLabel, BorderLayout.NORTH);
 
-        // SOMEBODY SAVE ME FROM THIS ATROCITY OMDDDD
-        JPanel entriesPanel = new JPanel();
+        // Entries List.
+        entriesPanel = new JPanel();
         entriesPanel.setLayout(new BoxLayout(entriesPanel, BoxLayout.Y_AXIS));
-
-        for (Entry entry : this.entries) {
-            JPanel entryTile;
-            switch (entry.getType()) {
-                case "Event":
-                    entryTile = createEventListTile((Event) entry);
-                    break;
-                case "Journal":
-                    entryTile = createJournalListTile((Journal) entry);
-                    break;
-                case "Meeting":
-                    entryTile = createMeetingListTile((Meeting) entry);
-                    break;
-                case "Task":
-                    entryTile = createTaskListTile((Task) entry);
-                    break;
-                default:
-                    entryTile = new JPanel();
-                    entryTile.add(new JLabel("Unknown entry type"));
-            }
-            entriesPanel.add(entryTile);
-        }
+        redrawEntries();
 
         JScrollPane scrollPane = new JScrollPane(entriesPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -71,13 +55,83 @@ public class EntriesPage extends JPanel {
 
         // Buttons Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        JButton addEntryButton = new JButton("Add Entry"); // Placeholder
-        JButton returnButton = new JButton("Return"); // Placeholder
+
+        // Add Entry.
+        JButton addEntryButton = new JButton("Add Entry"); 
+        addEntryButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Add entry.");
+            // UHHH ADD ENTRY STUFF WEAGSJBKELA.
+        });
+
+        // Return Button.
+        JButton returnButton = new JButton("Return");
+        returnButton.addActionListener(e -> router.showCalendarPage(router.getLogicController().getCurrentCalendarObject()));
+
         buttonPanel.add(addEntryButton);
         buttonPanel.add(returnButton);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    
+    // Redraw entries.
+    private void redrawEntries() {
+        entriesPanel.removeAll();
+
+        for (Entry entry : this.entries) {
+            JPanel entryTile = createEntryTile(entry);
+            entriesPanel.add(entryTile);
+        }
+
+        entriesPanel.revalidate();
+        entriesPanel.repaint();
+    }
+
+
+    // Create entry.
+    private JPanel createEntryTile(Entry entry) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(new EmptyBorder(8, 8, 8, 8));
+
+        // Entry Information Panel.
+        JPanel infoPanel = switch (entry.getType()) {
+                case "Event" -> createEventListTile((Event) entry);
+                case "Journal" -> createJournalListTile((Journal) entry);
+                case "Meeting" -> createMeetingListTile((Meeting) entry);
+                case "Task" -> createTaskListTile((Task) entry);
+                default -> new JPanel();    // if unknown type.
+        };
+
+        // Buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton editButton = new JButton("Edit");
+        JButton deleteButton = new JButton("Delete");
+
+        // Edit Entry.
+        editButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Edit Entry: " + entry.toDisplayString());
+            // EDIT ENTRY UHRUNSFJ
+        });
+
+        // Delete Entry.
+        deleteButton.addActionListener(e -> {
+            int result = JOptionPane.showConfirmDialog(this, "Delete this entry?", "Confirm", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.YES_OPTION) {
+                entries.remove(entry);
+                redrawEntries();
+            }
+        });
+
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+
+        panel.add(infoPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.EAST);
+
+        return panel;
+    }
+
+
+    // Event.
     private JPanel createEventListTile(Event event) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel(event.toDisplayString());
@@ -90,6 +144,8 @@ public class EntriesPage extends JPanel {
         return panel;
     }
 
+
+    // Journal.
     private JPanel createJournalListTile(Journal journal) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel(journal.toDisplayString());
@@ -102,6 +158,8 @@ public class EntriesPage extends JPanel {
         return panel;
     }
 
+
+    // Meeting.
     private JPanel createMeetingListTile(Meeting meeting) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel(meeting.toDisplayString());
@@ -116,6 +174,8 @@ public class EntriesPage extends JPanel {
         return panel;
     }
 
+
+    // Task.
     private JPanel createTaskListTile(Task task) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel(task.toDisplayString());
