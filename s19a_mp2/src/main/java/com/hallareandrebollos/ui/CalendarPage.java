@@ -24,7 +24,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JSpinner.NumberEditor;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -37,23 +36,37 @@ import com.hallareandrebollos.models.Task;
 import com.hallareandrebollos.services.LogicController;
 import com.hallareandrebollos.services.Router;
 
+
 public class CalendarPage extends JPanel {
     private final LogicController logic;
-    private final JPanel calendarGrid;
-    private final JButton datePickerButton;
+    private JPanel calendarGrid;
+    private JButton datePickerButton;
 
     public CalendarPage(Router router, LogicController logic) {
         this.logic = logic;
         setLayout(new BorderLayout());
         setBackground(new Color(0xE0E0E0));
 
-        // Set Initial Month/Year Using LogicController.
+        initializeDate();
+        add(createTopPanel(router), BorderLayout.NORTH);
+        calendarGrid = createCalendarGrid();
+        add(calendarGrid, BorderLayout.CENTER);
+        add(createBottomPanel(router), BorderLayout.SOUTH);
+        drawCalendar(router);
+    }
+
+
+    // Set Initial Month/Year Using LogicController.
+    private void initializeDate() {
         if (logic.getSelectedMonth() == 0 || logic.getSelectedYear() == 0) {
             logic.setSelectedMonth(LocalDate.now().getMonthValue());
             logic.setSelectedYear(LocalDate.now().getYear());
         }
+    }
 
-        // Top Panel.
+
+    // Creates the Top Panel of the Calendar Page.
+    private JPanel createTopPanel(Router router) {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.setBackground(new Color(0xE0E0E0));
 
@@ -85,45 +98,27 @@ public class CalendarPage extends JPanel {
         topPanel.add(datePickerButton);
         topPanel.add(nextMonthButton);
         topPanel.add(nextYearButton);
-        add(topPanel, BorderLayout.NORTH);
 
-        // Date Picker Logic.
-        datePickerButton.addActionListener(e -> {
-            String[] months = new DateFormatSymbols().getMonths();
-            JComboBox<String> monthBox = new JComboBox<>(Arrays.copyOf(months, 12));
-            monthBox.setSelectedIndex(logic.getSelectedMonth() - 1);
-            SpinnerNumberModel yearModel = new SpinnerNumberModel(logic.getSelectedYear(), 1900, 2100, 1);
-            JSpinner yearSpinner = new JSpinner(yearModel);
-            NumberEditor editor = new JSpinner.NumberEditor(yearSpinner, "#");    // removes the comma from the year.
-            yearSpinner.setEditor(editor);
+        datePickerButton.addActionListener(e -> showDatePicker(router));
+        setupNavigationButtons(router, prevMonthButton, nextMonthButton, prevYearButton, nextYearButton);
 
-            JPanel panel = new JPanel(new GridLayout(2, 2));
-            panel.add(new JLabel("Month:"));
-            panel.add(monthBox);
-            panel.add(new JLabel("Year:"));
-            panel.add(yearSpinner);
+        return topPanel;
+    }
 
-            int result = JOptionPane.showConfirmDialog(null, panel, "Select Month and Year",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            if (result == JOptionPane.OK_OPTION) {
-                logic.setSelectedMonth(monthBox.getSelectedIndex() + 1);
-                logic.setSelectedYear((int) yearSpinner.getValue());
-                updateDatePickerLabel();
-                drawCalendar(router);
-            }
-        });
-
-        // Center: Calendar Grid.
-        calendarGrid = new JPanel();
+    // Creates the Calendar Grid of the Calendar Page.
+    private JPanel createCalendarGrid() {
+        JPanel calendarGrid = new JPanel();
         calendarGrid.setLayout(new GridLayout(0, 7));
         calendarGrid.setBackground(new Color(0xD0D0D0));
         calendarGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
-        add(calendarGrid, BorderLayout.CENTER);
+        return calendarGrid;
+    }
 
-
-        // Bottom Panel: Back Button.
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    
+    // Creates the Bottom Panel of the Calendar Page.
+    private JPanel createBottomPanel(Router router) {
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(new Color(0xE0E0E0));
         JButton backButton = new JButton("Back to Menu");
         backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -131,59 +126,85 @@ public class CalendarPage extends JPanel {
         backButton.setBackground(Color.WHITE);
         backButton.addActionListener(e -> router.showMenuPage());
         bottomPanel.add(backButton);
-        add(bottomPanel, BorderLayout.SOUTH);
+        return bottomPanel;
+    }
 
-        // Navigation Buttons Logic.
-        prevMonthButton.addActionListener(e -> {
-            int month = logic.getSelectedMonth();
+
+    // Sets up the Navigation Buttons at the Top Panel.
+    private void setupNavigationButtons(Router router, JButton prevMonth, JButton nextMonth, JButton prevYear, JButton nextYear) {
+        prevMonth.addActionListener(e -> {
+            int month = logic.getSelectedMonth(); 
             int year = logic.getSelectedYear();
             if (month == 1) {
                 logic.setSelectedMonth(12);
                 logic.setSelectedYear(year - 1);
-            } else {
-                logic.setSelectedMonth(month - 1);
-            }
+            } else logic.setSelectedMonth(month - 1);
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
-        nextMonthButton.addActionListener(e -> {
-            int month = logic.getSelectedMonth();
+        nextMonth.addActionListener(e -> {
+            int month = logic.getSelectedMonth(); 
             int year = logic.getSelectedYear();
             if (month == 12) {
                 logic.setSelectedMonth(1);
                 logic.setSelectedYear(year + 1);
-            } else {
-                logic.setSelectedMonth(month + 1);
-            }
+            } else logic.setSelectedMonth(month + 1);
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
-        prevYearButton.addActionListener(e -> {
+        prevYear.addActionListener(e -> {
             logic.setSelectedYear(logic.getSelectedYear() - 1);
             updateDatePickerLabel();
             drawCalendar(router);
         });
 
-        nextYearButton.addActionListener(e -> {
+        nextYear.addActionListener(e -> {
             logic.setSelectedYear(logic.getSelectedYear() + 1);
             updateDatePickerLabel();
             drawCalendar(router);
         });
-
-        // Initialize.
-        drawCalendar(router);
     }
 
+
+    // A Button at the Top Panel to Manually Change the Date.
+    private void showDatePicker(Router router) {
+        String[] months = new DateFormatSymbols().getMonths();
+        JComboBox<String> monthBox = new JComboBox<>(Arrays.copyOf(months, 12));
+        monthBox.setSelectedIndex(logic.getSelectedMonth() - 1);
+        SpinnerNumberModel yearModel = new SpinnerNumberModel(logic.getSelectedYear(), 1900, 2100, 1);
+        JSpinner yearSpinner = new JSpinner(yearModel);
+        yearSpinner.setEditor(new JSpinner.NumberEditor(yearSpinner, "#"));
+
+        JPanel panel = new JPanel(new GridLayout(2, 2));
+        panel.add(new JLabel("Month:"));
+        panel.add(monthBox);
+        panel.add(new JLabel("Year:"));
+        panel.add(yearSpinner);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Select Month and Year",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            logic.setSelectedMonth(monthBox.getSelectedIndex() + 1);
+            logic.setSelectedYear((int) yearSpinner.getValue());
+            updateDatePickerLabel();
+            drawCalendar(router);
+        }
+    }
+
+
+    // Updates the DatePickerLabel.
     private void updateDatePickerLabel() {
         String monthName = Month.of(logic.getSelectedMonth()).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         datePickerButton.setText(monthName + " " + logic.getSelectedYear());
     }
 
 
+    // Draws the Individual Calendar Per Month.
     private void drawCalendar(Router router) {
-        calendarGrid.removeAll();
+                calendarGrid.removeAll();
 
         DayOfWeek[] weekDays = {
             DayOfWeek.SUNDAY, DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
@@ -369,4 +390,8 @@ public class CalendarPage extends JPanel {
         revalidate();
         repaint();
     }
+
+
+
+
 }
