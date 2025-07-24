@@ -10,9 +10,11 @@ import javax.swing.JPanel;
 import com.hallareandrebollos.models.CalendarObject;
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.views.AccountPage;
+import com.hallareandrebollos.views.AddEntryPage;
 import com.hallareandrebollos.views.CalendarListPage;
 import com.hallareandrebollos.views.CalendarPage;
 import com.hallareandrebollos.views.EntriesPage;
+import com.hallareandrebollos.views.EntryFormPage;
 import com.hallareandrebollos.views.LandingPage;
 import com.hallareandrebollos.views.MenuPage;
 
@@ -20,15 +22,19 @@ public final class Router extends JFrame {
     // Main Controller.
     private final LogicController logicController;
     
-    // Pages.
+    // Static Pages.
     private final LandingPage landingPage;
     private final AccountPage signupPage;
     private final AccountPage loginPage;
     private final MenuPage menuPage;
     private final CalendarListPage calendarListPage;
     private final CalendarPage calendarPage;
-    private EntriesPage entriesPage;        // Dynamic Page.
 
+    // Dynamic Pages.
+    private EntriesPage entriesPage;       
+    private AddEntryPage addEntryPage;
+    private EntryFormPage entryFormPage;
+    
     // Container for Switching Views.
     private final JPanel contentPanel;
 
@@ -103,7 +109,17 @@ public final class Router extends JFrame {
     }
 
     public void showEntriesPage(String day, String month, String year, ArrayList<Entry> entries) {
-    this.entriesPage = new EntriesPage(day, month, year, entries, this);
-    showPage(this.entriesPage);
-}
+        this.entriesPage = new EntriesPage(day, month, year, entries, this);
+        showPage(this.entriesPage);
+    }
+
+    public void showAddEntryPage(String day, String month, String year) {
+        this.addEntryPage = new AddEntryPage(this, logicController, day, month, year);
+        showPage(this.addEntryPage);
+    }
+
+    public void showEntryFormPage(String type, String day, String month, String year) {
+        this.entryFormPage = new EntryFormPage(this, logicController, type, day, month, year);
+        showPage(this.entryFormPage);
+    }
 }

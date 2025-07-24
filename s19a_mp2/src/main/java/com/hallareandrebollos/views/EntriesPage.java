@@ -58,10 +58,7 @@ public class EntriesPage extends JPanel {
 
         // Add Entry.
         JButton addEntryButton = new JButton("Add Entry"); 
-        addEntryButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Add entry.");
-            // UHHH ADD ENTRY STUFF WEAGSJBKELA.
-        });
+        addEntryButton.addActionListener(e -> router.showAddEntryPage(day, month, year));
 
         // Return Button.
         JButton returnButton = new JButton("Return");
