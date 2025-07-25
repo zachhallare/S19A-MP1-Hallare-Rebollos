@@ -27,7 +27,7 @@ public class EntriesPage extends JPanel {
     private final String day;
     private final String month;
     private final String year;
-    private final ArrayList<Entry> entries;
+    private ArrayList<Entry> entries;
     private final JPanel entriesPanel;
     
 
