@@ -36,6 +36,9 @@ public class LogicController {
     /** Currently selected year for calendar view. */
     private int selectedYear;
 
+    /** Currently selected day (1–31) for calendar view. */
+    private int selectedDay;
+
 
     /**
      * Constructs a LogicController and initializes all lists and indices.
@@ -457,6 +460,26 @@ public class LogicController {
     public int getSelectedYear() {
         return this.selectedYear;
     }
+
+    /**
+     * Sets the selected day for calendar operations.
+     * @param day the day to set (1–31). Ignored if out of range.
+     */
+    public void setSelectedDay(int day) {
+        if (day >= 1 && day <= 31) {
+            this.selectedDay = day;
+        }
+    }
+
+    /**
+     * Returns the currently selected day.
+     * @return the selected day (1–31).
+     */
+    public int getSelectedDay() {
+        return this.selectedDay;
+    }
+
+
 
     /**
      * Checks whether a calendar with the specified name and visibility already exists.

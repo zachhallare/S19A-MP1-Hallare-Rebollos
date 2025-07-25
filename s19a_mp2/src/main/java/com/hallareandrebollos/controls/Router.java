@@ -19,7 +19,7 @@ public final class Router extends JFrame {
     // Main Controller.
     private final LogicController logicController;
     
-    // Static Pages.
+    // Individual Pages.
     private final LandingPage landingPage;
     private final AccountPage signupPage;
     private final AccountPage loginPage;
@@ -95,6 +95,7 @@ public final class Router extends JFrame {
 
     public void showCalendarPage(CalendarObject calendar) {
         this.logicController.setCurrentCalendar(calendar);
+        this.calendarPage = new CalendarPage(this, this.logicController);
         showPage(this.calendarPage);
     }
 

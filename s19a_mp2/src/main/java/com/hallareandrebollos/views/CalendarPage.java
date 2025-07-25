@@ -19,17 +19,12 @@ import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
@@ -45,7 +40,6 @@ public class CalendarPage extends JPanel {
         this.logic = logic;
         setLayout(new BorderLayout());
         setBackground(new Color(0xE0E0E0));
-
         initializeDate();
         add(createTopPanel(router), BorderLayout.NORTH);
         this.calendarGrid = createCalendarGrid();
@@ -247,7 +241,7 @@ public class CalendarPage extends JPanel {
             dayButton.setBackground(Color.WHITE);
             dayButton.setOpaque(true);
 
-            // Highlight the Day Today.
+            // Highlight the Date Today.
             if (year == today.getYear() && month == today.getMonthValue() && day == today.getDayOfMonth()) {
                 dayButton.setFont(new Font("SansSerif", Font.BOLD, 15));
             } 

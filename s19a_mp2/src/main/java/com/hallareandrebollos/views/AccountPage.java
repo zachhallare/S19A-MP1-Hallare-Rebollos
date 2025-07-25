@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -53,9 +54,35 @@ public class AccountPage extends JPanel {
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(LABEL_FONT);
         passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         JPasswordField passwordField = new JPasswordField();
         passwordField.setFont(new Font("SansSerif", Font.PLAIN, 18));
         passwordField.setBorder(new EmptyBorder(0, 10, 0, 10));
+
+        // Panel to hold password field and show/hide button.
+        JPanel passwordPanel = new JPanel(new BorderLayout());
+        passwordPanel.setOpaque(false);
+        passwordPanel.add(passwordField, BorderLayout.CENTER);
+
+        // Show/Hide toggle button.
+        JButton toggleButton = new JButton("Show");
+        toggleButton.setFocusPainted(false);
+        toggleButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        toggleButton.setContentAreaFilled(true);
+        toggleButton.setBackground(Color.WHITE);
+        toggleButton.setForeground(FOREGROUND_COLOR.darker());
+        toggleButton.setBorder(BorderFactory.createEmptyBorder(5, 8, 5, 8));
+        toggleButton.addActionListener(ev -> {
+            if (passwordField.getEchoChar() != (char) 0) {
+                passwordField.setEchoChar((char) 0);
+                toggleButton.setText("Hide");
+            } else {
+                passwordField.setEchoChar('\u2022');
+                toggleButton.setText("Show");
+            }
+        });
+        passwordPanel.add(toggleButton, BorderLayout.EAST);
+
 
         // Buttons Initialization.
         mainButton = new JButton(isLoginPage ? "Login" : "Sign Up");
@@ -72,7 +99,7 @@ public class AccountPage extends JPanel {
         formPanel.add(usernameLabel);
         formPanel.add(usernameField);
         formPanel.add(passwordLabel);
-        formPanel.add(passwordField);
+        formPanel.add(passwordPanel);
         formPanel.add(mainButton);
         formPanel.add(backButton);
         add(formPanel, BorderLayout.CENTER);
