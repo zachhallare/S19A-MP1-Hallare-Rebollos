@@ -23,8 +23,8 @@ public class AccountPage extends JPanel {
     private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
     private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 20);
 
-    final private JButton mainButton;
-    final private JButton backButton;
+    private final JButton mainButton;
+    private final JButton backButton;
 
     public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
         setLayout(new BorderLayout());
