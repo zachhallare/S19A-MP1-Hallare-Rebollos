@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -51,19 +52,15 @@ public class AddEntryPage extends JPanel {
         JButton backButton = new JButton("Back");
 
         backButton.addActionListener(e -> {
-            CalendarObject calendar = logic.getCurrentCalendarObject();
-            ArrayList<Entry> entries = new ArrayList<>();
-            for (Entry entry : calendar.getEntries()) {
-                LocalDate date = entry.getDate();
-                if (date.getDayOfMonth() == Integer.parseInt(day)
-                        && date.getMonth().toString().equalsIgnoreCase(month)
-                        && date.getYear() == Integer.parseInt(year)) {
-                    entries.add(entry);
-                }
-            }
+            LocalDate selectedDate = LocalDate.of(
+                Integer.parseInt(year), 
+                Month.valueOf(month.toUpperCase()), 
+                Integer.parseInt(day));
+        
+            ArrayList<Entry> entries = logic.getEntriesForDate(selectedDate);
             router.showEntriesPage(day, month, year, entries);
         });
-
+        
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
 

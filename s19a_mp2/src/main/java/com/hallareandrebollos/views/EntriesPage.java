@@ -3,7 +3,10 @@ package com.hallareandrebollos.views;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -15,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.models.Event;
@@ -23,15 +27,18 @@ import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
 
 public class EntriesPage extends JPanel {
-
-    private final String day;
-    private final String month;
-    private final String year;
+    private final Router router;
+    private final LogicController logic;
+    private String day;
+    private String month;
+    private String year;
     private ArrayList<Entry> entries;
-    private final JPanel entriesPanel;
+    private JPanel entriesPanel;
+    private JLabel titleLabel;
     
-
-    public EntriesPage(String day, String month, String year, ArrayList<Entry> entries, Router router) {
+    public EntriesPage(Router router, LogicController logic, String day, String month, String year, ArrayList<Entry> entries) {
+        this.router = router;
+        this.logic = logic;
         this.day = day;
         this.month = month;
         this.year = year;
@@ -39,8 +46,17 @@ public class EntriesPage extends JPanel {
 
         setLayout(new BorderLayout(10, 10));
 
-        // Title
-        JLabel titleLabel = new JLabel(this.day + " " + this.month + " " + this.year, SwingConstants.CENTER);
+        // Convert day/month/year to LocalDate.
+        int dayInt = Integer.parseInt(day);
+        int monthInt = Integer.parseInt(month);
+        int yearInt = Integer.parseInt(year);
+        LocalDate date = LocalDate.of(yearInt, monthInt, dayInt);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", Locale.ENGLISH);
+        String formattedDate = date.format(formatter);
+
+
+        // Title Label
+        JLabel titleLabel = new JLabel(formattedDate, SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         add(titleLabel, BorderLayout.NORTH);
 
@@ -55,12 +71,9 @@ public class EntriesPage extends JPanel {
 
         // Buttons Panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-
-        // Add Entry.
         JButton addEntryButton = new JButton("Add Entry"); 
         addEntryButton.addActionListener(e -> router.showAddEntryPage(day, month, year));
 
-        // Return Button.
         JButton returnButton = new JButton("Return");
         returnButton.addActionListener(e -> router.showCalendarPage(router.getLogicController().getCurrentCalendarObject()));
 
@@ -69,6 +82,24 @@ public class EntriesPage extends JPanel {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+
+    // Refresh the entries and title.
+    public void refresh() {
+        // Reload entries.
+        LocalDate date = LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
+        this.entries = logic.getEntriesForDate(date);
+
+        titleLabel.setText(formatDateString(day, month, year));
+        redrawEntries();    // redraw.
+    }
+
+
+    // format date.
+    private String formatDateString(String day, String month, String year) {
+        LocalDate date = LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", Locale.ENGLISH);
+        return date.format(formatter);
+    }
     
     // Redraw entries.
     private void redrawEntries() {
@@ -91,11 +122,11 @@ public class EntriesPage extends JPanel {
 
         // Entry Information Panel.
         JPanel infoPanel = switch (entry.getType()) {
-                case "Event" -> createEventListTile((Event) entry);
-                case "Journal" -> createJournalListTile((Journal) entry);
-                case "Meeting" -> createMeetingListTile((Meeting) entry);
-                case "Task" -> createTaskListTile((Task) entry);
-                default -> new JPanel();    // if unknown type.
+            case "Event" -> createEventListTile((Event) entry);
+            case "Journal" -> createJournalListTile((Journal) entry);
+            case "Meeting" -> createMeetingListTile((Meeting) entry);
+            case "Task" -> createTaskListTile((Task) entry);
+            default -> new JPanel();    // if unknown type.
         };
 
         // Buttons
@@ -120,7 +151,6 @@ public class EntriesPage extends JPanel {
 
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
-
         panel.add(infoPanel, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.EAST);
 

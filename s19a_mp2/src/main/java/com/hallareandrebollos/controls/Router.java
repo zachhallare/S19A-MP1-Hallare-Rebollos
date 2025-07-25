@@ -22,15 +22,13 @@ public final class Router extends JFrame {
     // Main Controller.
     private final LogicController logicController;
     
-    // Static Pages.
+    // Individual Pages.
     private final LandingPage landingPage;
     private final AccountPage signupPage;
     private final AccountPage loginPage;
     private final MenuPage menuPage;
     private final CalendarListPage calendarListPage;
-    private final CalendarPage calendarPage;
-
-    // Dynamic Pages.
+    private CalendarPage calendarPage;
     private EntriesPage entriesPage;       
     private AddEntryPage addEntryPage;
     private EntryFormPage entryFormPage;
@@ -100,6 +98,7 @@ public final class Router extends JFrame {
 
     public void showCalendarPage(CalendarObject calendar) {
         this.logicController.setCurrentCalendar(calendar);
+        this.calendarPage = new CalendarPage(this, this.logicController);
         showPage(this.calendarPage);
     }
 
@@ -109,12 +108,12 @@ public final class Router extends JFrame {
     }
 
     public void showEntriesPage(String day, String month, String year, ArrayList<Entry> entries) {
-        this.entriesPage = new EntriesPage(day, month, year, entries, this);
+        this.entriesPage = new EntriesPage(this, this.logicController, day, month, year, entries);
         showPage(this.entriesPage);
     }
 
     public void showAddEntryPage(String day, String month, String year) {
-        this.addEntryPage = new AddEntryPage(this, logicController, day, month, year);
+        this.addEntryPage = new AddEntryPage(this, this.logicController, day, month, year);
         showPage(this.addEntryPage);
     }
 
