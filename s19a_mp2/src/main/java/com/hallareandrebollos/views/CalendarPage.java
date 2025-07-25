@@ -36,7 +36,6 @@ import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
 
-
 public class CalendarPage extends JPanel {
     private final LogicController logic;
     private JPanel calendarGrid;
@@ -49,8 +48,8 @@ public class CalendarPage extends JPanel {
 
         initializeDate();
         add(createTopPanel(router), BorderLayout.NORTH);
-        calendarGrid = createCalendarGrid();
-        add(calendarGrid, BorderLayout.CENTER);
+        this.calendarGrid = createCalendarGrid();
+        add(this.calendarGrid, BorderLayout.CENTER);
         add(createBottomPanel(router), BorderLayout.SOUTH);
         drawCalendar(router);
     }
@@ -75,10 +74,10 @@ public class CalendarPage extends JPanel {
         JButton nextMonthButton = new JButton(">");
         JButton nextYearButton = new JButton(">>");
 
-        datePickerButton = new JButton();
-        datePickerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-        datePickerButton.setFocusPainted(false);
-        datePickerButton.setBackground(Color.WHITE);
+        this.datePickerButton = new JButton();
+        this.datePickerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        this.datePickerButton.setFocusPainted(false);
+        this.datePickerButton.setBackground(Color.WHITE);
         updateDatePickerLabel();
 
         // Dimension and Font for the Buttons.
@@ -95,7 +94,7 @@ public class CalendarPage extends JPanel {
         // Add the Buttons to the Top Panel.
         topPanel.add(prevYearButton);
         topPanel.add(prevMonthButton);
-        topPanel.add(datePickerButton);
+        topPanel.add(this.datePickerButton);
         topPanel.add(nextMonthButton);
         topPanel.add(nextYearButton);
 
@@ -255,17 +254,6 @@ public class CalendarPage extends JPanel {
 
             int selectedDay = day;
             dayButton.addActionListener(e -> {
-                String dayString = String.valueOf(selectedDay);
-                String monthString = String.valueOf(month);
-                String yearString = String.valueOf(year);
-
-                // // Get entries from Logic Controller.
-                // ArrayList<Entry> entriesForDay = logic.getEntriesForDate(LocalDate.of(year, month, selectedDay));
-
-                // // Create EntriesPage.
-                // router.showEntriesPage(dayString, monthString, yearString, entriesForDay);
-
-
                 LocalDate selectedDate = LocalDate.of(year, month, selectedDay);
                 ArrayList<Entry> entriesForDay = logic.getEntriesForDate(selectedDate);
 
@@ -312,17 +300,17 @@ public class CalendarPage extends JPanel {
 
                 addBtn.addActionListener(ae -> {
                     dialog.dispose();
-                    router.showAddEntryPage(dayString, monthString, yearString);
+                    router.showEntryForm(null, selectedDate);
                 });
 
                 editBtn.addActionListener(ae -> {
                     dialog.dispose();
-                    // router.showEditEntryPage(dayString, monthString, yearString, entriesForDay); // You can customize this
+                    // router.showEditEntryPage(selectedDate); // You can customize this
                 });
 
                 deleteBtn.addActionListener(ae -> {
                     dialog.dispose();
-                    // router.showDeleteEntryPage(dayString, monthString, yearString, entriesForDay); // You can customize this
+                    // router.showDeleteEntryPage(selectedDate); // You can customize this
                 });
 
                 dialog.setVisible(true);

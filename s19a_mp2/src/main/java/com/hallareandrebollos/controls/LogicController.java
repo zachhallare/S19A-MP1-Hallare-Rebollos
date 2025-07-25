@@ -212,9 +212,9 @@ public class LogicController {
                 } else if (type.equals("meeting")) {
                     if (modality != null) {
                         if ((venue == null || venue.isBlank()) && (link == null || link.isBlank())) {
-                            entry = new Meeting(title, date, description, modality);
+                            entry = new Meeting(title, date, description, modality, startTime, endTime);
                         } else {
-                            entry = new Meeting(title, date, description, modality, venue, link);
+                            entry = new Meeting(title, date, startTime, endTime, description, modality, venue, link);
                         }
                         canAdd = true;
                     }
@@ -481,4 +481,5 @@ public class LogicController {
         }
         return isDuplicate;
     }
+
 }

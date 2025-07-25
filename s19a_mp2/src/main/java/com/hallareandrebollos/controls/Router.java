@@ -2,7 +2,6 @@
 package com.hallareandrebollos.controls;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -10,11 +9,9 @@ import javax.swing.JPanel;
 import com.hallareandrebollos.models.CalendarObject;
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.views.AccountPage;
-import com.hallareandrebollos.views.AddEntryPage;
 import com.hallareandrebollos.views.CalendarListPage;
 import com.hallareandrebollos.views.CalendarPage;
-import com.hallareandrebollos.views.EntriesPage;
-import com.hallareandrebollos.views.EntryFormPage;
+import com.hallareandrebollos.views.EntryForm;
 import com.hallareandrebollos.views.LandingPage;
 import com.hallareandrebollos.views.MenuPage;
 
@@ -31,9 +28,7 @@ public final class Router extends JFrame {
     private final CalendarPage calendarPage;
 
     // Dynamic Pages.
-    private EntriesPage entriesPage;       
-    private AddEntryPage addEntryPage;
-    private EntryFormPage entryFormPage;
+    private EntryForm entryForm;
     
     // Container for Switching Views.
     private final JPanel contentPanel;
@@ -108,18 +103,12 @@ public final class Router extends JFrame {
         showPage(this.calendarListPage);
     }
 
-    public void showEntriesPage(String day, String month, String year, ArrayList<Entry> entries) {
-        this.entriesPage = new EntriesPage(day, month, year, entries, this);
-        showPage(this.entriesPage);
+    public void showEntryForm(Entry entryToEdit) {
+        showEntryForm(entryToEdit, null);
     }
 
-    public void showAddEntryPage(String day, String month, String year) {
-        this.addEntryPage = new AddEntryPage(this, logicController, day, month, year);
-        showPage(this.addEntryPage);
-    }
-
-    public void showEntryFormPage(String type, String day, String month, String year) {
-        this.entryFormPage = new EntryFormPage(this, logicController, type, day, month, year);
-        showPage(this.entryFormPage);
+    public void showEntryForm(Entry entryToEdit, java.time.LocalDate preselectedDate) {
+        this.entryForm = new EntryForm(this, this.logicController, entryToEdit, preselectedDate);
+        showPage(this.entryForm);
     }
 }
