@@ -2,6 +2,7 @@
 package com.hallareandrebollos.controls;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -24,8 +25,8 @@ public final class Router extends JFrame {
     private final AccountPage signupPage;
     private final AccountPage loginPage;
     private final MenuPage menuPage;
-    private final CalendarListPage calendarListPage;
-    private final CalendarPage calendarPage;
+    private CalendarListPage calendarListPage;
+    private CalendarPage calendarPage;
 
     // Dynamic Pages.
     private EntryForm entryForm;
