@@ -25,7 +25,13 @@ public class LandingPage extends JPanel {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
 
-        // Title Section (North).
+        add(createTitlePanel(), BorderLayout.NORTH);
+        add(createCenterPanel(router), BorderLayout.CENTER);
+        add(createFooterPanel(), BorderLayout.SOUTH);
+    }
+
+
+    private JPanel createTitlePanel() {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
         titlePanel.setBorder(new EmptyBorder(80, 0, 30, 0));
@@ -39,30 +45,33 @@ public class LandingPage extends JPanel {
         subtitleLabel.setFont(SUBTITLE_FONT);
         subtitleLabel.setForeground(Color.DARK_GRAY);
         titlePanel.add(subtitleLabel, BorderLayout.SOUTH);
-        add(titlePanel, BorderLayout.NORTH);
+        
+        return titlePanel;
+    }
 
-        // Button Section (Center).
+
+    private JPanel createCenterPanel(Router router) {
         JPanel centerPanel = new JPanel(new GridLayout(2, 1, 0, 35));
         centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(20, 275, 20, 275));
         add(centerPanel, BorderLayout.CENTER);
 
         JButton loginButton = new JButton("Login");
-        loginButton.setFont(new Font("SansSerif", Font.PLAIN, 22));
-        loginButton.setFocusPainted(false);
-        loginButton.setBackground(Color.LIGHT_GRAY);
+        styleButton(loginButton);
         loginButton.addActionListener(e -> router.showLoginPage());
 
         JButton signupButton = new JButton("Sign Up");
-        signupButton.setFont(new Font("SansSerif", Font.PLAIN, 22));
-        signupButton.setFocusPainted(false);
-        signupButton.setBackground(Color.LIGHT_GRAY);
+        styleButton(signupButton);
         signupButton.addActionListener(e -> router.showSignupPage());
 
         centerPanel.add(loginButton);
         centerPanel.add(signupButton);
 
-        // Footer Panel.
+        return centerPanel;
+    }
+
+
+    private JPanel createFooterPanel() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footer.setOpaque(false);
         footer.setBorder(new EmptyBorder(40, 0, 90, 0));
@@ -71,6 +80,13 @@ public class LandingPage extends JPanel {
         quoteLabel.setFont(new Font("SansSerif", Font.ITALIC, 18));
         quoteLabel.setForeground(Color.GRAY);
         footer.add(quoteLabel);
-        add(footer, BorderLayout.SOUTH);
+
+        return footer;
+    }
+
+    private void styleButton(JButton button) {
+        button.setFont(new Font("SansSerif", Font.PLAIN, 22));
+        button.setFocusPainted(false);
+        button.setBackground(Color.LIGHT_GRAY);
     }
 }

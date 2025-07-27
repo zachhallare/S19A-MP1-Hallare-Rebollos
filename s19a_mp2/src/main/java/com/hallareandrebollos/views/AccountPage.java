@@ -23,55 +23,88 @@ public class AccountPage extends JPanel {
     private static final Color FOREGROUND_COLOR = new Color(0x36454F);
     private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
     private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 20);
-
-    private final JButton mainButton;
-    private final JButton backButton;
+    private JButton mainButton;
+    private JButton backButton;
 
     public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
 
-        // Title Panel (North).
+        add(createTitlePanel(isLoginPage), BorderLayout.NORTH);
+
+        JTextField usernameField = new JTextField();
+        JPasswordField passwordField = new JPasswordField();
+
+        JPanel formPanel = createFormPanel(usernameField, passwordField, isLoginPage, router, logic);
+        add(formPanel, BorderLayout.CENTER);
+
+        addButtonLogic(usernameField, passwordField, isLoginPage, router, logic);
+    }
+
+
+    private JPanel createTitlePanel(boolean isLoginPage) {
         JLabel titleLabel = new JLabel(isLoginPage ? "Login" : "Create an Account", SwingConstants.CENTER);
         titleLabel.setFont(TITLE_FONT);
         titleLabel.setForeground(FOREGROUND_COLOR);
         titleLabel.setBorder(new EmptyBorder(80, 0, 20, 0));
-        add(titleLabel, BorderLayout.NORTH);
 
-        // Form Panel (Center).
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setOpaque(false);
+        titlePanel.add(titleLabel, BorderLayout.CENTER);
+
+        return titlePanel;
+    }
+
+
+    private JPanel createFormPanel(JTextField usernameField, JPasswordField passwordField, boolean isLoginPage, Router router, LogicController logic) {
         JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 50));
         formPanel.setOpaque(false);
         formPanel.setBorder(new EmptyBorder(30, 220, 30, 220));
-        
-        // Labels for Username and Password.
+
+        // Username.
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(LABEL_FONT);
         usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        JTextField usernameField = new JTextField();
         usernameField.setFont(new Font("SansSerif", Font.PLAIN, 18));
         usernameField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
+        // Password.
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(LABEL_FONT);
         passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JPasswordField passwordField = new JPasswordField();
         passwordField.setFont(new Font("SansSerif", Font.PLAIN, 18));
         passwordField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
-        // Panel to hold password field and show/hide button.
+        // Password Panel with toggle.
         JPanel passwordPanel = new JPanel(new BorderLayout());
         passwordPanel.setOpaque(false);
         passwordPanel.add(passwordField, BorderLayout.CENTER);
+        passwordPanel.add(createToggleButton(passwordField), BorderLayout.EAST);
 
-        // Show/Hide toggle button.
+        // Buttons.
+        mainButton = createMainButton(isLoginPage);
+        backButton = createBackButton(usernameField, passwordField, router);
+
+        // Add components.
+        formPanel.add(usernameLabel);
+        formPanel.add(usernameField);
+        formPanel.add(passwordLabel);
+        formPanel.add(passwordPanel);
+        formPanel.add(mainButton);
+        formPanel.add(backButton);
+
+        return formPanel;
+    }
+
+
+    private JButton createToggleButton(JPasswordField passwordField) {
         JButton toggleButton = new JButton("Show");
         toggleButton.setFocusPainted(false);
         toggleButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        toggleButton.setContentAreaFilled(true);
         toggleButton.setBackground(Color.WHITE);
         toggleButton.setForeground(FOREGROUND_COLOR.darker());
         toggleButton.setBorder(BorderFactory.createEmptyBorder(5, 8, 5, 8));
+
         toggleButton.addActionListener(ev -> {
             if (passwordField.getEchoChar() != (char) 0) {
                 passwordField.setEchoChar((char) 0);
@@ -81,38 +114,42 @@ public class AccountPage extends JPanel {
                 toggleButton.setText("Show");
             }
         });
-        passwordPanel.add(toggleButton, BorderLayout.EAST);
+
+        return toggleButton;
+    }
 
 
-        // Buttons Initialization.
-        mainButton = new JButton(isLoginPage ? "Login" : "Sign Up");
-        mainButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        mainButton.setFocusPainted(false);
-        mainButton.setBackground(Color.LIGHT_GRAY);
+    private JButton createMainButton(boolean isLoginPage) {
+        JButton button = new JButton(isLoginPage ? "Login" : "Sign Up");
+        button.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        button.setFocusPainted(false);
+        button.setBackground(Color.LIGHT_GRAY);
 
-        backButton = new JButton("Back");
-        backButton.setFont(new Font("SansSerif", Font.PLAIN, 18));
-        backButton.setFocusPainted(false);
-        backButton.setBackground(Color.LIGHT_GRAY);
+        return button;
+    }
 
-        // Form Panels Initialization.
-        formPanel.add(usernameLabel);
-        formPanel.add(usernameField);
-        formPanel.add(passwordLabel);
-        formPanel.add(passwordPanel);
-        formPanel.add(mainButton);
-        formPanel.add(backButton);
-        add(formPanel, BorderLayout.CENTER);
 
-        // Main Button Logic.
+    private JButton createBackButton(JTextField usernameField, JPasswordField passwordField, Router router) {
+        JButton button = new JButton("Back");
+        button.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        button.setFocusPainted(false);
+        button.setBackground(Color.LIGHT_GRAY);
+        button.addActionListener(e -> {
+            usernameField.setText("");
+            passwordField.setText("");
+            router.showLandingPage();
+        });
+
+        return button;
+    }
+
+
+    private void addButtonLogic(JTextField usernameField, JPasswordField passwordField, boolean isLoginPage, Router router, LogicController logic) {
         mainButton.addActionListener(e -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
 
-            if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username and password cannot be empty.",
-                    isLoginPage ? "Login Failed" : "Signup Failed", JOptionPane.WARNING_MESSAGE);
-            } else {
+            if (!username.isEmpty() && !password.isEmpty()) {
                 if (isLoginPage) {
                     if (logic.authenticateAccount(username, password)) {
                         JOptionPane.showMessageDialog(this, "Login successful!");
@@ -120,7 +157,7 @@ public class AccountPage extends JPanel {
                         passwordField.setText("");
                         router.showMenuPage();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Invalid username or password.", 
+                        JOptionPane.showMessageDialog(this, "Invalid username or password.",
                             "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
@@ -135,14 +172,10 @@ public class AccountPage extends JPanel {
                         router.showLandingPage();
                     }
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, "Username and password cannot be empty.",
+                    isLoginPage ? "Login Failed" : "Signup Failed", JOptionPane.WARNING_MESSAGE);
             }
-        });
-
-        // Back Button Logic.
-        backButton.addActionListener(e -> {
-            usernameField.setText("");
-            passwordField.setText("");
-            router.showLandingPage();
         });
     }
 }
