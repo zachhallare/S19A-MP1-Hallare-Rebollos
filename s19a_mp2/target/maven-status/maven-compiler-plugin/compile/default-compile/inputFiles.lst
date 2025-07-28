@@ -1,6 +1,9 @@
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\controls\DisplayController.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\controls\LogicController.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\controls\Router.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\legacy_code\AddEntryPage.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\legacy_code\EntriesPage.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\legacy_code\EntryFormPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\Main.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Account.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\CalendarObject.java
@@ -10,10 +13,13 @@ C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Meeting.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Task.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\AccountPage.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\AddEntryPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\CalendarListPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\CalendarPage.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\EntriesPage.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\EntryFormPage.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\EntryForm.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\LandingPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\MenuPage.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\ShowEntriesPage.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\WeeklyView.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\entryList.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\hhmmSelector.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\yyyymmddSelector.java

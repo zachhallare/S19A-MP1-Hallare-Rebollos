@@ -28,7 +28,13 @@ public class MenuPage extends JPanel {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
 
-        // Title section (north)
+        add(createTitlePanel(), BorderLayout.NORTH);
+        add(createButtonPanel(router, logic), BorderLayout.CENTER);
+        add(createFooterPanel(), BorderLayout.SOUTH);
+    }
+
+    
+    private JPanel createTitlePanel() {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
         titlePanel.setBorder(new EmptyBorder(70, 0, 30, 0));
@@ -43,31 +49,22 @@ public class MenuPage extends JPanel {
         subtitleLabel.setForeground(Color.DARK_GRAY);
         titlePanel.add(subtitleLabel, BorderLayout.SOUTH);
 
-        add(titlePanel, BorderLayout.NORTH);
+        return titlePanel;
+    }
 
-        // Center button section
+
+    private JPanel createButtonPanel(Router router, LogicController logic) {
         JPanel centerPanel = new JPanel(new GridLayout(4, 1, 0, 10));
         centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(0, 275, 0, 275));
-        add(centerPanel, BorderLayout.CENTER);
 
-        // Button 1: Select Calendar
-        JButton selectButton = new JButton("Select Calendar");
-        selectButton.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        selectButton.setFocusPainted(false);
-        selectButton.setBackground(Color.LIGHT_GRAY);
-        selectButton.setPreferredSize(new Dimension(160, 40));
-        selectButton.addActionListener(e -> {
-            router.showCalendarListPage();
-        });
+        // Select Calendar
+        JButton selectButton = createStandardButton("Select Calendar");
+        selectButton.addActionListener(e -> router.showCalendarListPage());
         centerPanel.add(selectButton);
 
-        // Button 2: Add Calendar.
-        JButton addButton = new JButton("Add Calendar");
-        addButton.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        addButton.setFocusPainted(false);
-        addButton.setBackground(Color.LIGHT_GRAY);
-        addButton.setPreferredSize(new Dimension(160, 40));
+        // Add Calendar
+        JButton addButton = createStandardButton("Add Calendar");
         addButton.addActionListener(e -> {
             String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
             if (name != null && !name.isBlank()) {
@@ -76,9 +73,9 @@ public class MenuPage extends JPanel {
                         "Choose calendar type:", "Calendar Type",
                         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                         null, options, options[0]);
-
                 boolean isPublic = (type == 1);
                 boolean exists = logic.checkCalendarDuplicate(name, isPublic, logic.getCurrentAccount().getUsername());
+
                 if (!exists) {
                     logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, isPublic);
                     JOptionPane.showMessageDialog(this, "Calendar added!");
@@ -90,12 +87,8 @@ public class MenuPage extends JPanel {
         });
         centerPanel.add(addButton);
 
-        // Button 3: Delete Account
-        JButton deleteAccButton = new JButton("Delete Account");
-        deleteAccButton.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        deleteAccButton.setFocusPainted(false);
-        deleteAccButton.setBackground(Color.LIGHT_GRAY);
-        deleteAccButton.setPreferredSize(new Dimension(160, 40));
+        // Delete Account
+        JButton deleteAccButton = createStandardButton("Delete Account");
         deleteAccButton.setBackground(ACCENT_COLOR);
         deleteAccButton.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
@@ -107,19 +100,29 @@ public class MenuPage extends JPanel {
         });
         centerPanel.add(deleteAccButton);
 
-        // Button 4: Logout
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.setFont(new Font("SansSerif", Font.PLAIN, 20));
-        logoutButton.setFocusPainted(false);
-        logoutButton.setBackground(Color.LIGHT_GRAY);
-        logoutButton.setPreferredSize(new Dimension(160, 40));
+        // Logout
+        JButton logoutButton = createStandardButton("Logout");
         logoutButton.addActionListener(e -> {
             logic.logoutAccount();
             router.showLandingPage();
         });
         centerPanel.add(logoutButton);
 
-        // Optional: Footer
+        return centerPanel;
+    }
+
+
+    private JButton createStandardButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        button.setFocusPainted(false);
+        button.setBackground(Color.LIGHT_GRAY);
+        button.setPreferredSize(new Dimension(160, 40));
+        return button;
+    }
+
+
+    private JPanel createFooterPanel() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footer.setOpaque(false);
         footer.setBorder(new EmptyBorder(20, 0, 80, 0));
@@ -128,6 +131,8 @@ public class MenuPage extends JPanel {
         quoteLabel.setFont(new Font("SansSerif", Font.ITALIC, 18));
         quoteLabel.setForeground(Color.GRAY);
         footer.add(quoteLabel);
-        add(footer, BorderLayout.SOUTH);
+
+        return footer;
     }
 }
+

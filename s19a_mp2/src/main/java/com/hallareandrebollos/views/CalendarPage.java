@@ -262,8 +262,8 @@ public class CalendarPage extends JPanel {
                 } else {
                     for (int i = 0; i < entriesForDay.size(); i++) {
                         Entry entry = entriesForDay.get(i);
-                        message.append(i + 1).append(". ").append(entry.getTitle()).append(" - ");
-                        message.append(entry.getClass().getSimpleName()).append("\n");
+                        message.append(i + 1).append(". ").append(entry.getTitle()).append("(");
+                        message.append(entry.getClass().getSimpleName()).append(")\n");
                     }
                 }
 
@@ -272,7 +272,7 @@ public class CalendarPage extends JPanel {
 
                 JTextArea textArea = new JTextArea(message.toString());
                 textArea.setEditable(false);
-                textArea.setFont(new Font("SansSerif", Font.PLAIN, 13));
+                textArea.setFont(new Font("SansSerif", Font.PLAIN, 16));
                 panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
                 JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
