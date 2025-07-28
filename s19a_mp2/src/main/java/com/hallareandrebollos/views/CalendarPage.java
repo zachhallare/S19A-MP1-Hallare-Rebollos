@@ -24,9 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -35,6 +33,7 @@ import javax.swing.border.EmptyBorder;
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.widgets.entryList;
 
 public class CalendarPage extends JPanel {
     private final LogicController logic;
@@ -118,11 +117,24 @@ public class CalendarPage extends JPanel {
     private JPanel createBottomPanel(Router router) {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(new Color(0xE0E0E0));
+        
+        JButton weeklyViewButton = new JButton("Weekly View");
+        weeklyViewButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        weeklyViewButton.setFocusPainted(false);
+        weeklyViewButton.setBackground(Color.WHITE);
+        weeklyViewButton.addActionListener(e -> {
+            // Set the weekly view to start from the first day of the selected month
+            LocalDate firstDayOfMonth = LocalDate.of(logic.getSelectedYear(), logic.getSelectedMonth(), 1);
+            router.showWeeklyView(firstDayOfMonth);
+        });
+        
         JButton backButton = new JButton("Back to Menu");
         backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
         backButton.setFocusPainted(false);
         backButton.setBackground(Color.WHITE);
         backButton.addActionListener(e -> router.showMenuPage());
+        
+        bottomPanel.add(weeklyViewButton);
         bottomPanel.add(backButton);
         return bottomPanel;
     }
@@ -256,62 +268,14 @@ public class CalendarPage extends JPanel {
                 LocalDate selectedDate = LocalDate.of(year, month, selectedDay);
                 ArrayList<Entry> entriesForDay = logic.getEntriesForDate(selectedDate);
 
-                StringBuilder message = new StringBuilder();
-                if (entriesForDay.isEmpty()) {
-                    message.append("No entries for this day.");
-                } else {
-                    for (int i = 0; i < entriesForDay.size(); i++) {
-                        Entry entry = entriesForDay.get(i);
-                        message.append(i + 1).append(". ").append(entry.getTitle()).append("(");
-                        message.append(entry.getClass().getSimpleName()).append(")\n");
-                    }
-                }
-
-                JPanel panel = new JPanel();
-                panel.setLayout(new BorderLayout());
-
-                JTextArea textArea = new JTextArea(message.toString());
-                textArea.setEditable(false);
-                textArea.setFont(new Font("SansSerif", Font.PLAIN, 16));
-                panel.add(new JScrollPane(textArea), BorderLayout.CENTER);
-
-                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                JButton addBtn = new JButton("Add Entry");
-                JButton editBtn = new JButton("Edit Entry");
-                JButton deleteBtn = new JButton("Delete Entry");
-                JButton closeBtn = new JButton("Close");
-
-                buttonPanel.add(addBtn);
-                buttonPanel.add(editBtn);
-                buttonPanel.add(deleteBtn);
-                buttonPanel.add(closeBtn);
-
-                panel.add(buttonPanel, BorderLayout.SOUTH);
+                // Create entryList widget for the selected date
+                entryList entryListWidget = new entryList(selectedDate, entriesForDay, router, logic, true);
 
                 JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(calendarGrid), 
                                             "Entries for " + selectedDate.toString(), true);
-                dialog.setContentPane(panel);
-                dialog.setSize(400, 300);
+                dialog.setContentPane(entryListWidget);
+                dialog.setSize(500, 600);
                 dialog.setLocationRelativeTo(calendarGrid);
-
-                // Action buttons
-                closeBtn.addActionListener(ae -> dialog.dispose());
-
-                addBtn.addActionListener(ae -> {
-                    dialog.dispose();
-                    router.showEntryForm(null, selectedDate);
-                });
-
-                editBtn.addActionListener(ae -> {
-                    dialog.dispose();
-                    // router.showEditEntryPage(selectedDate); // You can customize this
-                });
-
-                deleteBtn.addActionListener(ae -> {
-                    dialog.dispose();
-                    // router.showDeleteEntryPage(selectedDate); // You can customize this
-                });
-
                 dialog.setVisible(true);
             });
 

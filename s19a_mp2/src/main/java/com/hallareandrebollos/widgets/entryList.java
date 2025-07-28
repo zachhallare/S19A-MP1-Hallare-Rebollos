@@ -4,8 +4,11 @@ package com.hallareandrebollos.widgets;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
@@ -37,12 +40,14 @@ public class entryList extends JPanel {
     private final List<Entry> entries;
     private final Router router;
     private final LogicController logicController;
+    private final boolean closeDialogOnAdd;
 
-    public entryList(LocalDate date, List<Entry> entries, Router router, LogicController logicController) {
+    public entryList(LocalDate date, List<Entry> entries, Router router, LogicController logicController, boolean closeDialogOnAdd) {
         this.date = date;
         this.entries = entries;
         this.router = router;
         this.logicController = logicController;
+        this.closeDialogOnAdd = closeDialogOnAdd;
         setLayout(new BorderLayout());
         setOpaque(false);
 
@@ -131,13 +136,11 @@ public class entryList extends JPanel {
         infoPanel.add(titleLabel);
         infoPanel.add(typeLabel);
 
-        if (entry instanceof Meeting) {
-            Meeting m = (Meeting) entry;
+        if (entry instanceof Meeting m) {
             JLabel timeLabel = new JLabel(m.getStartTime() + " - " + m.getEndTime());
             timeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
             infoPanel.add(timeLabel);
-        } else if (entry instanceof Event) {
-            Event e = (Event) entry;
+        } else if (entry instanceof Event e) {
             JLabel timeLabel = new JLabel(e.getStartTime() + " - " + e.getEndTime());
             timeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
             infoPanel.add(timeLabel);
@@ -152,7 +155,7 @@ public class entryList extends JPanel {
         menuBtn.setBorderPainted(false);
         menuBtn.setContentAreaFilled(false);
         menuBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        menuBtn.addActionListener(e -> {
+        menuBtn.addActionListener((var e) -> {
             JPanel dialogPanel = new JPanel();
             dialogPanel.setLayout(new BoxLayout(dialogPanel, BoxLayout.Y_AXIS));
             JButton editBtn = new JButton("Edit Entry");
@@ -162,14 +165,14 @@ public class entryList extends JPanel {
             dialogPanel.add(editBtn);
             dialogPanel.add(deleteBtn);
 
-            java.awt.Window window = SwingUtilities.getWindowAncestor(panel);
+            Window window = SwingUtilities.getWindowAncestor(panel);
             JDialog dialog;
-            if (window instanceof java.awt.Frame) {
-                dialog = new JDialog((java.awt.Frame) window, "Entry Actions", true);
-            } else if (window instanceof java.awt.Dialog) {
-                dialog = new JDialog((java.awt.Dialog) window, "Entry Actions", true);
+            if (window instanceof Frame frame) {
+                dialog = new JDialog(frame, "Entry Actions", true);
+            } else if (window instanceof Dialog dialog1) {
+                dialog = new JDialog(dialog1, "Entry Actions", true);
             } else {
-                dialog = new JDialog((java.awt.Frame) null, "Entry Actions", true);
+                dialog = new JDialog((Frame) null, "Entry Actions", true);
             }
             dialog.setContentPane(dialogPanel);
             dialog.setSize(220, 120);
@@ -185,7 +188,7 @@ public class entryList extends JPanel {
                 if (confirm == JOptionPane.YES_OPTION) {
                     logicController.getCurrentCalendarObject().removeEntry(entry);
                     JOptionPane.showMessageDialog(panel, "Entry deleted.");
-                    router.showEntriesPage(String.valueOf(date.getDayOfMonth()), String.valueOf(date.getMonthValue()), String.valueOf(date.getYear()), logicController.getEntriesForDate(date));
+                    router.showWeeklyView(entry.getDate());
                 }
             });
             dialog.setVisible(true);
@@ -205,34 +208,31 @@ public class entryList extends JPanel {
                 if (entry.getDescription() != null && !entry.getDescription().isEmpty()) {
                     dialogPanel.add(new JLabel("Description: " + entry.getDescription()));
                 }
-                if (entry instanceof Event) {
-                    Event ev = (Event) entry;
+                if (entry instanceof Event ev) {
                     dialogPanel.add(new JLabel("Venue: " + ev.getVenue()));
                     dialogPanel.add(new JLabel("Organizer: " + ev.getOrganizer()));
                     dialogPanel.add(new JLabel("Start Time: " + ev.getStartTime()));
                     dialogPanel.add(new JLabel("End Time: " + ev.getEndTime()));
-                } else if (entry instanceof Meeting) {
-                    Meeting mt = (Meeting) entry;
+                } else if (entry instanceof Meeting mt) {
                     dialogPanel.add(new JLabel("Modality: " + mt.getModality()));
                     dialogPanel.add(new JLabel("Venue: " + (mt.getVenue() != null ? mt.getVenue() : "")));
                     dialogPanel.add(new JLabel("Link: " + (mt.getLink() != null ? mt.getLink() : "")));
                     dialogPanel.add(new JLabel("Start Time: " + mt.getStartTime()));
                     dialogPanel.add(new JLabel("End Time: " + mt.getEndTime()));
-                } else if (entry instanceof Task) {
-                    Task tk = (Task) entry;
+                } else if (entry instanceof Task tk) {
                     dialogPanel.add(new JLabel("Priority: " + tk.getPriority()));
                     dialogPanel.add(new JLabel("Status: " + tk.getStatus()));
                     dialogPanel.add(new JLabel("Created By: " + tk.getCreatedBy()));
                     dialogPanel.add(new JLabel("Finished By: " + (tk.getFinishedBy() != null ? tk.getFinishedBy() : "")));
                 }
                 JDialog dialog;
-                java.awt.Window window = SwingUtilities.getWindowAncestor(panel);
-                if (window instanceof java.awt.Frame) {
-                    dialog = new JDialog((java.awt.Frame) window, "Entry Details", true);
-                } else if (window instanceof java.awt.Dialog) {
-                    dialog = new JDialog((java.awt.Dialog) window, "Entry Details", true);
+                Window window = SwingUtilities.getWindowAncestor(panel);
+                if (window instanceof Frame frame) {
+                    dialog = new JDialog(frame, "Entry Details", true);
+                } else if (window instanceof Dialog dialog1) {
+                    dialog = new JDialog(dialog1, "Entry Details", true);
                 } else {
-                    dialog = new JDialog((java.awt.Frame) null, "Entry Details", true);
+                    dialog = new JDialog((Frame) null, "Entry Details", true);
                 }
                 dialog.setContentPane(dialogPanel);
                 dialog.setSize(320, 320);
@@ -255,8 +255,14 @@ public class entryList extends JPanel {
         addBtn.setForeground(Color.WHITE);
         addBtn.setFocusPainted(false);
         addBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        addBtn.addActionListener(e -> {
+        addBtn.addActionListener((var e) -> {
             // Show EntryForm for this date
+            if (closeDialogOnAdd) {
+                Window window = SwingUtilities.getWindowAncestor(this);
+                if (window instanceof JDialog jDialog) {
+                    jDialog.dispose();
+                }
+            }
             router.showEntryForm(null, this.date);
         });
 

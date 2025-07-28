@@ -382,13 +382,8 @@ public class EntryForm extends JPanel {
                 logic.getCurrentCalendarObject().addEntry(newEntry);
                 JOptionPane.showMessageDialog(this, "Entry updated!");
             }
-            // Route to entries list page after submit
-            String day = String.valueOf(date.getDayOfMonth());
-            String month = String.valueOf(date.getMonthValue());
-            String year = String.valueOf(date.getYear());
-            ArrayList<Entry> entries = logic.getEntriesForDate(date);
             clearFields();
-            router.showEntriesPage(day, month, year, entries);
+            router.showWeeklyView(date);
         }
     }
 

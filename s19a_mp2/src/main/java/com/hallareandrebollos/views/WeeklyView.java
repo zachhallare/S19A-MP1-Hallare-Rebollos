@@ -3,7 +3,6 @@ package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -32,7 +31,6 @@ public class WeeklyView extends JPanel {
     private LocalDate weekStart;
     private JPanel entryListsPanel;
     private JScrollPane horizontalScrollPane;
-    private JScrollPane verticalScrollPane;
     private JLabel weekLabel;
 
     public WeeklyView(Router router, LogicController logic) {
@@ -97,29 +95,13 @@ public class WeeklyView extends JPanel {
         this.entryListsPanel.setLayout(new BoxLayout(this.entryListsPanel, BoxLayout.X_AXIS));
         this.entryListsPanel.setOpaque(false);
 
-        this.horizontalScrollPane = new JScrollPane(this.entryListsPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        this.horizontalScrollPane = new JScrollPane(this.entryListsPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.horizontalScrollPane.setBorder(null);
         this.horizontalScrollPane.getHorizontalScrollBar().setUnitIncrement(24);
         this.horizontalScrollPane.setOpaque(false);
         this.horizontalScrollPane.getViewport().setOpaque(false);
 
-        this.verticalScrollPane = new JScrollPane(this.horizontalScrollPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        this.verticalScrollPane.setBorder(null);
-        this.verticalScrollPane.getVerticalScrollBar().setUnitIncrement(24);
-        this.verticalScrollPane.setOpaque(false);
-        this.verticalScrollPane.getViewport().setOpaque(false);
-
-        // Should sync vertical scroll for all entry lists
-        // Havent tested kinda half ahhed
-        this.verticalScrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
-            for (Component comp : this.entryListsPanel.getComponents()) {
-                if (comp instanceof JScrollPane sp) {
-                    sp.getVerticalScrollBar().setValue(e.getValue());
-                }
-            }
-        });
-
-        return this.verticalScrollPane;
+        return this.horizontalScrollPane;
     }
 
     private JPanel createBottomPanel() {
@@ -151,9 +133,9 @@ public class WeeklyView extends JPanel {
         for (int i = 0; i < 7; i++) {
             LocalDate date = weekStart.plusDays(i);
             List<Entry> entries = logic.getEntriesForDate(date);
-            entryList list = new entryList(date, entries, router, logic);
+            entryList list = new entryList(date, entries, router, logic, false);
 
-            JScrollPane entryScrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane entryScrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             entryScrollPane.setPreferredSize(new Dimension(220, 400));
             entryScrollPane.setBorder(BorderFactory.createTitledBorder(date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)));
             entryScrollPane.getVerticalScrollBar().setUnitIncrement(24);
@@ -165,5 +147,14 @@ public class WeeklyView extends JPanel {
 
         entryListsPanel.revalidate();
         entryListsPanel.repaint();
+    }
+
+    public void redrawContents() {
+        updateWeekView();
+    }
+
+    public void moveToSpecificWeek(LocalDate startDate) {
+        this.weekStart = startDate.minusDays(startDate.getDayOfWeek().getValue() % 7);
+        updateWeekView();
     }
 }

@@ -105,7 +105,7 @@
 //         // Date construction
 //         LocalDate date = LocalDate.of(
 //             Integer.parseInt(year),
-//             java.time.Month.valueOf(month.toUpperCase()),
+//             Month.valueOf(month.toUpperCase()),
 //             Integer.parseInt(day)
 //         );
 

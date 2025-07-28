@@ -51,17 +51,6 @@ public class LogicController {
     }
 
     /**
-     * Returns the current month (0–11) in the system's time zone.
-     * @return The current month index.
-     */
-    public int getCurrentMonth() {
-        long currentTimeMillis = System.currentTimeMillis();
-        java.util.Calendar CalendarLogic = java.util.Calendar.getInstance();
-        CalendarLogic.setTimeInMillis(currentTimeMillis);
-        return CalendarLogic.get(java.util.Calendar.MONTH);
-    }
-
-    /**
      * Authenticates the provided username and password. If matched, sets the
      * accountIndex to the corresponding user.
      * @param username The input username.

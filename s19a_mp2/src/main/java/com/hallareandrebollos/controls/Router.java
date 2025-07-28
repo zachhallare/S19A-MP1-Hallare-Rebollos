@@ -2,7 +2,7 @@
 package com.hallareandrebollos.controls;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
+import java.time.LocalDate;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,6 +15,7 @@ import com.hallareandrebollos.views.CalendarPage;
 import com.hallareandrebollos.views.EntryForm;
 import com.hallareandrebollos.views.LandingPage;
 import com.hallareandrebollos.views.MenuPage;
+import com.hallareandrebollos.views.WeeklyView;
 
 public final class Router extends JFrame {
     // Main Controller.
@@ -27,6 +28,7 @@ public final class Router extends JFrame {
     private final MenuPage menuPage;
     private CalendarListPage calendarListPage;
     private CalendarPage calendarPage;
+    public final WeeklyView weeklyView;
 
     // Dynamic Pages.
     private EntryForm entryForm;
@@ -52,6 +54,7 @@ public final class Router extends JFrame {
         this.menuPage = new MenuPage(this, this.logicController);
         this.calendarPage = new CalendarPage(this, this.logicController);
         this.calendarListPage = new CalendarListPage(this, this.logicController);
+        this.weeklyView = new WeeklyView(this, this.logicController);
 
         // Main Content Panel.
         this.contentPanel = new JPanel(new BorderLayout());
@@ -109,8 +112,19 @@ public final class Router extends JFrame {
         showEntryForm(entryToEdit, null);
     }
 
-    public void showEntryForm(Entry entryToEdit, java.time.LocalDate preselectedDate) {
+    public void showEntryForm(Entry entryToEdit, LocalDate preselectedDate) {
         this.entryForm = new EntryForm(this, this.logicController, entryToEdit, preselectedDate);
         showPage(this.entryForm);
+    }
+
+    public void showWeeklyView(LocalDate startDate) {
+        this.weeklyView.redrawContents();
+        if (startDate != null) {
+            this.weeklyView.moveToSpecificWeek(startDate);
+        } else {
+            this.weeklyView.moveToSpecificWeek(LocalDate.now());
+            
+        }
+        showPage(this.weeklyView);
     }
 }
