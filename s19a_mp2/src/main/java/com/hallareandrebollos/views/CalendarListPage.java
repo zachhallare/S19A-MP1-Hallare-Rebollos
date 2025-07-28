@@ -234,20 +234,31 @@ public class CalendarListPage extends JPanel {
     private void onAddCalendar(LogicController logic) {
         String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
         if (name != null && !name.isBlank()) {
-            String[] options = {"Private", "Public"};
-            int type = JOptionPane.showOptionDialog(this,
-                    "Choose calendar type:", "Calendar Type",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                    null, options, options[0]);
-
-            boolean isPublic = (type == 1);
-            boolean exists = logic.checkCalendarDuplicate(name, isPublic, logic.getCurrentAccount().getUsername());
-            if (!exists) {
-                logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, isPublic);
-                JOptionPane.showMessageDialog(this, "Calendar added!");
-                redrawContents();
-            } else {
-                JOptionPane.showMessageDialog(this, "Calendar already exists.");
+            // default assumes public is true
+            // personal assumes public is false
+            // family assumes public is true and requires a passcode
+            String[] options = {"Default", "Personal", "Family"};
+            int choice = JOptionPane.showOptionDialog(this, "Select calendar type:", "Add Calendar",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+            switch (choice) {
+                case 0:
+                    // Default calendar
+                    logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, true);
+                    break;
+                case 1:
+                    // Personal calendar
+                    logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, false);
+                    break;
+                case 2:
+                    // Family calendar
+                    try {
+                        int passcode = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter family calendar passcode:"));
+                        logic.addFamilyCalendar(logic.getCurrentAccount().getUsername(), name, passcode);
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(this, "Invalid passcode. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }   break;
+                default:
+                    break;
             }
         }
     }

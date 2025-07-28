@@ -118,7 +118,7 @@ public final class Router extends JFrame {
     }
 
     public void showWeeklyView(LocalDate startDate) {
-        this.weeklyView.redrawContents();
+        this.weeklyView.updateWeekView();
         if (startDate != null) {
             this.weeklyView.moveToSpecificWeek(startDate);
         } else {

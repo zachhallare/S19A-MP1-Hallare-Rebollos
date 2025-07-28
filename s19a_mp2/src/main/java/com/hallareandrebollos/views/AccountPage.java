@@ -170,6 +170,7 @@ public class AccountPage extends JPanel {
                         usernameField.setText("");
                         passwordField.setText("");
                         router.showLandingPage();
+                        logic.addCalendarObject(username, username, false);
                     }
                 }
             } else {

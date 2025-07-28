@@ -118,7 +118,7 @@ public class WeeklyView extends JPanel {
         return bottomPanel;
     }
 
-    private void updateWeekView() {
+    public void updateWeekView() {
         // Update week label and lavel
         LocalDate weekEnd = weekStart.plusDays(6);
         String startStr = weekStart.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
@@ -147,10 +147,6 @@ public class WeeklyView extends JPanel {
 
         entryListsPanel.revalidate();
         entryListsPanel.repaint();
-    }
-
-    public void redrawContents() {
-        updateWeekView();
     }
 
     public void moveToSpecificWeek(LocalDate startDate) {

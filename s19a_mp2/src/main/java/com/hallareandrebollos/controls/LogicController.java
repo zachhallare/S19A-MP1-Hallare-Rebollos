@@ -8,6 +8,7 @@ import com.hallareandrebollos.models.Account;
 import com.hallareandrebollos.models.CalendarObject;
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.models.Event;
+import com.hallareandrebollos.models.FamilyCalendar;
 import com.hallareandrebollos.models.Journal;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
@@ -494,4 +495,8 @@ public class LogicController {
         return isDuplicate;
     }
 
+    public void addFamilyCalendar(String username, String calendarName, int passcode) {
+        FamilyCalendar familyCalendar = new FamilyCalendar(passcode, calendarName, true);
+        addCalendarInstance(familyCalendar);
+    }
 }
