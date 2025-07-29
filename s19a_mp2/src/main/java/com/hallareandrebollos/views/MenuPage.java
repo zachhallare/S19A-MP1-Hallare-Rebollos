@@ -68,20 +68,27 @@ public class MenuPage extends JPanel {
         addButton.addActionListener(e -> {
             String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
             if (name != null && !name.isBlank()) {
-                String[] options = {"Private", "Public"};
+                String[] options = {"Default", "Personal", "Family"};
                 int type = JOptionPane.showOptionDialog(this,
                         "Choose calendar type:", "Calendar Type",
                         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                         null, options, options[0]);
-                boolean isPublic = (type == 1);
-                boolean exists = logic.checkCalendarDuplicate(name, isPublic, logic.getCurrentAccount().getUsername());
-
-                if (!exists) {
-                    logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, isPublic);
-                    JOptionPane.showMessageDialog(this, "Calendar added!");
-                    router.showCalendarListPage();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Calendar already exists.");
+                boolean exists = logic.checkCalendarDuplicate(name, true, logic.getCurrentAccount().getUsername());
+                if (exists) {
+                    type = 5;
+                }
+                exists = logic.checkCalendarDuplicate(name, false, logic.getCurrentAccount().getUsername());
+                if (exists) {
+                    type = 5;
+                }
+                switch (type) {
+                    case 0 -> logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, true);
+                    case 1 -> logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, false);
+                    case 2 -> {
+                        int passcode = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter family calendar passcode:"));
+                        logic.addFamilyCalendar(logic.getCurrentAccount().getUsername(), name, passcode);
+                    }
+                    default -> JOptionPane.showMessageDialog(this, "Calendar with this name already exists.");
                 }
             }
         });

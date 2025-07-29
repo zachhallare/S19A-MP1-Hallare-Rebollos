@@ -499,4 +499,22 @@ public class LogicController {
         FamilyCalendar familyCalendar = new FamilyCalendar(passcode, calendarName, true);
         addCalendarInstance(familyCalendar);
     }
+
+    public boolean checkCurrentCalendarIsFamily() {
+        if (this.CalendarObjectIndex >= 0 && this.CalendarObjectIndex < CalendarObjects.size()) {
+            CalendarObject currentCalendar = CalendarObjects.get(this.CalendarObjectIndex);
+            return currentCalendar instanceof FamilyCalendar;
+        }
+        return false;
+    }
+
+    public FamilyCalendar getCurrentFamilyCalendar() {
+        if (checkCurrentCalendarIsFamily()) {
+            CalendarObject currentCalendar = CalendarObjects.get(this.CalendarObjectIndex);
+            if (currentCalendar instanceof FamilyCalendar) {
+                return (FamilyCalendar) currentCalendar;
+            }
+        }
+        return null; // No FamilyCalendar is selected
+    }
 }

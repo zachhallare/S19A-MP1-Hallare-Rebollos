@@ -13,8 +13,6 @@ import javax.swing.JPanel;
 import com.hallareandrebollos.models.Entry;
 
 public class pieChart extends JPanel {
-
-    private static final long serialVersionUID = 1L;
     private final int[] values;
     private final Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE};
     private final String[] types = {"Event", "Meeting", "Task", "Journal"};

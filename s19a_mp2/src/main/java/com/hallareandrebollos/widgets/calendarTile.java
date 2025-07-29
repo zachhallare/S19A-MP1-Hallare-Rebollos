@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -22,8 +23,6 @@ import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
 
 public class calendarTile extends JPanel implements MouseListener {
-
-    private static final long serialVersionUID = 1L;
     private int day;
     private int month;
     private int year;
@@ -77,13 +76,12 @@ public class calendarTile extends JPanel implements MouseListener {
         ArrayList<Entry> entriesForDay = logic.getEntriesForDate(selectedDate);
 
         entryList entryListWidget = new entryList(selectedDate, entriesForDay, router, logic, true);
-
-        JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(parentPanel),
-                "Entries for " + selectedDate.toString(), true);
-        dialog.setContentPane(entryListWidget);
-        dialog.setSize(500, 600);
-        dialog.setLocationRelativeTo(parentPanel);
-        dialog.setVisible(true);
+            JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(parentPanel),
+                    "Entries for " + selectedDate.toString(), true);
+            dialog.setContentPane(entryListWidget);
+            dialog.setSize(500, 600);
+            dialog.setLocationRelativeTo(parentPanel);
+            dialog.setVisible(true);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -155,7 +156,7 @@ public class EntryForm extends JPanel {
             typeBtn.setFocusPainted(false);
             typeBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
             typeBtn.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
-            typeBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            typeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
             
             typeBtn.addActionListener(e -> {
                 this.currentIdx = idx;
@@ -206,7 +207,7 @@ public class EntryForm extends JPanel {
         submitBtn.setForeground(Color.WHITE);
         submitBtn.setFocusPainted(false);
         submitBtn.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 32));
-        submitBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        submitBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         submitBtn.addActionListener(e -> handleSubmitAndReturnToEntries());
         bottomPanel.add(submitBtn);
 
@@ -216,7 +217,7 @@ public class EntryForm extends JPanel {
         returnBtn.setForeground(Color.WHITE);
         returnBtn.setFocusPainted(false);
         returnBtn.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 32));
-        returnBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        returnBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         returnBtn.addActionListener(e -> handleReturnToCalendar());
         bottomPanel.add(returnBtn);
 
