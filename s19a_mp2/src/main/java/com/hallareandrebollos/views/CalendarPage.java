@@ -6,34 +6,28 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.text.DateFormatSymbols;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
-import com.hallareandrebollos.models.Entry;
-import com.hallareandrebollos.widgets.entryList;
+import com.hallareandrebollos.widgets.calendarTile;
 
 public class CalendarPage extends JPanel {
     private final LogicController logic;
@@ -133,7 +127,14 @@ public class CalendarPage extends JPanel {
         backButton.setFocusPainted(false);
         backButton.setBackground(Color.WHITE);
         backButton.addActionListener(e -> router.showMenuPage());
-        
+        JButton addInfoButton = new JButton("Help");
+        addInfoButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        addInfoButton.setFocusPainted(false);
+        addInfoButton.setBackground(Color.WHITE);
+        addInfoButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Red - Task\n Blue - Event\n Yellow - Meeting\n Green - Journal", "Help", JOptionPane.INFORMATION_MESSAGE);
+        });
+        bottomPanel.add(addInfoButton);
         bottomPanel.add(weeklyViewButton);
         bottomPanel.add(backButton);
         return bottomPanel;
@@ -249,35 +250,11 @@ public class CalendarPage extends JPanel {
 
         // Displays Each Button for Each Day.
         for (int day = 1; day <= daysInMonth; day++) {
-            JButton dayButton = new JButton(String.valueOf(day));
-            dayButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            dayButton.setHorizontalAlignment(SwingConstants.LEFT);
-            dayButton.setVerticalAlignment(SwingConstants.TOP);
-            dayButton.setMargin(new Insets(4, 6, 4, 4));
-            dayButton.setFocusPainted(false);
-            dayButton.setBackground(Color.WHITE);
-            dayButton.setOpaque(true);
-
-            // Highlight the Date Today.
-            if (year == today.getYear() && month == today.getMonthValue() && day == today.getDayOfMonth()) {
-                dayButton.setFont(new Font("SansSerif", Font.BOLD, 15));
-            } 
-
-            int selectedDay = day;
-            dayButton.addActionListener(e -> {
-                LocalDate selectedDate = LocalDate.of(year, month, selectedDay);
-                ArrayList<Entry> entriesForDay = logic.getEntriesForDate(selectedDate);
-
-                // Create entryList widget for the selected date
-                entryList entryListWidget = new entryList(selectedDate, entriesForDay, router, logic, true);
-
-                JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(calendarGrid), 
-                                            "Entries for " + selectedDate.toString(), true);
-                dialog.setContentPane(entryListWidget);
-                dialog.setSize(500, 600);
-                dialog.setLocationRelativeTo(calendarGrid);
-                dialog.setVisible(true);
-            });
+            calendarTile dayButton = new calendarTile(
+                calendarGrid, day, month, year,
+                day == today.getDayOfMonth() && month == today.getMonthValue() && year == today.getYear(),
+                logic, router
+            );
 
             calendarGrid.add(dayButton);
         }
