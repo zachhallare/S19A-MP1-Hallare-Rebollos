@@ -1,4 +1,3 @@
-
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
@@ -171,7 +170,7 @@ public class EntryForm extends JPanel {
         return header;
     }
 
-        private void updateButtonStyles() {
+    private void updateButtonStyles() {
         Color[] activeColors = {
             new Color(59, 130, 246),   // Blue for Event
             new Color(34, 197, 94),    // Green for Journal  
