@@ -149,7 +149,7 @@ public class entryList extends JPanel {
         panel.add(infoPanel, BorderLayout.WEST);
 
         // Right: Menu button
-        JButton menuBtn = new JButton("⋮");
+        JButton menuBtn = new JButton("...");
         menuBtn.setFont(new Font("Arial", Font.BOLD, 16));
         menuBtn.setFocusPainted(false);
         menuBtn.setBorderPainted(false);

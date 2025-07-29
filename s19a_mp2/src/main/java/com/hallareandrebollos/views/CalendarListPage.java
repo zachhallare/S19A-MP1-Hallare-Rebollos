@@ -26,6 +26,7 @@ import javax.swing.SwingConstants;
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.CalendarObject;
+import com.hallareandrebollos.models.FamilyCalendar;
 
 /**
  * CalendarListPage displays two list views: public calendars (horizontal) and private calendars (vertical).
@@ -224,7 +225,16 @@ public class CalendarListPage extends JPanel {
 
     // TODO: add functionality.
     private void onPublicCalendarClicked(CalendarObject cal, Router router) {
-        router.showCalendarPage(cal);
+        if (cal instanceof FamilyCalendar familyCal) {
+            int passcode = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter family calendar passcode:"));
+            if (familyCal.isPasscodeCorrect(passcode)) {
+                router.showCalendarPage(cal);
+            } else {
+                JOptionPane.showMessageDialog(this, "Incorrect passcode.");
+            }
+        } else {
+            router.showCalendarPage(cal);
+        }
     }
 
     private void onPrivateCalendarClicked(CalendarObject cal) {

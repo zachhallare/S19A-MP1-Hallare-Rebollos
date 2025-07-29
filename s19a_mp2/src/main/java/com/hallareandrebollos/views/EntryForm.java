@@ -3,6 +3,7 @@ package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -155,7 +156,7 @@ public class EntryForm extends JPanel {
             typeBtn.setFocusPainted(false);
             typeBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
             typeBtn.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
-            typeBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+            typeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
             
             typeBtn.addActionListener(e -> {
                 this.currentIdx = idx;
@@ -206,7 +207,7 @@ public class EntryForm extends JPanel {
         submitBtn.setForeground(Color.WHITE);
         submitBtn.setFocusPainted(false);
         submitBtn.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 32));
-        submitBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        submitBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         submitBtn.addActionListener(e -> handleSubmitAndReturnToEntries());
         bottomPanel.add(submitBtn);
 
@@ -216,7 +217,7 @@ public class EntryForm extends JPanel {
         returnBtn.setForeground(Color.WHITE);
         returnBtn.setFocusPainted(false);
         returnBtn.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 32));
-        returnBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        returnBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         returnBtn.addActionListener(e -> handleReturnToCalendar());
         bottomPanel.add(returnBtn);
 
@@ -261,8 +262,12 @@ public class EntryForm extends JPanel {
 
         // Common Fields.
         addSectionHeader("Basic Information", gbc);
-        titleField = addLabeledTextField("Title:", gbc);
-        descField = addLabeledTextArea("Description:", gbc);
+        titleField = addLabeledTextField("Title:", gbc, true);
+
+        // Desc Field: required for Journal, optional for the rest.
+        boolean descRequired = (idx == 1);
+        descField = addLabeledTextArea("Description:", gbc, descRequired);
+        
         addDateField("Date:", gbc);
 
         // Type-Specific Fields.
@@ -345,12 +350,14 @@ public class EntryForm extends JPanel {
         return field;
     }
 
+
     private JTextField addLabeledTextField(String labelText, GridBagConstraints gbc) {
         return addLabeledTextField(labelText, gbc, false);
     }
 
-    private JTextArea addLabeledTextArea(String labelText, GridBagConstraints gbc) {
-        JLabel label = new JLabel(labelText);
+
+    private JTextArea addLabeledTextArea(String labelText, GridBagConstraints gbc, boolean required) {
+        JLabel label = new JLabel(labelText + (required ? " *" : ""));
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         label.setForeground(new Color(55, 65, 81));
         gbc.gridx = 0;
@@ -403,8 +410,8 @@ public class EntryForm extends JPanel {
     }
 
 
-    private JComboBox<String> addLabeledComboBox(String labelText, String[] options, GridBagConstraints gbc) {
-        JLabel label = new JLabel(labelText);
+    private JComboBox<String> addLabeledComboBox(String labelText, String[] options, GridBagConstraints gbc, boolean required) {
+        JLabel label = new JLabel(labelText + (required ? " *" : ""));
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         label.setForeground(new Color(55, 65, 81));
         gbc.gridx = 0;
@@ -443,8 +450,8 @@ public class EntryForm extends JPanel {
     private void addEventFields(GridBagConstraints gbc) {
         venueField = addLabeledTextField("Venue:", gbc, true);
         
-        // Organizer field (read-only)
-        JLabel orgLabel = new JLabel("Organizer:");
+        // Organizer field.
+        JLabel orgLabel = new JLabel("Organizer: *");
         orgLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         orgLabel.setForeground(new Color(55, 65, 81));
         gbc.gridx = 0;
@@ -474,7 +481,7 @@ public class EntryForm extends JPanel {
 
 
     private void addMeetingFields(GridBagConstraints gbc) {
-        this.modalityField = addLabeledComboBox("Modality:", new String[]{"Online", "Onsite", "Hybrid"}, gbc);
+        this.modalityField = addLabeledComboBox("Modality:", new String[]{"Online", "Onsite", "Hybrid"}, gbc, true);
         this.meetingVenueField = addLabeledTextField("Venue (optional):", gbc);
         this.linkField = addLabeledTextField("Link (optional):", gbc);
         
@@ -485,13 +492,13 @@ public class EntryForm extends JPanel {
         addTimeField("End Time:", this.endTimeSelector, gbc);
     }
 
+
     private void addTaskFields(GridBagConstraints gbc) {
-        this.priorityBox = addLabeledComboBox("Priority:", new String[]{"High", "Medium", "Low"}, gbc);
-        this.statusBox = addLabeledComboBox("Status:", new String[]{"Pending", "Done"}, gbc);
+        this.priorityBox = addLabeledComboBox("Priority:", new String[]{"High", "Medium", "Low"}, gbc, true);
+        this.statusBox = addLabeledComboBox("Status:", new String[]{"Pending", "Done"}, gbc, true);
         this.createdByField = addLabeledTextField("Created By:", gbc, true);
         this.finishedByField = addLabeledTextField("Finished By (optional):", gbc);
     }
-
 
 
     private void populateFieldsForEdit() {
@@ -531,85 +538,158 @@ public class EntryForm extends JPanel {
     }
 
 
-    private void handleSubmitAndReturnToEntries() {
-        String title = this.titleField.getText().trim();
-        String desc = this.descField.getText().trim();
-        LocalDate date = this.dateSelector.getSelectedDate();
-        if (date == null) date = LocalDate.now();
+    private boolean validateRequiredFields() {
+        ArrayList<String> missingFields = new ArrayList<>();
+        boolean isValid = true;
 
-        Entry newEntry = null;
-
-        switch (this.currentIdx) {
-            case 0: // Event
-                String venue = this.venueField.getText().trim();
-                String organizer = logic.getCurrentAccount() != null ? logic.getCurrentAccount().getUsername() : "";
-                LocalTime start = this.startTimeSelector.getSelectedTime();
-                LocalTime end = this.endTimeSelector.getSelectedTime();
-                if (start == null) start = LocalTime.now();
-                if (end == null) end = LocalTime.now();
-                newEntry = new Event(title, date, desc, venue, organizer, start, end);
-                break;
-            case 1: // Journal
-                // Only allow if calendar name matches account username
-                String calendarName = logic.getCurrentCalendarObject() != null ? logic.getCurrentCalendarObject().getCalendarName() : "";
-                String accountName = logic.getCurrentAccount() != null ? logic.getCurrentAccount().getUsername() : "";
-                boolean isEditingJournal = (this.editingEntry != null && this.editingEntry instanceof Journal);
-                boolean journalExists = false;
-                if (!isEditingJournal) {
-                    ArrayList<Entry> entries = logic.getCurrentCalendarObject() != null ? logic.getCurrentCalendarObject().getEntries() : new ArrayList<>();
-                    for (Entry e : entries) {
-                        if (e instanceof Journal && e.getDate().equals(date)) {
-                            journalExists = true;
-                            break;
-                        }
-                    }
-                }
-                if (!calendarName.equals(accountName)) {
-                    JOptionPane.showMessageDialog(this, "Journals can only be created in a calendar named after your account.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                if (journalExists) {
-                    JOptionPane.showMessageDialog(this, "A journal already exists for this date.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                newEntry = new Journal(title, date, desc);
-                break;
-            case 2: // Meeting
-                String modality = this.modalityField instanceof JComboBox ? (String)((JComboBox<?>)this.modalityField).getSelectedItem() : "";
-                String mVenue = this.meetingVenueField.getText().trim();
-                String link = this.linkField.getText().trim();
-                LocalTime meetingStart = this.startTimeSelector != null ? this.startTimeSelector.getSelectedTime() : null;
-                LocalTime meetingEnd = this.endTimeSelector != null ? this.endTimeSelector.getSelectedTime() : null;
-                if (meetingStart == null) meetingStart = LocalTime.now();
-                if (meetingEnd == null) meetingEnd = LocalTime.now();
-                if (!mVenue.isEmpty() || !link.isEmpty())
-                    newEntry = new Meeting(title, date, meetingStart, meetingEnd, desc, modality, mVenue.isEmpty() ? null : mVenue, link.isEmpty() ? null : link);
-                else
-                    newEntry = new Meeting(title, date, meetingStart, meetingEnd, desc, modality, null, null);
-                break;
-            case 3: // Task
-                String priority = (String) this.priorityBox.getSelectedItem();
-                String status = (String) this.statusBox.getSelectedItem();
-                String createdBy = this.createdByField.getText().trim();
-                String finishedBy = this.finishedByField.getText().trim();
-                newEntry = !finishedBy.isEmpty()
-                    ? new Task(title, date, desc, priority, status, createdBy, finishedBy)
-                    : new Task(title, date, desc, priority, status, createdBy);
-                break;
+        // Common required fields.
+        if (titleField.getText().trim().isEmpty()) {
+            missingFields.add("Title");
+        }
+        
+        if (dateSelector.getSelectedDate() == null) {
+            missingFields.add("Date");
         }
 
-        if (newEntry != null) {
-            if (this.editingEntry == null) {
-                logic.getCurrentCalendarObject().addEntry(newEntry);
-                JOptionPane.showMessageDialog(this, "Entry created!");
-            } else {
-                // Replace logic: remove old, add new
-                logic.getCurrentCalendarObject().removeEntry(this.editingEntry);
-                logic.getCurrentCalendarObject().addEntry(newEntry);
-                JOptionPane.showMessageDialog(this, "Entry updated!");
+        // Type-specific validation.
+        switch (this.currentIdx) {
+            case 0: // Event
+                if (venueField.getText().trim().isEmpty()) {
+                    missingFields.add("Venue");
+                }
+                if (organizerField.getText().trim().isEmpty()) {
+                    missingFields.add("Organizer");
+                }
+                break;
+                
+            case 1: // Journal
+                if (descField.getText().trim().isEmpty()) {
+                    missingFields.add("Description");
+                }
+                break;
+                
+            case 2: // Meeting
+                if (modalityField.getSelectedItem() == null || 
+                    modalityField.getSelectedItem().toString().trim().isEmpty()) {
+                    missingFields.add("Modality");
+                }
+                break;
+                
+            case 3: // Task
+                if (priorityBox.getSelectedItem() == null || 
+                    priorityBox.getSelectedItem().toString().trim().isEmpty()) {
+                    missingFields.add("Priority");
+                }
+                if (statusBox.getSelectedItem() == null || 
+                    statusBox.getSelectedItem().toString().trim().isEmpty()) {
+                    missingFields.add("Status");
+                }
+                if (createdByField.getText().trim().isEmpty()) {
+                    missingFields.add("Created By");
+                }
+                break;
+        }
+        
+        if (!missingFields.isEmpty()) {
+            String message = "Please fill in the following required fields:\n* " + 
+                            String.join("\n* ", missingFields);
+            JOptionPane.showMessageDialog(this, message, "Required Fields Missing", JOptionPane.WARNING_MESSAGE);
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+
+    private void handleSubmitAndReturnToEntries() {
+        boolean fieldsValid = validateRequiredFields();
+
+        if (fieldsValid) {
+            String title = this.titleField.getText().trim();
+            String desc = this.descField.getText().trim();
+            LocalDate date = this.dateSelector.getSelectedDate();
+            if (date == null) date = LocalDate.now();
+
+            Entry newEntry = null;
+            boolean canProceed = true;
+            String errorMessage = "";
+
+            switch (this.currentIdx) {
+                case 0: // Event
+                    String venue = this.venueField.getText().trim();
+                    String organizer = logic.getCurrentAccount() != null ? logic.getCurrentAccount().getUsername() : "";
+                    LocalTime start = this.startTimeSelector.getSelectedTime();
+                    LocalTime end = this.endTimeSelector.getSelectedTime();
+                    if (start == null) start = LocalTime.now();
+                    if (end == null) end = LocalTime.now();
+                    newEntry = new Event(title, date, desc, venue, organizer, start, end);
+                    break;
+                case 1: // Journal
+                    // Only allow if calendar name matches account username
+                    String calendarName = logic.getCurrentCalendarObject() != null ? logic.getCurrentCalendarObject().getCalendarName() : "";
+                    String accountName = logic.getCurrentAccount() != null ? logic.getCurrentAccount().getUsername() : "";
+                    boolean isEditingJournal = (this.editingEntry != null && this.editingEntry instanceof Journal);
+                    boolean journalExists = false;
+                    if (!isEditingJournal) {
+                        ArrayList<Entry> entries = logic.getCurrentCalendarObject() != null ? logic.getCurrentCalendarObject().getEntries() : new ArrayList<>();
+                        for (Entry e : entries) {
+                            if (e instanceof Journal && e.getDate().equals(date)) {
+                                journalExists = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!calendarName.equals(accountName)) {
+                        JOptionPane.showMessageDialog(this, "Journals can only be created in a calendar named after your account.", "Error", JOptionPane.ERROR_MESSAGE);
+                        canProceed = false;
+                    } else if (journalExists) {
+                        JOptionPane.showMessageDialog(this, "A journal already exists for this date.", "Error", JOptionPane.ERROR_MESSAGE);
+                        canProceed = false;
+                    } else {
+                        newEntry = new Journal(title, date, desc);
+                    }
+                    break;
+
+                case 2: // Meeting
+                    String modality = this.modalityField instanceof JComboBox ? (String)((JComboBox<?>)this.modalityField).getSelectedItem() : "";
+                    String mVenue = this.meetingVenueField.getText().trim();
+                    String link = this.linkField.getText().trim();
+                    LocalTime meetingStart = this.startTimeSelector != null ? this.startTimeSelector.getSelectedTime() : null;
+                    LocalTime meetingEnd = this.endTimeSelector != null ? this.endTimeSelector.getSelectedTime() : null;
+                    if (meetingStart == null) meetingStart = LocalTime.now();
+                    if (meetingEnd == null) meetingEnd = LocalTime.now();
+                    if (!mVenue.isEmpty() || !link.isEmpty())
+                        newEntry = new Meeting(title, date, meetingStart, meetingEnd, desc, modality, mVenue.isEmpty() ? null : mVenue, link.isEmpty() ? null : link);
+                    else
+                        newEntry = new Meeting(title, date, meetingStart, meetingEnd, desc, modality, null, null);
+                    break;
+
+                case 3: // Task
+                    String priority = (String) this.priorityBox.getSelectedItem();
+                    String status = (String) this.statusBox.getSelectedItem();
+                    String createdBy = this.createdByField.getText().trim();
+                    String finishedBy = this.finishedByField.getText().trim();
+                    newEntry = !finishedBy.isEmpty()
+                        ? new Task(title, date, desc, priority, status, createdBy, finishedBy)
+                        : new Task(title, date, desc, priority, status, createdBy);
+                    break;
             }
-            clearFields();
-            router.showWeeklyView(date);
+
+            if (canProceed && newEntry != null) {
+                if (this.editingEntry == null) {
+                    logic.getCurrentCalendarObject().addEntry(newEntry);
+                    JOptionPane.showMessageDialog(this, "Entry created!");
+                } else {
+                    // Replace logic: remove old, add new
+                    logic.getCurrentCalendarObject().removeEntry(this.editingEntry);
+                    logic.getCurrentCalendarObject().addEntry(newEntry);
+                    JOptionPane.showMessageDialog(this, "Entry updated!");
+                }
+                clearFields();
+                router.showWeeklyView(date);
+            } else if (!canProceed) {
+                JOptionPane.showMessageDialog(this, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

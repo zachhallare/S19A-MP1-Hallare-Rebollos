@@ -28,7 +28,7 @@ public final class Router extends JFrame {
     private final MenuPage menuPage;
     private CalendarListPage calendarListPage;
     private CalendarPage calendarPage;
-    public final WeeklyView weeklyView;
+    private final WeeklyView weeklyView;
 
     // Dynamic Pages.
     private EntryForm entryForm;
