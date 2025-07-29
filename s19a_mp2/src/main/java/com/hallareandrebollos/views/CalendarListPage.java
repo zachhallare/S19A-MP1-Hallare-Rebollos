@@ -222,7 +222,7 @@ public class CalendarListPage extends JPanel {
         return tile;
     }
 
-    // TODO: add functionality
+    // TODO: add functionality.
     private void onPublicCalendarClicked(CalendarObject cal, Router router) {
         router.showCalendarPage(cal);
     }
