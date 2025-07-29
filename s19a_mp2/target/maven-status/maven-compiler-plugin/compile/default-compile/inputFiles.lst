@@ -9,6 +9,7 @@ C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\CalendarObject.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Entry.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Event.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\FamilyCalendar.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Journal.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Meeting.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Task.java
@@ -18,7 +19,6 @@ C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\EntryForm.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\LandingPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\MenuPage.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\ShowEntriesPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\WeeklyView.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\entryList.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\hhmmSelector.java
