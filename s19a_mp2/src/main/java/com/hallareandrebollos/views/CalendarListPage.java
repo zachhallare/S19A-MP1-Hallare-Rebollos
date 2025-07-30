@@ -33,9 +33,19 @@ import com.hallareandrebollos.models.FamilyCalendar;
  * Both lists are scrollable and items are clickable (placeholder actions). Action buttons are at the bottom.
  */
 public class CalendarListPage extends JPanel {
+
+    /** Handles all logic for accounts, calendars, and entries. */
     private final LogicController logicController;
+
+    /** Manages navigation between GUI pages. */
     private Router router;
 
+
+    /**
+     * Constructs a CalendarListPage with the given router and logic controller.
+     * @param router       The application's router for navigation.
+     * @param logicCon     The logic controller that manages data and operations.
+     */
     public CalendarListPage(Router router, LogicController logicCon) {
         this.logicController = logicCon;
         this.router = router;
@@ -44,6 +54,10 @@ public class CalendarListPage extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Add padding to the main panel
     }
 
+
+    /**
+     * Rebuilds the contents of the panel to reflect any updated calendar data.
+     */
     public void redrawContents() {
         removeAll();
 
@@ -64,7 +78,8 @@ public class CalendarListPage extends JPanel {
         mainPanel.add(publicScrollPane);
 
         // Private Calendars Title
-        JLabel privateTitle = new JLabel("Your Private Calendars");
+        String username = logicController.getCurrentAccount().getUsername();
+        JLabel privateTitle = new JLabel(username + "'s Private Calendars");
         privateTitle.setFont(new Font("Arial", Font.BOLD, 16));
         privateTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPanel.add(Box.createVerticalStrut(10));
@@ -95,8 +110,11 @@ public class CalendarListPage extends JPanel {
         repaint();
     }
 
+
     /**
-     * Creates a horizontal scrollable list of public calendars.
+     * Creates a horizontally scrollable panel displaying all public calendars.
+     * @param router The router used to navigate on click.
+     * @return JScrollPane containing calendar tiles.
      */
     private JScrollPane createPublicCalendarList(Router router) {
         ArrayList<CalendarObject> publicCalendars = logicController.getPublicCalendarObjects();
@@ -126,8 +144,12 @@ public class CalendarListPage extends JPanel {
         return scrollPane;
     }
 
+
     /**
-     * Creates a tile for a public calendar (3:4 aspect ratio, name centered).
+     * Creates a single tile representing a public calendar.
+     * @param cal    The CalendarObject to display.
+     * @param router The router for navigation when clicked.
+     * @return JPanel tile component.
      */
     private JPanel createPublicCalendarTile(CalendarObject cal, Router router) {
         JPanel tile = new JPanel();
@@ -159,8 +181,10 @@ public class CalendarListPage extends JPanel {
         return tile;
     }
 
+
     /**
-     * Creates a vertical scrollable list of private calendars.
+     * Creates a vertically scrollable panel displaying all private calendars.
+     * @return JScrollPane containing calendar tiles.
      */
     private JScrollPane createPrivateCalendarList() {
         ArrayList<CalendarObject> privateCalendars = logicController.getPrivateCalendarObjects();
@@ -190,8 +214,11 @@ public class CalendarListPage extends JPanel {
         return scrollPane;
     }
 
+
     /**
-     * Creates a tile for a private calendar (list tile with name).
+     * Creates a single tile representing a private calendar.
+     * @param cal The CalendarObject to display.
+     * @return JPanel tile component.
      */
     private JPanel createPrivateCalendarTile(CalendarObject cal) {
         JPanel tile = new JPanel(new BorderLayout());
@@ -223,7 +250,12 @@ public class CalendarListPage extends JPanel {
         return tile;
     }
 
-    // TODO: add functionality.
+    
+    /**
+     * Handles the click event for a public calendar. If it's a family calendar, requests a passcode.
+     * @param cal    The calendar clicked.
+     * @param router The router for page navigation.
+     */
     private void onPublicCalendarClicked(CalendarObject cal, Router router) {
         if (cal instanceof FamilyCalendar familyCal) {
             int passcode = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter family calendar passcode:"));
@@ -237,10 +269,20 @@ public class CalendarListPage extends JPanel {
         }
     }
 
+
+    /**
+     * Handles the click event for a private calendar.
+     * @param cal The calendar clicked.
+     */
     private void onPrivateCalendarClicked(CalendarObject cal) {
         router.showCalendarPage(cal);
     }
 
+
+    /**
+     * Opens a dialog for the user to add a new calendar and adds it to the system.
+     * @param logic The logic controller used to create the calendar.
+     */
     private void onAddCalendar(LogicController logic) {
         String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
         if (name != null && !name.isBlank()) {
@@ -273,6 +315,12 @@ public class CalendarListPage extends JPanel {
         }
     }
 
+
+    /**
+     * Navigates back to the main menu.
+     *
+     * @param router The router used for navigation.
+     */
     private void onBack(Router router) {
         router.showMenuPage();
     }

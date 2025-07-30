@@ -35,13 +35,37 @@ import com.hallareandrebollos.models.Event;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
 
+
+/**
+ * A widget that displays a list of entries (Journal, Task, Meeting, Event) for a specific date.
+ * It includes a header, a scrollable list of entries, and a footer with an "Add Entry" button.
+ */
 public class entryList extends JPanel {
+
+    /** The date for which entries are being displayed. */
     private final LocalDate date;
+    
+    /** The list of entries to display. */
     private final List<Entry> entries;
+
+    /** The application's router to navigate views. */
     private final Router router;
+
+    /** The logic controller to handle entry operations. */
     private final LogicController logicController;
+
+    /** Flag that determines whether to close the dialog when adding an entry. */
     private final boolean closeDialogOnAdd;
 
+
+    /**
+     * Constructs an entryList panel for the given date and list of entries
+     * @param date             The date the entries belong to.
+     * @param entries          The list of entries for the date.
+     * @param router           The router used for view navigation.
+     * @param logicController  The logic controller for entry manipulation.
+     * @param closeDialogOnAdd Whether to close the dialog when adding an entry.
+     */
     public entryList(LocalDate date, List<Entry> entries, Router router, LogicController logicController, boolean closeDialogOnAdd) {
         this.date = date;
         this.entries = entries;
@@ -56,6 +80,11 @@ public class entryList extends JPanel {
         add(createFooter(), BorderLayout.SOUTH);
     }
 
+
+    /**
+     * Creates the header panel that displays the formatted date.
+     * @return the header panel.
+     */
     private JPanel createHeader() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 20, 10, 20));
@@ -72,6 +101,11 @@ public class entryList extends JPanel {
         return panel;
     }
 
+
+    /**
+     * Creates a scrollable list view panel that organizes and displays entry tiles.
+     * @return the scroll pane containing the entry list.
+     */
     private JScrollPane createListView() {
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
@@ -120,6 +154,13 @@ public class entryList extends JPanel {
         return scrollPane;
     }
 
+
+    /**
+     * Creates a tile (panel) representing a single entry.
+     * Displays basic info and includes action buttons.
+     * @param entry The entry to represent.
+     * @return the JPanel representing the entry tile.
+     */
     private JPanel createTile(Entry entry) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(8, 16, 8, 16));
@@ -244,6 +285,12 @@ public class entryList extends JPanel {
         return panel;
     }
 
+
+    /**
+     * Creates the footer panel with the "Add Entry" button.
+     *
+     * @return the footer panel.
+     */
     private JPanel createFooter() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 20, 10, 20));

@@ -12,20 +12,39 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+
+/**
+ * A custom Swing widget that allows users to select or input time in hour and minute format.
+ * Uses buttons that display prompt dialogs to select hour and minute from lists.
+ */
 public class hhmmSelector extends JPanel {
 
+    /** Text field for entering the hour. */
     private JTextField hourField;
+
+    /** Text field for entering the minute. */
     private JTextField minuteField;
+
+    /** Button to open the hour selection prompt. */
     private JButton hourButton;
+
+    /** Button to open the minute selection prompt. */
     private JButton minuteButton;
 
-    // Empty selector constructor
+
+    /**
+     * Constructs a time selector with default time set to 00:00.
+     */
     public hhmmSelector() {
         this(0, 0);
     }
 
-    // Constructor with initial hour and minute
-    // For editing existing entries
+    
+    /**
+     * Constructs a time selector with specified initial hour and minute.
+     * @param hour   Initial hour (0–23)
+     * @param minute Initial minute (0–59)
+     */
     public hhmmSelector(int hour, int minute) {
         setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
@@ -47,6 +66,10 @@ public class hhmmSelector extends JPanel {
         this.minuteButton.addActionListener(e -> showMinutePrompt());
     }
 
+
+    /**
+     * Displays a prompt for the user to select an hour value from a list.
+     */
     private void showHourPrompt() {
         JList<Integer> hourList = new JList<>(getHourChoices());
         hourList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -60,6 +83,10 @@ public class hhmmSelector extends JPanel {
         }
     }
 
+
+    /**
+     * Displays a prompt for the user to select a minute value from a list.
+     */
     private void showMinutePrompt() {
         JList<Integer> minuteList = new JList<>(getMinuteChoices());
         minuteList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -73,6 +100,11 @@ public class hhmmSelector extends JPanel {
         }
     }
 
+
+    /**
+     * Returns the array of possible hour values (0–23).
+     * @return An array of integers representing valid hours.
+     */
     private Integer[] getHourChoices() {
         Integer[] hours = new Integer[24];
         for (int i = 0; i < 24; i++) {
@@ -81,6 +113,11 @@ public class hhmmSelector extends JPanel {
         return hours;
     }
 
+
+    /**
+     * Returns the array of possible minute values (0–59).
+     * @return An array of integers representing valid minutes.
+     */
     private Integer[] getMinuteChoices() {
         Integer[] minutes = new Integer[60];
         for (int i = 0; i < 60; i++) {
@@ -89,14 +126,22 @@ public class hhmmSelector extends JPanel {
         return minutes;
     }
 
-    // Returns the selected time as a LocalTime object (seconds are zero)
+
+    /**
+     * Returns the selected time as a LocalTime object.
+     * @return The selected time, defaulting to 00:00 if inputs are invalid.
+     */
     public LocalTime getSelectedTime() {
         int hour = parseField(this.hourField, 0, 23);
         int minute = parseField(this.minuteField, 0, 59);
         return LocalTime.of(hour, minute, 0);
     }
 
-    // Add missing setter for EntryForm clearing
+
+    /**
+     * Sets the selector to the given LocalTime value.
+     * @param time The time to set. If null, no change is made.
+     */
     public void setSelectedTime(LocalTime time) {
         if (time != null) {
             this.hourField.setText(String.format("%02d", time.getHour()));
@@ -104,6 +149,15 @@ public class hhmmSelector extends JPanel {
         }
     }
 
+
+    /**
+     * Parses and validates a numeric value from the given text field.
+     * If invalid, shows a dialog and returns the minimum allowed value.
+     * @param field The text field to parse.
+     * @param min   Minimum allowed value.
+     * @param max   Maximum allowed value.
+     * @return Parsed integer between min and max, or min if invalid.
+     */
     private int parseField(JTextField field, int min, int max) {
         try {
             int value = Integer.parseInt(field.getText());

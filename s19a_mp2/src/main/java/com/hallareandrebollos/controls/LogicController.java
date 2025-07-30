@@ -51,6 +51,7 @@ public class LogicController {
         this.CalendarObjectIndex = -1; // No CalendarObject is selected initially
     }
 
+
     /**
      * Authenticates the provided username and password. If matched, sets the
      * accountIndex to the corresponding user.
@@ -71,6 +72,7 @@ public class LogicController {
         return isAuthenticated;
     }
 
+
     /**
      * Logs out the current account and clears selected calendar.
      */
@@ -78,6 +80,7 @@ public class LogicController {
         this.accountIndex = -1;
         this.CalendarObjectIndex = -1;
     }
+
 
     /**
      * Adds a new account with a default calendar for the current year.
@@ -89,6 +92,7 @@ public class LogicController {
         accounts.add(account);
     }
 
+
     /**
      * Deactivates the currently logged-in account.
      */
@@ -98,6 +102,7 @@ public class LogicController {
             account.setIsActive(false);
         }
     }
+
 
     /**
      * Checks if a username already exists.
@@ -114,6 +119,7 @@ public class LogicController {
         }
         return isUsernameExisting;
     }
+
 
     /**
      * Adds a new calendar to the system if it does not already exist.
@@ -139,6 +145,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Adds an existing CalendarObject to the system.
      * @param calendarObject The CalendarObject to add.
@@ -151,6 +158,7 @@ public class LogicController {
         }
         return false;
     }
+
 
     /**
      * Removes the currently selected calendar from the system.
@@ -166,6 +174,7 @@ public class LogicController {
             this.CalendarObjectIndex = -1;
         }
     }
+
 
     /**
      * Adds a new entry to the currently selected calendar.
@@ -232,6 +241,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Edits an existing entry in the currently selected calendar.
      * @param oldEntry The entry to replace.
@@ -243,6 +253,7 @@ public class LogicController {
             currentCalendarObject.editEntry(oldEntry, newEntry);
         }
     }
+
 
     /**
      * Removes an entry from the currently selected calendar based on title.
@@ -261,6 +272,13 @@ public class LogicController {
         }
     }
 
+
+    /**
+     * Retrieves all entries from the currently selected calendar that match the given date.
+     * @param date The date to filter entries by.
+     * @return A list of entries scheduled for the specified date. Returns an empty list if no calendar
+     *         is selected or no entries match the date.
+     */
     public ArrayList<Entry> getEntriesForDate(LocalDate date) {
         ArrayList<Entry> result = new ArrayList<>();
 
@@ -278,6 +296,7 @@ public class LogicController {
         return result;
     }
 
+
     /**
      * Converts a calendar to public visibility by name.
      * @param CalendarObjectName Name of the calendar to convert.
@@ -292,6 +311,7 @@ public class LogicController {
         System.out.println("CalendarObject not found.");
     }
 
+
     /**
      * Sets the current account index.
      * @param index Index to set as current account.
@@ -303,6 +323,7 @@ public class LogicController {
             System.out.println("Invalid account index.");
         }
     }
+
 
     /**
      * Sets the current calendar object index.
@@ -316,6 +337,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Sets the current calendar object.
      * @param calendar The calendar object to set as current.
@@ -328,6 +350,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Returns the currently logged-in account.
      * @return The current Account or null if none.
@@ -338,6 +361,7 @@ public class LogicController {
         }
         return null; // No account is logged in
     }
+
 
     /**
      * Returns all public calendars in the system.
@@ -352,6 +376,7 @@ public class LogicController {
         }
         return publicCalendarObjects;
     }
+
 
     /**
      * Returns all private calendars owned by the current account.
@@ -369,6 +394,7 @@ public class LogicController {
         return privateCalendarObjects;
     }
 
+
     /**
      * Returns the currently selected calendar object.
      * @return The selected CalendarObject or null if none.
@@ -379,6 +405,7 @@ public class LogicController {
         }
         return null; // No CalendarObject is selected
     }
+
 
     /**
      * Returns the index of a calendar by name and visibility.
@@ -397,6 +424,7 @@ public class LogicController {
         return foundIdx;
     }
 
+
     /**
      * Returns the index of the account with the specified username.
      * @param username the username to search for.
@@ -413,6 +441,7 @@ public class LogicController {
         return foundIdx;
     }
     
+
     /**
      * Sets the selected month for calendar operations.
      * @param month the month to set (1–12). Ignored if out of range.
@@ -423,6 +452,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Returns the currently selected month.
      * @return the selected month (1–12).
@@ -430,6 +460,7 @@ public class LogicController {
     public int getSelectedMonth() {
         return this.selectedMonth;
     }
+
 
     /**
      * Sets the selected year for calendar operations.
@@ -442,6 +473,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Returns the currently selected year.
      *
@@ -450,6 +482,7 @@ public class LogicController {
     public int getSelectedYear() {
         return this.selectedYear;
     }
+
 
     /**
      * Sets the selected day for calendar operations.
@@ -461,6 +494,7 @@ public class LogicController {
         }
     }
 
+
     /**
      * Returns the currently selected day.
      * @return the selected day (1–31).
@@ -468,7 +502,6 @@ public class LogicController {
     public int getSelectedDay() {
         return this.selectedDay;
     }
-
 
 
     /**
@@ -495,11 +528,25 @@ public class LogicController {
         return isDuplicate;
     }
 
+    /**
+     * Creates a new {@code FamilyCalendar} with the specified name and passcode,
+     * and adds it to the system.
+     *
+     * @param username     The username of the account creating the family calendar.
+     * @param calendarName The name of the family calendar.
+     * @param passcode     The numeric passcode required to join or access the calendar.
+     */
     public void addFamilyCalendar(String username, String calendarName, int passcode) {
         FamilyCalendar familyCalendar = new FamilyCalendar(passcode, calendarName, true);
         addCalendarInstance(familyCalendar);
     }
 
+
+    /**
+     * Checks whether the currently selected calendar is a {@code FamilyCalendar}.
+     *
+     * @return {@code true} if the current calendar is a FamilyCalendar; {@code false} otherwise.
+     */
     public boolean checkCurrentCalendarIsFamily() {
         if (this.CalendarObjectIndex >= 0 && this.CalendarObjectIndex < CalendarObjects.size()) {
             CalendarObject currentCalendar = CalendarObjects.get(this.CalendarObjectIndex);
@@ -508,6 +555,13 @@ public class LogicController {
         return false;
     }
 
+
+    /**
+     * Retrieves the currently selected calendar as a {@code FamilyCalendar}, if applicable.
+     *
+     * @return The current {@code FamilyCalendar}, or {@code null} if none is selected
+     *         or if the selected calendar is not a FamilyCalendar.
+     */
     public FamilyCalendar getCurrentFamilyCalendar() {
         if (checkCurrentCalendarIsFamily()) {
             CalendarObject currentCalendar = CalendarObjects.get(this.CalendarObjectIndex);

@@ -17,13 +17,35 @@ import javax.swing.border.EmptyBorder;
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 
+
+/**
+ * The MenuPage class represents the main menu UI panel of the application,
+ * allowing users to navigate to different features such as selecting or adding a calendar,
+ * deleting their account, or logging out.
+ */
 public class MenuPage extends JPanel {
+    
+    /** Background color for the page. */
     private static final Color BACKGROUND_COLOR = new Color(0xE0E0E0);
+
+    /** Primary text color for titles and labels. */
     private static final Color FOREGROUND_COLOR = new Color(0x36454F);
+    
+    /** Accent color used for highlighting (e.g., delete button). */
     private static final Color ACCENT_COLOR = new Color(0xFF9999);
+    
+    /** Font used for main titles. */
     private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
+    
+    /** Font used for subtitles or secondary text. */
     private static final Font SUBTITLE_FONT = new Font("SansSerif", Font.PLAIN, 20);
 
+
+    /**
+     * Constructs the MenuPage UI and initializes its components.
+     * @param router the Router instance for navigating between pages
+     * @param logic  the LogicController instance for managing application logic
+     */
     public MenuPage(Router router, LogicController logic) {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
@@ -34,6 +56,10 @@ public class MenuPage extends JPanel {
     }
 
     
+    /**
+     * Creates and returns the panel containing the title and subtitle labels.
+     * @return a JPanel with title and subtitle
+     */
     private JPanel createTitlePanel() {
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
@@ -53,6 +79,12 @@ public class MenuPage extends JPanel {
     }
 
 
+    /**
+     * Creates and returns the panel containing all menu buttons.
+     * @param router the Router for page navigation
+     * @param logic  the LogicController for executing user actions
+     * @return a JPanel with menu buttons
+     */
     private JPanel createButtonPanel(Router router, LogicController logic) {
         JPanel centerPanel = new JPanel(new GridLayout(4, 1, 0, 10));
         centerPanel.setOpaque(false);
@@ -119,6 +151,11 @@ public class MenuPage extends JPanel {
     }
 
 
+    /**
+     * Creates a standardized button with consistent style.
+     * @param text the label for the button
+     * @return a styled JButton
+     */
     private JButton createStandardButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -129,6 +166,10 @@ public class MenuPage extends JPanel {
     }
 
 
+    /**
+     * Creates and returns the panel containing the footer quote.
+     * @return a JPanel with a motivational quote
+     */
     private JPanel createFooterPanel() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footer.setOpaque(false);

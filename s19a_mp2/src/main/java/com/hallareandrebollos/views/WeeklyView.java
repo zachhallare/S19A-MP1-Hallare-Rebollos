@@ -25,14 +25,36 @@ import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.widgets.entryList;
 
+
+/**
+ * WeeklyView represents a 7-day view panel of calendar entries.
+ */
 public class WeeklyView extends JPanel {
+
+    /** Reference to the app's Router for navigation. */
     private final Router router;
+
+    /** LogicController for handling data and operations. */
     private final LogicController logic;
+
+    /** Starting date of the current week view (Sunday). */
     private LocalDate weekStart;
+
+    /** Panel containing a horizontal list of daily entry panels. */
     private JPanel entryListsPanel;
+
+    /** Scroll pane that allows horizontal scrolling of daily panels. */
     private JScrollPane horizontalScrollPane;
+
+    /** Label displaying the currently viewed week range. */
     private JLabel weekLabel;
 
+
+    /**
+     * Constructs the weekly view with navigation, entry display, and return button.
+     * @param router the Router used for navigation
+     * @param logic the LogicController for fetching calendar data
+     */
     public WeeklyView(Router router, LogicController logic) {
         this.router = router;
         this.logic = logic;
@@ -51,6 +73,11 @@ public class WeeklyView extends JPanel {
         updateWeekView();
     }
 
+
+    /**
+     * Creates the top panel with navigation buttons and week label.
+     * @return the top JPanel component
+     */
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
@@ -90,6 +117,11 @@ public class WeeklyView extends JPanel {
         return topPanel;
     }
 
+
+    /**
+     * Creates the main panel containing horizontally scrollable daily entry lists.
+     * @return the JScrollPane wrapping the daily entry panels
+     */
     private JScrollPane createMainPanel() {
         this.entryListsPanel = new JPanel();
         this.entryListsPanel.setLayout(new BoxLayout(this.entryListsPanel, BoxLayout.X_AXIS));
@@ -104,6 +136,11 @@ public class WeeklyView extends JPanel {
         return this.horizontalScrollPane;
     }
 
+
+    /**
+     * Creates the bottom panel containing the return-to-calendar button.
+     * @return the bottom JPanel component
+     */
     private JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setOpaque(false);
@@ -118,6 +155,10 @@ public class WeeklyView extends JPanel {
         return bottomPanel;
     }
 
+
+    /**
+     * Updates the entry view and label based on the current weekStart value.
+     */
     public void updateWeekView() {
         // Update week label and lavel
         LocalDate weekEnd = weekStart.plusDays(6);
@@ -149,6 +190,11 @@ public class WeeklyView extends JPanel {
         entryListsPanel.repaint();
     }
 
+
+    /**
+     * Sets the view to a specific week based on a date input.
+     * @param startDate the LocalDate to base the week on
+     */
     public void moveToSpecificWeek(LocalDate startDate) {
         this.weekStart = startDate.minusDays(startDate.getDayOfWeek().getValue() % 7);
         updateWeekView();

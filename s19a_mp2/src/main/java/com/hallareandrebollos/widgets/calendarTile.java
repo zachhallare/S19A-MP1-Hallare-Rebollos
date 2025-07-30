@@ -13,7 +13,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -22,15 +21,44 @@ import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
 
+
+/**
+ * Represents a single day tile in the calendar view with visual info and click handling.
+ */
 public class calendarTile extends JPanel implements MouseListener {
+    
+    /** Day of the month represented by this tile. */
     private int day;
+
+    /** Month of the year represented by this tile. */
     private int month;
+
+    /** Year represented by this tile. */
     private int year;
+
+    /** LogicController used to fetch entry data. */
     private LogicController logic;
+
+    /** Whether the tile represents the current day. */
     private boolean isToday;
+
+    /** Router used for navigation between views. */
     private Router router;
+
+    /** Reference to the parent panel to position modal dialogs. */
     private final JPanel parentPanel;
 
+
+    /**
+     * Constructs a calendar tile with date, visual style, and controller logic.
+     * @param parentPanel the parent panel for modal positioning
+     * @param day the day of the month
+     * @param month the month (1-based)
+     * @param year the year
+     * @param isToday true if this tile represents today
+     * @param logic the LogicController for data access
+     * @param router the Router for navigation
+     */
     public calendarTile(JPanel parentPanel, int day, int month, int year, boolean isToday, LogicController logic, Router router) {
         this.parentPanel = parentPanel;
         this.day = day;
@@ -43,6 +71,10 @@ public class calendarTile extends JPanel implements MouseListener {
         initializeComponents();
     }
 
+
+    /**
+     * Initializes the layout, style, and components of the calendar tile.
+     */
     private void initializeComponents() {
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(120, 100));
@@ -70,6 +102,11 @@ public class calendarTile extends JPanel implements MouseListener {
         addMouseListener(this);
     }
 
+
+    /**
+     * Handles click events on the tile by showing a popup with that day's entries.
+     * @param e the MouseEvent triggered by click
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         LocalDate selectedDate = LocalDate.of(year, month, day);
@@ -84,19 +121,39 @@ public class calendarTile extends JPanel implements MouseListener {
             dialog.setVisible(true);
     }
 
+
+    /**
+     * Highlights tile border when mouse is pressed.
+     * @param e the MouseEvent triggered by hover
+     */
     @Override
     public void mousePressed(MouseEvent e) {
     }
 
+
+    /**
+     * Highlights tile border when mouse is released.
+     * @param e the MouseEvent triggered by hover
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
     }
 
+
+    /**
+     * Highlights tile border when mouse enters.
+     * @param e the MouseEvent triggered by hover
+     */
     @Override
     public void mouseEntered(MouseEvent e) {
         setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
     }
 
+
+    /**
+     * Resets tile border when mouse exits.
+     * @param e the MouseEvent triggered by hover exit
+     */
     @Override
     public void mouseExited(MouseEvent e) {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));

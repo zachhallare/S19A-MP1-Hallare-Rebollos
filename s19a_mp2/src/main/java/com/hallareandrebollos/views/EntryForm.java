@@ -34,44 +34,119 @@ import com.hallareandrebollos.models.Task;
 import com.hallareandrebollos.widgets.hhmmSelector;
 import com.hallareandrebollos.widgets.yyyymmddSelector;
 
+
+/**
+ * EntryForm is a JPanel used to create or edit various types of entries including
+ * Events, Journals, Meetings, and Tasks. It dynamically adjusts the form fields
+ * based on the selected entry type and handles validation, submission, and navigation.
+ */
 public class EntryForm extends JPanel {
+
+    /** Controller to manage logic and model operations */
     private final LogicController logic;
+
+    /** Router for navigation between views */
     private final Router router;
+
+    /** Panel that holds the form's header (title, instructions, buttons) */
     private JPanel headerPanel;
+
+    /** Button group for selecting entry types */
     private JPanel buttonPanel;
+
+    /** Main form panel holding the dynamic input fields */
     private JPanel formPanel;
+
+    /** If editing, this holds the entry to edit */
     private Entry editingEntry;
 
     // Common fields
+    /** Field for entry title */
     private JTextField titleField;
+
+    /** Text area for entry description */
     private JTextArea descField;
+
+    /** Date selector widget */
     private yyyymmddSelector dateSelector;
+
+    /** If provided, pre-fills the date selector */
     private LocalDate preselectedDate = null;
 
     // Event fields
-    private JTextField venueField, organizerField;
-    private hhmmSelector startTimeSelector, endTimeSelector;
+    /** Venue of the event. */
+    private JTextField venueField;
+
+    /** Organizer of the event. */
+    private JTextField organizerField;
+
+    /** Start time of the event. */
+    private hhmmSelector startTimeSelector;
+
+    /** End time of the event. */
+    private hhmmSelector endTimeSelector;
 
     // Meeting fields
+    /** Modality of the meeting (e.g., online or face-to-face). */
     private JComboBox<String> modalityField;
-    private JTextField meetingVenueField, linkField;
+
+    /** Venue of the meeting (if physical). */
+    private JTextField meetingVenueField;
+    
+    /** Online meeting link (if applicable). */
+    private JTextField linkField;
 
     // Task fields
-    private JComboBox<String> priorityBox, statusBox;
-    private JTextField createdByField, finishedByField;
+    /** Priority level of the task. */
+    private JComboBox<String> priorityBox;
 
+    /** Current status of the task. */
+    private JComboBox<String> statusBox;
+
+    /** Creator of the task. */
+    private JTextField createdByField;
+
+    /** Person assigned to finish the task. */
+    private JTextField finishedByField;
+
+    /** Currently selected entry type index (0 = Event, 1 = Journal, ...) */
     private int currentIdx;
+
+    /** Array of entry type buttons */
     private JButton[] typeButtons;
 
 
+    /**
+     * Constructs an empty EntryForm for creating a new entry.
+     *
+     * @param router the navigation router
+     * @param logic the logic controller
+     */
     public EntryForm(Router router, LogicController logic) {
         this(router, logic, null, null);
     }
 
+
+    /**
+     * Constructs a pre-filled EntryForm for editing an existing entry.
+     *
+     * @param router the navigation router
+     * @param logic the logic controller
+     * @param entryToEdit the entry to edit
+     */
     public EntryForm(Router router, LogicController logic, Entry entryToEdit) {
         this(router, logic, entryToEdit, null);
     }
 
+
+    /**
+     * Constructs a new EntryForm with optional entry and preselected date.
+     *
+     * @param router the navigation router
+     * @param logic the logic controller
+     * @param entryToEdit entry to edit, or null
+     * @param preselectedDate date to pre-fill the date selector
+     */
     public EntryForm(Router router, LogicController logic, Entry entryToEdit, LocalDate preselectedDate) {
         this.logic = logic;
         this.router = router;
@@ -96,6 +171,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Initializes layout structure of EntryForm.
+     */
     private void initializeLayout() {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -117,7 +195,11 @@ public class EntryForm extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    
+
+    /**
+     * Creates the top header panel with entry type selection buttons.
+     * @return the header JPanel
+     */
     private JPanel createHeaderPanel() {
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(248, 249, 250));
@@ -172,7 +254,11 @@ public class EntryForm extends JPanel {
         return header;
     }
 
-        private void updateButtonStyles() {
+
+    /**
+     * Updates the button styles to reflect the currently selected type.
+     */
+    private void updateButtonStyles() {
         Color[] activeColors = {
             new Color(59, 130, 246),   // Blue for Event
             new Color(34, 197, 94),    // Green for Journal  
@@ -196,6 +282,10 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Creates bottom panel with "Create/Update" and "Return" buttons.
+     * @return the JPanel to be added to the south
+     */
     private JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 20));
         bottomPanel.setBackground(new Color(248, 249, 250));
@@ -225,6 +315,11 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Returns the index for a given entry type string.
+     * @param type the entry type string
+     * @return the index of the type
+     */
     private int getTabIndexForType(String type) {
         switch (type) {
             case "Event": return 0;
@@ -236,6 +331,10 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Redraws the form fields based on the selected entry type.
+     * @param idx index of the selected entry type
+     */
     private void redrawForm(int idx) {
         formPanel.removeAll();
         formPanel.setLayout(new GridBagLayout());
@@ -295,6 +394,11 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds a section header label to the form.
+     * @param headerText the header text
+     * @param gbc the layout constraints
+     */
     private void addSectionHeader(String headerText, GridBagConstraints gbc) {
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -311,6 +415,11 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds a section note label (italic) to the form.
+     * @param noteText the note text
+     * @param gbc the layout constraints
+     */
     private void addSectionNote(String noteText, GridBagConstraints gbc) {
         gbc.gridx = 0;
         gbc.gridwidth = 2;
@@ -327,6 +436,14 @@ public class EntryForm extends JPanel {
     }
 
 
+
+    /**
+     * Adds a labeled JTextField to the form.
+     * @param labelText the label
+     * @param gbc constraints
+     * @param required if the field is required
+     * @return the created JTextField
+     */
     private JTextField addLabeledTextField(String labelText, GridBagConstraints gbc, boolean required) {
         JLabel label = new JLabel(labelText + (required ? " *" : ""));
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
@@ -351,11 +468,21 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Overload for non-required text field.
+     */
     private JTextField addLabeledTextField(String labelText, GridBagConstraints gbc) {
         return addLabeledTextField(labelText, gbc, false);
     }
 
 
+    /**
+     * Adds a labeled JTextArea to the form.
+     * @param labelText the label
+     * @param gbc constraints
+     * @param required whether it's required
+     * @return the created JTextArea
+     */
     private JTextArea addLabeledTextArea(String labelText, GridBagConstraints gbc, boolean required) {
         JLabel label = new JLabel(labelText + (required ? " *" : ""));
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
@@ -384,6 +511,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds a labeled date field using a yyyymmddSelector.
+     */
     private void addDateField(String labelText, GridBagConstraints gbc) {
         JLabel label = new JLabel(labelText + " *");
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
@@ -410,6 +540,14 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds a labeled JComboBox to the form.
+     * @param labelText label text
+     * @param options options to select
+     * @param gbc constraints
+     * @param required if field is required
+     * @return the JComboBox created
+     */
     private JComboBox<String> addLabeledComboBox(String labelText, String[] options, GridBagConstraints gbc, boolean required) {
         JLabel label = new JLabel(labelText + (required ? " *" : ""));
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
@@ -431,6 +569,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds a labeled hhmmSelector time input to the form.
+     */
     private void addTimeField(String labelText, hhmmSelector selector, GridBagConstraints gbc) {
         JLabel label = new JLabel(labelText);
         label.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
@@ -446,7 +587,9 @@ public class EntryForm extends JPanel {
     }
 
 
-
+    /**
+     * Adds input fields specific to Event entries.
+     */
     private void addEventFields(GridBagConstraints gbc) {
         venueField = addLabeledTextField("Venue:", gbc, true);
         
@@ -480,6 +623,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds input fields specific to Meeting entries.
+     */
     private void addMeetingFields(GridBagConstraints gbc) {
         this.modalityField = addLabeledComboBox("Modality:", new String[]{"Online", "Onsite", "Hybrid"}, gbc, true);
         this.meetingVenueField = addLabeledTextField("Venue (optional):", gbc);
@@ -493,6 +639,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Adds input fields specific to Task entries.
+     */
     private void addTaskFields(GridBagConstraints gbc) {
         this.priorityBox = addLabeledComboBox("Priority:", new String[]{"High", "Medium", "Low"}, gbc, true);
         this.statusBox = addLabeledComboBox("Status:", new String[]{"Pending", "Done"}, gbc, true);
@@ -501,6 +650,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Populates fields with data from the entry being edited.
+     */
     private void populateFieldsForEdit() {
         this.titleField.setText(this.editingEntry.getTitle());
         this.descField.setText(this.editingEntry.getDescription() != null ? this.editingEntry.getDescription() : "");
@@ -538,6 +690,10 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Validates the required fields based on entry type.
+     * @return true if all required fields are valid, false otherwise
+     */
     private boolean validateRequiredFields() {
         ArrayList<String> missingFields = new ArrayList<>();
         boolean isValid = true;
@@ -601,6 +757,9 @@ public class EntryForm extends JPanel {
     }
 
 
+    /**
+     * Submits the entry (create or update) and returns to entries view.
+     */
     private void handleSubmitAndReturnToEntries() {
         boolean fieldsValid = validateRequiredFields();
 
@@ -693,11 +852,19 @@ public class EntryForm extends JPanel {
         }
     }
 
+    
+    /**
+     * Returns to the calendar view without saving changes.
+     */
     private void handleReturnToCalendar() {
         clearFields();
         router.showCalendarPage(logic.getCurrentCalendarObject());
     }
 
+
+    /**
+     * Clears all input fields and resets form state.
+     */
     private void clearFields() {
         this.titleField.setText("");
         this.descField.setText("");

@@ -7,6 +7,7 @@ import java.util.ArrayList;
  * The calendar can be either public or private and is associated with a specific year.
  */
 public class CalendarObject {
+
     /** The name/title of the calendar. */
     private String calendarName;
 
@@ -16,6 +17,7 @@ public class CalendarObject {
     /** List of entries in the calendar. */
     final private ArrayList<Entry> entries;
 
+    
     /**
      * Constructs a new CalendarObject with the specified name, visibility, and year.
      * @param calendarName the name of the calendar.
@@ -27,6 +29,7 @@ public class CalendarObject {
         this.entries = new ArrayList<>();
     }
 
+
     /**
      * Returns the name of the calendar
      * @return The calendar name.
@@ -35,6 +38,7 @@ public class CalendarObject {
         return this.calendarName;
     }
 
+
     /**
      * Adds a new entry to the calendar.
      * @param entry The entry to add.
@@ -42,6 +46,7 @@ public class CalendarObject {
     public void addEntry(Entry entry) {
         entries.add(entry);
     }
+
 
     /**
      * Replaces an existing entry with a new one.
@@ -55,6 +60,7 @@ public class CalendarObject {
         }
     }
 
+
     /**
      * Removes an entry from the calendar.
      * @param entry The entry to remove.
@@ -62,6 +68,7 @@ public class CalendarObject {
     public void removeEntry(Entry entry) {
         entries.remove(entry);
     }
+
 
     /**
      * Sets the public/private visibility of the calendar.
@@ -71,6 +78,7 @@ public class CalendarObject {
         this.isPublic = isPublic;
     }
 
+
     /**
      * Sets the name/title of the calendar.
      * @param title The new title for the calendar.
@@ -78,6 +86,7 @@ public class CalendarObject {
     public void setTitle(String title) {
         this.calendarName = title;
     }
+
 
     /**
      * Returns the list of entries in the calendar.
@@ -87,6 +96,7 @@ public class CalendarObject {
         return this.entries;
     }
 
+
     /**
      * Returns the name of the calendar.
      * @return The calendar name.
@@ -94,6 +104,7 @@ public class CalendarObject {
     public String getCalendarName() {
         return this.calendarName;
     }
+
 
     /**
      * Checks whether the calendar is public.
@@ -103,6 +114,7 @@ public class CalendarObject {
         return this.isPublic;
     }
 
+    
     /**
      * Creates a copy of this CalendarObject, including all of its entries.
      * @return a new CalendarObject with the same name, visibility, and copied entries.

@@ -1,9 +1,6 @@
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\controls\DisplayController.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\controls\LogicController.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\controls\Router.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\legacy_code\AddEntryPage.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\legacy_code\EntriesPage.java
-C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\legacy_code\EntryFormPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\Main.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\Account.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\models\CalendarObject.java
@@ -20,6 +17,8 @@ C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\LandingPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\MenuPage.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\views\WeeklyView.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\calendarTile.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\entryList.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\hhmmSelector.java
+C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\pieChart.java
 C:\Users\Zach\OneDrive\Desktop\S19A-MP1-Hallare-Rebollos\s19a_mp2\src\main\java\com\hallareandrebollos\widgets\yyyymmddSelector.java

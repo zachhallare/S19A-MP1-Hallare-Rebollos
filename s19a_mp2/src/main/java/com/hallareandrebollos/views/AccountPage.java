@@ -18,14 +18,38 @@ import javax.swing.border.EmptyBorder;
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 
+
+/**
+ * Represents the login/signup GUI page where users can either log in to an existing account
+ * or create a new account.
+ */
 public class AccountPage extends JPanel {
+
+    /** Background color for the page. */
     private static final Color BACKGROUND_COLOR = new Color(0xD3D3D3);
+
+    /** Foreground (text) color used for labels. */
     private static final Color FOREGROUND_COLOR = new Color(0x36454F);
+
+    /** Font used for the main title. */
     private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
+
+    /** Font used for labels. */
     private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 20);
+    
+    /** Button for submitting login or signup. */
     private JButton mainButton;
+
+    /** Button for navigating back to the landing page. */
     private JButton backButton;
 
+
+    /**
+     * Constructs the account page.
+     * @param router       the router used to switch between views
+     * @param logic        the logic controller for authentication and account operations
+     * @param isLoginPage  true if displaying login UI; false if displaying sign-up UI
+     */
     public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
@@ -42,6 +66,11 @@ public class AccountPage extends JPanel {
     }
 
 
+    /**
+     * Creates the title panel.
+     * @param isLoginPage whether the page is for login
+     * @return a JPanel with the title
+     */
     private JPanel createTitlePanel(boolean isLoginPage) {
         JLabel titleLabel = new JLabel(isLoginPage ? "Login" : "Create an Account", SwingConstants.CENTER);
         titleLabel.setFont(TITLE_FONT);
@@ -56,6 +85,15 @@ public class AccountPage extends JPanel {
     }
 
 
+    /**
+     * Creates the form panel containing input fields and buttons.
+     * @param usernameField input field for the username
+     * @param passwordField input field for the password
+     * @param isLoginPage   true if for login; false if for signup
+     * @param router        router to switch pages
+     * @param logic         logic controller for authentication and account creation
+     * @return the form panel
+     */
     private JPanel createFormPanel(JTextField usernameField, JPasswordField passwordField, boolean isLoginPage, Router router, LogicController logic) {
         JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 50));
         formPanel.setOpaque(false);
@@ -97,6 +135,11 @@ public class AccountPage extends JPanel {
     }
 
 
+    /**
+     * Creates a toggle button to show/hide the password.
+     * @param passwordField the password field to toggle visibility
+     * @return the toggle button
+     */
     private JButton createToggleButton(JPasswordField passwordField) {
         JButton toggleButton = new JButton("Show");
         toggleButton.setFocusPainted(false);
@@ -119,6 +162,11 @@ public class AccountPage extends JPanel {
     }
 
 
+    /**
+     * Creates the main login/signup button.
+     * @param isLoginPage true if login; false if signup
+     * @return the button
+     */
     private JButton createMainButton(boolean isLoginPage) {
         JButton button = new JButton(isLoginPage ? "Login" : "Sign Up");
         button.setFont(new Font("SansSerif", Font.PLAIN, 18));
@@ -129,6 +177,13 @@ public class AccountPage extends JPanel {
     }
 
 
+    /**
+     * Creates the back button to return to the landing page.
+     * @param usernameField the username input field
+     * @param passwordField the password input field
+     * @param router        router used for navigation
+     * @return the back button
+     */
     private JButton createBackButton(JTextField usernameField, JPasswordField passwordField, Router router) {
         JButton button = new JButton("Back");
         button.setFont(new Font("SansSerif", Font.PLAIN, 18));
@@ -144,6 +199,14 @@ public class AccountPage extends JPanel {
     }
 
 
+    /**
+     * Adds logic to the main login/signup button to handle authentication and account creation.
+     * @param usernameField input field for the username
+     * @param passwordField input field for the password
+     * @param isLoginPage   true if login; false if signup
+     * @param router        router for navigation
+     * @param logic         logic controller for account operations
+     */
     private void addButtonLogic(JTextField usernameField, JPasswordField passwordField, boolean isLoginPage, Router router, LogicController logic) {
         mainButton.addActionListener(e -> {
             String username = usernameField.getText().trim();

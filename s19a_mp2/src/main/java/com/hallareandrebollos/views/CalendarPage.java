@@ -29,11 +29,28 @@ import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.widgets.calendarTile;
 
+
+/**
+ * Represents the main monthly calendar view, displaying a grid of days,
+ * with navigation controls and buttons for switching views.
+ */
 public class CalendarPage extends JPanel {
+
+    /** Handles calendar logic such as selected date and entry retrieval. */
     private final LogicController logic;
+
+    /** Panel that displays the grid of day tiles. */
     private JPanel calendarGrid;
+
+    /** Button that displays and updates the selected month and year. */
     private JButton datePickerButton;
 
+
+    /**
+     * Constructs the CalendarPage view and initializes components.
+     * @param router Router for page navigation
+     * @param logic LogicController for date and entry management
+     */
     public CalendarPage(Router router, LogicController logic) {
         this.logic = logic;
         setLayout(new BorderLayout());
@@ -47,7 +64,7 @@ public class CalendarPage extends JPanel {
     }
 
 
-    // Set Initial Month/Year Using LogicController.
+    /** Initializes the selected month and year if not already set. */
     private void initializeDate() {
         if (logic.getSelectedMonth() == 0 || logic.getSelectedYear() == 0) {
             logic.setSelectedMonth(LocalDate.now().getMonthValue());
@@ -56,7 +73,12 @@ public class CalendarPage extends JPanel {
     }
 
 
-    // Creates the Top Panel of the Calendar Page.
+    /**
+     * Creates the top panel with navigation buttons and date picker.
+     *
+     * @param router Router used for calendar updates and navigation
+     * @return Configured JPanel for the top section
+     */
     private JPanel createTopPanel(Router router) {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.setBackground(new Color(0xE0E0E0));
@@ -97,7 +119,10 @@ public class CalendarPage extends JPanel {
     }
 
 
-    // Creates the Calendar Grid of the Calendar Page.
+    /**
+     * Creates the calendar grid panel that displays days of the month.
+     * @return A JPanel arranged in a 7-column grid layout
+     */
     private JPanel createCalendarGrid() {
         JPanel calendarGrid = new JPanel();
         calendarGrid.setLayout(new GridLayout(0, 7));
@@ -107,7 +132,11 @@ public class CalendarPage extends JPanel {
     }
 
     
-    // Creates the Bottom Panel of the Calendar Page.
+    /**
+     * Creates the bottom panel with buttons for help, weekly view, and back navigation.
+     * @param router Router for handling navigation actions
+     * @return Configured JPanel for the bottom section
+     */
     private JPanel createBottomPanel(Router router) {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(new Color(0xE0E0E0));
@@ -141,7 +170,14 @@ public class CalendarPage extends JPanel {
     }
 
 
-    // Sets up the Navigation Buttons at the Top Panel.
+    /**
+     * Sets up navigation actions for month and year navigation buttons.
+     * @param router Router used to trigger calendar redraw
+     * @param prevMonth Button to go to previous month
+     * @param nextMonth Button to go to next month
+     * @param prevYear Button to go to previous year
+     * @param nextYear Button to go to next year
+     */
     private void setupNavigationButtons(Router router, JButton prevMonth, JButton nextMonth, JButton prevYear, JButton nextYear) {
         prevMonth.addActionListener(e -> {
             int month = logic.getSelectedMonth(); 
@@ -179,7 +215,10 @@ public class CalendarPage extends JPanel {
     }
 
 
-    // A Button at the Top Panel to Manually Change the Date.
+    /**
+     * Shows a dialog allowing users to pick a specific month and year.
+     * @param router Router used to redraw the calendar after date change
+     */
     private void showDatePicker(Router router) {
         String[] months = new DateFormatSymbols().getMonths();
         JComboBox<String> monthBox = new JComboBox<>(Arrays.copyOf(months, 12));
@@ -206,14 +245,17 @@ public class CalendarPage extends JPanel {
     }
 
 
-    // Updates the DatePickerLabel.
+    /** Updates the label on the date picker button to reflect the selected date. */
     private void updateDatePickerLabel() {
         String monthName = Month.of(logic.getSelectedMonth()).getDisplayName(TextStyle.FULL, Locale.ENGLISH);
         datePickerButton.setText(monthName + " " + logic.getSelectedYear());
     }
 
 
-    // Draws the Individual Calendar Per Month.
+    /**
+     * Renders the calendar grid based on the selected month and year.
+     * @param router Router used for interaction in calendar tiles
+     */
     private void drawCalendar(Router router) {
         calendarGrid.removeAll();
 

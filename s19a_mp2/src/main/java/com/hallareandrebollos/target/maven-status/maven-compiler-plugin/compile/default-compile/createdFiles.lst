@@ -1,0 +1,13 @@
+com\hallareandrebollos\models\Journal.class
+com\hallareandrebollos\widgets\yyyymmddSelector.class
+com\hallareandrebollos\models\CalendarObject.class
+com\hallareandrebollos\models\Task.class
+com\hallareandrebollos\views\CalendarListPage$2.class
+com\hallareandrebollos\models\Entry.class
+com\hallareandrebollos\models\Meeting.class
+com\hallareandrebollos\views\CalendarListPage$1.class
+com\hallareandrebollos\models\Event.class
+com\hallareandrebollos\widgets\hhmmSelector.class
+com\hallareandrebollos\models\FamilyCalendar.class
+com\hallareandrebollos\models\Account.class
+com\hallareandrebollos\widgets\entryList$1.class
