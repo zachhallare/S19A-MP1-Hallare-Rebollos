@@ -98,6 +98,7 @@ public class CalendarListPage extends JPanel {
 
         JButton addCalendarBtn = new JButton("Add Calendar");
         addCalendarBtn.addActionListener(e -> onAddCalendar(this.logicController));
+        
         JButton backBtn = new JButton("Back");
         backBtn.addActionListener(e -> onBack(router));
 
@@ -292,25 +293,37 @@ public class CalendarListPage extends JPanel {
             String[] options = {"Default", "Personal", "Family"};
             int choice = JOptionPane.showOptionDialog(this, "Select calendar type:", "Add Calendar",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+            
+            boolean calendarAdded = false;
+            
             switch (choice) {
                 case 0:
                     // Default calendar
                     logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, true);
+                    calendarAdded = true;
                     break;
                 case 1:
                     // Personal calendar
                     logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, false);
+                    calendarAdded = true;
                     break;
                 case 2:
                     // Family calendar
                     try {
                         int passcode = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter family calendar passcode:"));
                         logic.addFamilyCalendar(logic.getCurrentAccount().getUsername(), name, passcode);
+                        calendarAdded = true;
                     } catch (NumberFormatException e) {
                         JOptionPane.showMessageDialog(this, "Invalid passcode. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-                    }   break;
+                    }   
+                    break;
                 default:
                     break;
+            }
+
+            // Refresh the UI if a calendar was successfully added.
+            if (calendarAdded) {
+                redrawContents();
             }
         }
     }

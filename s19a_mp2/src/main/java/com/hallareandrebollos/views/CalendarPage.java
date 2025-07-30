@@ -151,19 +151,44 @@ public class CalendarPage extends JPanel {
             router.showWeeklyView(firstDayOfMonth);
         });
         
+        JButton deleteCalendarButton = new JButton("Delete Calendar");
+        deleteCalendarButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        deleteCalendarButton.setFocusPainted(false);
+        deleteCalendarButton.setBackground(Color.WHITE);
+        deleteCalendarButton.addActionListener(e -> {
+            // Show confirmation dialog.
+            String calendarName = logic.getCurrentCalendarObject() != null ? 
+                logic.getCurrentCalendarObject().getCalendarName() : "this calendar";
+
+            int result = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete \"" + calendarName + "\"?\nThis action cannot be undone.",
+                "Confirm Delete Calendar",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+            
+            if (result == JOptionPane.YES_OPTION) {
+                logic.removeCurrentCalendarObject();
+                router.showCalendarListPage();
+            }
+        });
+
         JButton backButton = new JButton("Back to Menu");
         backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
         backButton.setFocusPainted(false);
         backButton.setBackground(Color.WHITE);
         backButton.addActionListener(e -> router.showMenuPage());
+
         JButton addInfoButton = new JButton("Help");
         addInfoButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
         addInfoButton.setFocusPainted(false);
         addInfoButton.setBackground(Color.WHITE);
         addInfoButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Red - Task\n Blue - Event\n Yellow - Meeting\n Green - Journal", "Help", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Red = Task Entry\nBlue = Event Entry\nYellow = Meeting Entry\nGreen = Journal Entry", "Help", JOptionPane.INFORMATION_MESSAGE);
         });
+
         bottomPanel.add(addInfoButton);
+        bottomPanel.add(deleteCalendarButton);
         bottomPanel.add(weeklyViewButton);
         bottomPanel.add(backButton);
         return bottomPanel;
