@@ -13,7 +13,7 @@ public class Account {
     private final String username;
 
     /** Password of the account. */
-    private final String password;
+    private String password;
 
     /** Indicates if the account is active. */
     private boolean isActive;
@@ -101,5 +101,9 @@ public class Account {
      */
     public void removeOwnedCalendar(String calendarName) {
         ownedCalendars.remove(calendarName);
+    }
+
+    public void setPassword(String newPassword) {
+        this.password = newPassword;
     }
 }

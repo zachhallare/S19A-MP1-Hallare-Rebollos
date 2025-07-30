@@ -31,9 +31,6 @@ public class MenuPage extends JPanel {
     /** Primary text color for titles and labels. */
     private static final Color FOREGROUND_COLOR = new Color(0x36454F);
     
-    /** Accent color used for highlighting (e.g., delete button). */
-    private static final Color ACCENT_COLOR = new Color(0xFF9999);
-    
     /** Font used for main titles. */
     private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
     
@@ -126,18 +123,10 @@ public class MenuPage extends JPanel {
         });
         centerPanel.add(addButton);
 
-        // Delete Account
-        JButton deleteAccButton = createStandardButton("Delete Account");
-        deleteAccButton.setBackground(ACCENT_COLOR);
-        deleteAccButton.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(this,
-                    "Delete your account?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                logic.deactivateAccount();
-                router.showLandingPage();
-            }
-        });
-        centerPanel.add(deleteAccButton);
+        // Account Settings
+        JButton settingsButton = createStandardButton("Account Settings");
+        settingsButton.addActionListener(e -> showAccountSettingsDialog(router, logic));
+        centerPanel.add(settingsButton);
 
         // Logout
         JButton logoutButton = createStandardButton("Logout");
@@ -163,6 +152,54 @@ public class MenuPage extends JPanel {
         button.setBackground(Color.LIGHT_GRAY);
         button.setPreferredSize(new Dimension(160, 40));
         return button;
+    }
+
+
+    /**
+     * Shows the account settings dialog with options for changing password and deleting account.
+     * @param router the Router for page navigation
+     * @param logic  the LogicController for executing user actions
+     */
+    private void showAccountSettingsDialog(Router router, LogicController logic) {
+        String[] options = {"Change Password", "Delete Account", "Cancel"};
+        int choice = JOptionPane.showOptionDialog(this,
+                "Choose an account setting option:", "Account Settings",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, options, options[2]);
+        
+        switch (choice) {
+            case 0 -> handleChangePassword(router, logic);
+            case 1 -> handleDeleteAccount(router, logic);
+        }
+    }
+
+
+    /**
+     * Handles the change password functionality.
+     */
+    private void handleChangePassword(Router router, LogicController logic) {
+        String newPassword = JOptionPane.showInputDialog(this, "Enter new password:");
+        if (newPassword != null && !newPassword.isBlank()) {
+            logic.changePassword(logic.getCurrentAccount().getUsername(), newPassword);
+            JOptionPane.showMessageDialog(this, "Password changed successfully.");
+            router.showLandingPage();
+        }
+    }
+
+
+    /**
+     * Handles the delete account functionality.
+     * @param router the Router for page navigation
+     * @param logic  the LogicController for executing user actions
+     */
+    private void handleDeleteAccount(Router router, LogicController logic) {
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete your account?\nThis action cannot be undone.", 
+                "Confirm Account Deletion", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirm == JOptionPane.YES_OPTION) {
+            logic.deactivateAccount();
+            router.showLandingPage();
+        }
     }
 
 

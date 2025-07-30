@@ -571,4 +571,14 @@ public class LogicController {
         }
         return null; // No FamilyCalendar is selected
     }
+
+    public void changePassword(String username, String newPassword) {
+        int accountIndex = getAccountFromIndex(username);
+        if (accountIndex >= 0 && accountIndex < accounts.size()) {
+            Account account = accounts.get(accountIndex);
+            account.setPassword(newPassword);
+        } else {
+            System.out.println("Account not found: " + username);
+        }
+    }
 }
