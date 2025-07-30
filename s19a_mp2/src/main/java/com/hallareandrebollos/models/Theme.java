@@ -179,7 +179,86 @@ public class Theme {
         this.borderColor = new Color(0x8D6E63);            // Light brown
     }
     
-    // Getters for all color properties
+    /**
+     * Creates a darker version of the given color by reducing RGB values.
+     * @param color The original color
+     * @param factor The darkening factor (0.0 to 1.0)
+     * @return A darker version of the color
+     */
+    public static Color darkerColor(Color color, double factor) {
+        return new Color(
+            Math.max((int)(color.getRed() * factor), 0),
+            Math.max((int)(color.getGreen() * factor), 0),
+            Math.max((int)(color.getBlue() * factor), 0),
+            color.getAlpha()
+        );
+    }
+    
+    /**
+     * Creates a lighter version of the given color by increasing RGB values.
+     * @param color The original color
+     * @param factor The lightening factor (0.0 to 1.0)
+     * @return A lighter version of the color
+     */
+    public static Color lighterColor(Color color, double factor) {
+        return new Color(
+            Math.min((int)(color.getRed() + (255 - color.getRed()) * factor), 255),
+            Math.min((int)(color.getGreen() + (255 - color.getGreen()) * factor), 255),
+            Math.min((int)(color.getBlue() + (255 - color.getBlue()) * factor), 255),
+            color.getAlpha()
+        );
+    }
+    
+    /**
+     * Returns a string representation of the current theme.
+     * @return A string describing the current theme
+     */
+    @Override
+    public String toString() {
+        return "Theme{" +
+                "currentTheme=" + currentTheme +
+                ", backgroundColor=" + backgroundColor +
+                ", foregroundColor=" + foregroundColor +
+                ", accentColor=" + accentColor +
+                '}';
+    }
+    
+    /**
+     * Checks if the current theme is a dark theme.
+     * @return true if the theme is dark, false otherwise
+     */
+    public boolean isDarkTheme() {
+        return currentTheme == ThemeType.DARK_DEFAULT ||
+               currentTheme == ThemeType.AMOLED_BLACK ||
+               currentTheme == ThemeType.DARK_BLUE_OCEAN ||
+               currentTheme == ThemeType.DARK_GREEN_PLANT ||
+               currentTheme == ThemeType.RED_YELLOW_SAND_DUNES;
+    }
+    
+    /**
+     * Returns an array of all available theme types.
+     * @return Array of ThemeType values
+     */
+    public static ThemeType[] getAllThemes() {
+        return ThemeType.values();
+    }
+    
+    /**
+     * Returns a user-friendly name for the given theme type.
+     * @param themeType The theme type
+     * @return A readable name for the theme
+     */
+    public static String getThemeName(ThemeType themeType) {
+        return switch (themeType) {
+            case LIGHT_DEFAULT -> "Light Default";
+            case DARK_DEFAULT -> "Dark Default";
+            case AMOLED_BLACK -> "AMOLED Black";
+            case DARK_BLUE_OCEAN -> "Dark Blue Ocean";
+            case DARK_GREEN_PLANT -> "Dark Green Plant";
+            case RED_YELLOW_SAND_DUNES -> "Red Yellow Sand Dunes";
+        };
+    }
+
     
     /**
      * Returns the current background color.
@@ -261,8 +340,6 @@ public class Theme {
         return borderColor;
     }
     
-    // Getters for all font properties
-    
     /**
      * Returns the title font.
      * @return The title font
@@ -302,8 +379,6 @@ public class Theme {
     public ThemeType getCurrentTheme() {
         return currentTheme;
     }
-    
-    // Setters for individual color properties
     
     /**
      * Sets the background color.
@@ -385,8 +460,6 @@ public class Theme {
         this.borderColor = borderColor;
     }
     
-    // Setters for font properties
-    
     /**
      * Sets the title font.
      * @param titleFont The new title font
@@ -417,87 +490,5 @@ public class Theme {
      */
     public void setRegularFont(Font regularFont) {
         this.regularFont = regularFont;
-    }
-    
-    // Utility methods
-    
-    /**
-     * Creates a darker version of the given color by reducing RGB values.
-     * @param color The original color
-     * @param factor The darkening factor (0.0 to 1.0)
-     * @return A darker version of the color
-     */
-    public static Color darkerColor(Color color, double factor) {
-        return new Color(
-            Math.max((int)(color.getRed() * factor), 0),
-            Math.max((int)(color.getGreen() * factor), 0),
-            Math.max((int)(color.getBlue() * factor), 0),
-            color.getAlpha()
-        );
-    }
-    
-    /**
-     * Creates a lighter version of the given color by increasing RGB values.
-     * @param color The original color
-     * @param factor The lightening factor (0.0 to 1.0)
-     * @return A lighter version of the color
-     */
-    public static Color lighterColor(Color color, double factor) {
-        return new Color(
-            Math.min((int)(color.getRed() + (255 - color.getRed()) * factor), 255),
-            Math.min((int)(color.getGreen() + (255 - color.getGreen()) * factor), 255),
-            Math.min((int)(color.getBlue() + (255 - color.getBlue()) * factor), 255),
-            color.getAlpha()
-        );
-    }
-    
-    /**
-     * Returns a string representation of the current theme.
-     * @return A string describing the current theme
-     */
-    @Override
-    public String toString() {
-        return "Theme{" +
-                "currentTheme=" + currentTheme +
-                ", backgroundColor=" + backgroundColor +
-                ", foregroundColor=" + foregroundColor +
-                ", accentColor=" + accentColor +
-                '}';
-    }
-    
-    /**
-     * Checks if the current theme is a dark theme.
-     * @return true if the theme is dark, false otherwise
-     */
-    public boolean isDarkTheme() {
-        return currentTheme == ThemeType.DARK_DEFAULT ||
-               currentTheme == ThemeType.AMOLED_BLACK ||
-               currentTheme == ThemeType.DARK_BLUE_OCEAN ||
-               currentTheme == ThemeType.DARK_GREEN_PLANT ||
-               currentTheme == ThemeType.RED_YELLOW_SAND_DUNES;
-    }
-    
-    /**
-     * Returns an array of all available theme types.
-     * @return Array of ThemeType values
-     */
-    public static ThemeType[] getAllThemes() {
-        return ThemeType.values();
-    }
-    
-    /**
-     * Returns a user-friendly name for the given theme type.
-     * @param themeType The theme type
-     * @return A readable name for the theme
-     */
-    public static String getThemeName(ThemeType themeType) {
-        return switch (themeType) {
-            case LIGHT_DEFAULT -> "Light Default";
-            case DARK_DEFAULT -> "Dark Default";
-            case AMOLED_BLACK -> "AMOLED Black";
-            case DARK_BLUE_OCEAN -> "Dark Blue Ocean";
-            case DARK_GREEN_PLANT -> "Dark Green Plant";
-            case RED_YELLOW_SAND_DUNES -> "Red Yellow Sand Dunes";
-        };
     }
 }
