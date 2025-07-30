@@ -2,11 +2,9 @@
 package com.hallareandrebollos.widgets;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.MouseAdapter;
@@ -34,6 +32,7 @@ import com.hallareandrebollos.models.Entry;
 import com.hallareandrebollos.models.Event;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
+import com.hallareandrebollos.models.Theme;
 
 
 /**
@@ -86,6 +85,8 @@ public class entryList extends JPanel {
      * @return the header panel.
      */
     private JPanel createHeader() {
+        Theme theme = logicController.getCurrentTheme();
+        
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 20, 10, 20));
         panel.setOpaque(false);
@@ -95,7 +96,8 @@ public class entryList extends JPanel {
         String headerText = String.format("%s %d (%s)", month, date.getDayOfMonth(), dayOfWeek);
 
         JLabel label = new JLabel(headerText);
-        label.setFont(new Font("Arial", Font.BOLD, 20));
+        label.setFont(theme.getSubtitleFont());
+        label.setForeground(theme.getTextColor());
         panel.add(label, BorderLayout.WEST);
 
         return panel;
@@ -107,9 +109,12 @@ public class entryList extends JPanel {
      * @return the scroll pane containing the entry list.
      */
     private JScrollPane createListView() {
+        Theme theme = logicController.getCurrentTheme();
+        
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
+        listPanel.setBackground(theme.getBackgroundColor());
 
         // Separate entries
         List<Entry> journalsAndTasks = new ArrayList<>();
@@ -151,6 +156,8 @@ public class entryList extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBackground(theme.getBackgroundColor());
+        scrollPane.getViewport().setBackground(theme.getBackgroundColor());
         return scrollPane;
     }
 
@@ -162,28 +169,34 @@ public class entryList extends JPanel {
      * @return the JPanel representing the entry tile.
      */
     private JPanel createTile(Entry entry) {
+        Theme theme = logicController.getCurrentTheme();
+        
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(8, 16, 8, 16));
-        panel.setBackground(new Color(245, 245, 245));
+        panel.setBackground(theme.getPanelColor());
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 
         JPanel infoPanel = new JPanel();
         infoPanel.setOpaque(false);
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         JLabel titleLabel = new JLabel(entry.getTitle());
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        titleLabel.setFont(theme.getSubtitleFont());
+        titleLabel.setForeground(theme.getTextColor());
         JLabel typeLabel = new JLabel(entry.getType());
-        typeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        typeLabel.setFont(theme.getRegularFont());
+        typeLabel.setForeground(theme.getSubtitleColor());
         infoPanel.add(titleLabel);
         infoPanel.add(typeLabel);
 
         if (entry instanceof Meeting m) {
             JLabel timeLabel = new JLabel(m.getStartTime() + " - " + m.getEndTime());
-            timeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+            timeLabel.setFont(theme.getRegularFont());
+            timeLabel.setForeground(theme.getSubtitleColor());
             infoPanel.add(timeLabel);
         } else if (entry instanceof Event e) {
             JLabel timeLabel = new JLabel(e.getStartTime() + " - " + e.getEndTime());
-            timeLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+            timeLabel.setFont(theme.getRegularFont());
+            timeLabel.setForeground(theme.getSubtitleColor());
             infoPanel.add(timeLabel);
         }
 
@@ -191,10 +204,11 @@ public class entryList extends JPanel {
 
         // Right: Menu button
         JButton menuBtn = new JButton("...");
-        menuBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        menuBtn.setFont(theme.getButtonFont());
         menuBtn.setFocusPainted(false);
         menuBtn.setBorderPainted(false);
         menuBtn.setContentAreaFilled(false);
+        menuBtn.setForeground(theme.getTextColor());
         menuBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         menuBtn.addActionListener((var e) -> {
             JPanel dialogPanel = new JPanel();
@@ -292,14 +306,16 @@ public class entryList extends JPanel {
      * @return the footer panel.
      */
     private JPanel createFooter() {
+        Theme theme = logicController.getCurrentTheme();
+        
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 20, 10, 20));
         panel.setOpaque(false);
 
         JButton addBtn = new JButton("Add Entry");
-        addBtn.setFont(new Font("Arial", Font.BOLD, 16));
-        addBtn.setBackground(new Color(66, 133, 244));
-        addBtn.setForeground(Color.WHITE);
+        addBtn.setFont(theme.getButtonFont());
+        addBtn.setBackground(theme.getAccentColor());
+        addBtn.setForeground(theme.getButtonTextColor());
         addBtn.setFocusPainted(false);
         addBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         addBtn.addActionListener((var e) -> {

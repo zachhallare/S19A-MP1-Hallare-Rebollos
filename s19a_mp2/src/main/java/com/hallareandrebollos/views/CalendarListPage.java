@@ -2,12 +2,10 @@
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -27,6 +25,7 @@ import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.CalendarObject;
 import com.hallareandrebollos.models.FamilyCalendar;
+import com.hallareandrebollos.models.Theme;
 
 /**
  * CalendarListPage displays two list views: public calendars (horizontal) and private calendars (vertical).
@@ -50,8 +49,16 @@ public class CalendarListPage extends JPanel {
         this.logicController = logicCon;
         this.router = router;
         setLayout(new BorderLayout(0, 10));
-        setBackground(Color.WHITE);
+        applyTheme();
         setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30)); // Add padding to the main panel
+    }
+
+    /**
+     * Applies the current theme to this panel.
+     */
+    private void applyTheme() {
+        Theme theme = logicController.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
     }
 
 
@@ -60,14 +67,17 @@ public class CalendarListPage extends JPanel {
      */
     public void redrawContents() {
         removeAll();
+        applyTheme(); // Refresh theme when redrawing
 
+        Theme theme = logicController.getCurrentTheme();
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setOpaque(false);
 
         // Public Calendars Title
         JLabel publicTitle = new JLabel("Public Calendars");
-        publicTitle.setFont(new Font("Arial", Font.BOLD, 16));
+        publicTitle.setFont(theme.getSubtitleFont());
+        publicTitle.setForeground(theme.getForegroundColor());
         publicTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPanel.add(publicTitle);
 
@@ -80,7 +90,8 @@ public class CalendarListPage extends JPanel {
         // Private Calendars Title
         String username = logicController.getCurrentAccount().getUsername();
         JLabel privateTitle = new JLabel(username + "'s Private Calendars");
-        privateTitle.setFont(new Font("Arial", Font.BOLD, 16));
+        privateTitle.setFont(theme.getSubtitleFont());
+        privateTitle.setForeground(theme.getForegroundColor());
         privateTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         mainPanel.add(Box.createVerticalStrut(10));
         mainPanel.add(privateTitle);
@@ -97,9 +108,17 @@ public class CalendarListPage extends JPanel {
         buttonPanel.setOpaque(false);
 
         JButton addCalendarBtn = new JButton("Add Calendar");
+        addCalendarBtn.setFont(theme.getButtonFont());
+        addCalendarBtn.setBackground(theme.getPrimaryButtonColor());
+        addCalendarBtn.setForeground(theme.getButtonTextColor());
+        addCalendarBtn.setFocusPainted(false);
         addCalendarBtn.addActionListener(e -> onAddCalendar(this.logicController));
         
         JButton backBtn = new JButton("Back");
+        backBtn.setFont(theme.getButtonFont());
+        backBtn.setBackground(theme.getSecondaryButtonColor());
+        backBtn.setForeground(theme.getButtonTextColor());
+        backBtn.setFocusPainted(false);
         backBtn.addActionListener(e -> onBack(router));
 
         buttonPanel.add(addCalendarBtn);
@@ -118,15 +137,17 @@ public class CalendarListPage extends JPanel {
      * @return JScrollPane containing calendar tiles.
      */
     private JScrollPane createPublicCalendarList(Router router) {
+        Theme theme = logicController.getCurrentTheme();
         ArrayList<CalendarObject> publicCalendars = logicController.getPublicCalendarObjects();
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.X_AXIS));
         listPanel.setOpaque(false);
+        listPanel.setBackground(theme.getBackgroundColor());
 
         if (publicCalendars.isEmpty()) {
             JLabel emptyLabel = new JLabel("No Calendars.");
-            emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-            emptyLabel.setForeground(Color.GRAY);
+            emptyLabel.setFont(theme.getRegularFont());
+            emptyLabel.setForeground(theme.getSubtitleColor());
             listPanel.add(emptyLabel);
         } else {
             for (CalendarObject cal : publicCalendars) {
@@ -141,6 +162,9 @@ public class CalendarListPage extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setOpaque(false);
+        scrollPane.setOpaque(false);
+        scrollPane.setBackground(theme.getBackgroundColor());
+        scrollPane.getViewport().setBackground(theme.getBackgroundColor());
         scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         return scrollPane;
     }
@@ -153,15 +177,18 @@ public class CalendarListPage extends JPanel {
      * @return JPanel tile component.
      */
     private JPanel createPublicCalendarTile(CalendarObject cal, Router router) {
+        Theme theme = logicController.getCurrentTheme();
+        
         JPanel tile = new JPanel();
         tile.setLayout(new GridBagLayout());
         tile.setPreferredSize(new Dimension(75, 100)); // 3:4 aspect ratio
         tile.setMaximumSize(new Dimension(75, 100));
-        tile.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        tile.setBackground(new Color(240, 248, 255));
+        tile.setBorder(BorderFactory.createLineBorder(theme.getBorderColor(), 1));
+        tile.setBackground(theme.getPanelColor());
 
         JLabel nameLabel = new JLabel(cal.getName(), SwingConstants.CENTER);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        nameLabel.setFont(theme.getButtonFont());
+        nameLabel.setForeground(theme.getTextColor());
         tile.add(nameLabel);
 
         tile.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -172,11 +199,13 @@ public class CalendarListPage extends JPanel {
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                tile.setBackground(new Color(220, 235, 255));
+                Theme theme = logicController.getCurrentTheme();
+                tile.setBackground(theme.getAccentColor());
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                tile.setBackground(new Color(240, 248, 255));
+                Theme theme = logicController.getCurrentTheme();
+                tile.setBackground(theme.getPanelColor());
             }
         });
         return tile;
@@ -188,15 +217,17 @@ public class CalendarListPage extends JPanel {
      * @return JScrollPane containing calendar tiles.
      */
     private JScrollPane createPrivateCalendarList() {
+        Theme theme = logicController.getCurrentTheme();
         ArrayList<CalendarObject> privateCalendars = logicController.getPrivateCalendarObjects();
         JPanel listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setOpaque(false);
+        listPanel.setBackground(theme.getBackgroundColor());
 
         if (privateCalendars.isEmpty()) {
             JLabel emptyLabel = new JLabel("No Calendars.");
-            emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-            emptyLabel.setForeground(Color.GRAY);
+            emptyLabel.setFont(theme.getRegularFont());
+            emptyLabel.setForeground(theme.getSubtitleColor());
             listPanel.add(emptyLabel);
         } else {
             for (CalendarObject cal : privateCalendars) {
@@ -211,6 +242,9 @@ public class CalendarListPage extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setOpaque(false);
+        scrollPane.setOpaque(false);
+        scrollPane.setBackground(theme.getBackgroundColor());
+        scrollPane.getViewport().setBackground(theme.getBackgroundColor());
         scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         return scrollPane;
     }
@@ -222,14 +256,17 @@ public class CalendarListPage extends JPanel {
      * @return JPanel tile component.
      */
     private JPanel createPrivateCalendarTile(CalendarObject cal) {
+        Theme theme = logicController.getCurrentTheme();
+        
         JPanel tile = new JPanel(new BorderLayout());
         tile.setPreferredSize(new Dimension(740, 40));
         tile.setMaximumSize(new Dimension(740, 40));
-        tile.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        tile.setBackground(Color.WHITE);
+        tile.setBorder(BorderFactory.createLineBorder(theme.getBorderColor(), 1));
+        tile.setBackground(theme.getPanelColor());
 
         JLabel nameLabel = new JLabel(cal.getName());
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        nameLabel.setFont(theme.getRegularFont());
+        nameLabel.setForeground(theme.getTextColor());
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         tile.add(nameLabel, BorderLayout.CENTER);
 
@@ -241,11 +278,13 @@ public class CalendarListPage extends JPanel {
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                tile.setBackground(new Color(220, 235, 255));
+                Theme theme = logicController.getCurrentTheme();
+                tile.setBackground(theme.getAccentColor());
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                tile.setBackground(Color.WHITE);
+                Theme theme = logicController.getCurrentTheme();
+                tile.setBackground(theme.getPanelColor());
             }
         });
         return tile;

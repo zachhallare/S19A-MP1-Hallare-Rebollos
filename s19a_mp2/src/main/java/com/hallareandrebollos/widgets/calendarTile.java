@@ -1,9 +1,7 @@
 package com.hallareandrebollos.widgets;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalDate;
@@ -20,6 +18,7 @@ import javax.swing.SwingUtilities;
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.models.Theme;
 
 
 /**
@@ -76,19 +75,22 @@ public class calendarTile extends JPanel implements MouseListener {
      * Initializes the layout, style, and components of the calendar tile.
      */
     private void initializeComponents() {
+        Theme theme = logic.getCurrentTheme();
+        
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(120, 100));
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        setBackground(theme.getPanelColor());
+        setBorder(BorderFactory.createLineBorder(theme.getBorderColor(), 1));
 
         JLabel dayLabel = new JLabel(String.valueOf(day));
-        dayLabel.setFont(isToday ? new Font("SansSerif", Font.BOLD, 16) : new Font("SansSerif", Font.PLAIN, 14));
+        dayLabel.setFont(isToday ? theme.getTitleFont() : theme.getRegularFont());
         dayLabel.setHorizontalAlignment(SwingConstants.LEFT);
         dayLabel.setVerticalAlignment(SwingConstants.TOP);
         dayLabel.setOpaque(false);
+        dayLabel.setForeground(theme.getTextColor());
         
         ArrayList<Entry> entries = logic.getEntriesForDate(LocalDate.of(year, month, day));
-        pieChart pieChartPanel = new pieChart(entries, 35, 35);
+        pieChart pieChartPanel = new pieChart(entries, 35, 35, logic);
         pieChartPanel.setOpaque(false);
 
         JPanel contentPanel = new JPanel(new BorderLayout());
@@ -146,7 +148,8 @@ public class calendarTile extends JPanel implements MouseListener {
      */
     @Override
     public void mouseEntered(MouseEvent e) {
-        setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
+        Theme theme = logic.getCurrentTheme();
+        setBorder(BorderFactory.createLineBorder(theme.getAccentColor(), 2));
     }
 
 
@@ -156,6 +159,7 @@ public class calendarTile extends JPanel implements MouseListener {
      */
     @Override
     public void mouseExited(MouseEvent e) {
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        Theme theme = logic.getCurrentTheme();
+        setBorder(BorderFactory.createLineBorder(theme.getBorderColor(), 1));
     }
 }

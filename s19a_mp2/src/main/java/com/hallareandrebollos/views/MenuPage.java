@@ -1,13 +1,13 @@
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
+import com.hallareandrebollos.models.Theme;
 
 
 /**
@@ -25,17 +26,11 @@ import com.hallareandrebollos.controls.Router;
  */
 public class MenuPage extends JPanel {
     
-    /** Background color for the page. */
-    private static final Color BACKGROUND_COLOR = new Color(0xE0E0E0);
-
-    /** Primary text color for titles and labels. */
-    private static final Color FOREGROUND_COLOR = new Color(0x36454F);
+    /** Reference to the LogicController for theme access. */
+    private final LogicController logic;
     
-    /** Font used for main titles. */
-    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
-    
-    /** Font used for subtitles or secondary text. */
-    private static final Font SUBTITLE_FONT = new Font("SansSerif", Font.PLAIN, 20);
+    /** Reference to the Router for navigation. */
+    private final Router router;
 
 
     /**
@@ -44,12 +39,23 @@ public class MenuPage extends JPanel {
      * @param logic  the LogicController instance for managing application logic
      */
     public MenuPage(Router router, LogicController logic) {
+        this.router = router;
+        this.logic = logic;
+        
         setLayout(new BorderLayout());
-        setBackground(BACKGROUND_COLOR);
+        applyTheme();
 
         add(createTitlePanel(), BorderLayout.NORTH);
         add(createButtonPanel(router, logic), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
+    }
+
+    /**
+     * Applies the current theme to this panel.
+     */
+    private void applyTheme() {
+        Theme theme = logic.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
     }
 
     
@@ -58,18 +64,20 @@ public class MenuPage extends JPanel {
      * @return a JPanel with title and subtitle
      */
     private JPanel createTitlePanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
         titlePanel.setBorder(new EmptyBorder(70, 0, 30, 0));
 
         JLabel titleLabel = new JLabel("Main Menu", SwingConstants.CENTER);
-        titleLabel.setFont(TITLE_FONT);
-        titleLabel.setForeground(FOREGROUND_COLOR);
+        titleLabel.setFont(theme.getTitleFont());
+        titleLabel.setForeground(theme.getForegroundColor());
         titlePanel.add(titleLabel, BorderLayout.CENTER);
 
         JLabel subtitleLabel = new JLabel("Manage your calendars with ease", SwingConstants.CENTER);
-        subtitleLabel.setFont(SUBTITLE_FONT);
-        subtitleLabel.setForeground(Color.DARK_GRAY);
+        subtitleLabel.setFont(theme.getSubtitleFont());
+        subtitleLabel.setForeground(theme.getSubtitleColor());
         titlePanel.add(subtitleLabel, BorderLayout.SOUTH);
 
         return titlePanel;
@@ -92,41 +100,15 @@ public class MenuPage extends JPanel {
         selectButton.addActionListener(e -> router.showCalendarListPage());
         centerPanel.add(selectButton);
 
-        // Add Calendar
-        JButton addButton = createStandardButton("Add Calendar");
-        addButton.addActionListener(e -> {
-            String name = JOptionPane.showInputDialog(this, "Enter calendar name:");
-            if (name != null && !name.isBlank()) {
-                String[] options = {"Default", "Personal", "Family"};
-                int type = JOptionPane.showOptionDialog(this,
-                        "Choose calendar type:", "Calendar Type",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                        null, options, options[0]);
-                boolean exists = logic.checkCalendarDuplicate(name, true, logic.getCurrentAccount().getUsername());
-                if (exists) {
-                    type = 5;
-                }
-                exists = logic.checkCalendarDuplicate(name, false, logic.getCurrentAccount().getUsername());
-                if (exists) {
-                    type = 5;
-                }
-                switch (type) {
-                    case 0 -> logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, true);
-                    case 1 -> logic.addCalendarObject(logic.getCurrentAccount().getUsername(), name, false);
-                    case 2 -> {
-                        int passcode = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter family calendar passcode:"));
-                        logic.addFamilyCalendar(logic.getCurrentAccount().getUsername(), name, passcode);
-                    }
-                    default -> JOptionPane.showMessageDialog(this, "Calendar with this name already exists.");
-                }
-            }
-        });
-        centerPanel.add(addButton);
-
         // Account Settings
         JButton settingsButton = createStandardButton("Account Settings");
         settingsButton.addActionListener(e -> showAccountSettingsDialog(router, logic));
         centerPanel.add(settingsButton);
+
+        // Change Theme
+        JButton themeButton = createStandardButton("Change Theme");
+        themeButton.addActionListener(e -> showThemeSelectionDialog());
+        centerPanel.add(themeButton);
 
         // Logout
         JButton logoutButton = createStandardButton("Logout");
@@ -146,12 +128,138 @@ public class MenuPage extends JPanel {
      * @return a styled JButton
      */
     private JButton createStandardButton(String text) {
+        Theme theme = logic.getCurrentTheme();
+        
         JButton button = new JButton(text);
-        button.setFont(new Font("SansSerif", Font.PLAIN, 20));
+        button.setFont(theme.getButtonFont());
         button.setFocusPainted(false);
-        button.setBackground(Color.LIGHT_GRAY);
+        button.setBackground(theme.getPrimaryButtonColor());
+        button.setForeground(theme.getButtonTextColor());
         button.setPreferredSize(new Dimension(160, 40));
         return button;
+    }
+
+
+    /**
+     * Shows the theme selection dialog with all available themes.
+     */
+    private void showThemeSelectionDialog() {
+        Theme.ThemeType[] themes = Theme.getAllThemes();
+        
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Choose a Theme");
+        dialog.setModal(true);
+        dialog.setLayout(new BorderLayout());
+        
+        // Apply current theme to dialog
+        Theme currentTheme = logic.getCurrentTheme();
+        dialog.getContentPane().setBackground(currentTheme.getBackgroundColor());
+        
+        JLabel titleLabel = new JLabel("Select Theme", SwingConstants.CENTER);
+        titleLabel.setFont(currentTheme.getTitleFont());
+        titleLabel.setForeground(currentTheme.getForegroundColor());
+        titleLabel.setBorder(new EmptyBorder(20, 20, 10, 20));
+        dialog.add(titleLabel, BorderLayout.NORTH);
+        
+        JPanel themePanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        themePanel.setBorder(new EmptyBorder(10, 20, 20, 20));
+        themePanel.setOpaque(false);
+        
+        for (Theme.ThemeType themeType : themes) {
+            Theme previewTheme = new Theme(themeType);
+            JButton themeButton = createThemePreviewButton(themeType, previewTheme);
+            themeButton.addActionListener(e -> {
+                logic.changeTheme(themeType);
+                refreshUI();
+                dialog.dispose();
+            });
+            themePanel.add(themeButton);
+        }
+        
+        dialog.add(themePanel, BorderLayout.CENTER);
+        
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(currentTheme.getButtonFont());
+        cancelButton.setBackground(currentTheme.getSecondaryButtonColor());
+        cancelButton.setForeground(currentTheme.getButtonTextColor());
+        cancelButton.setFocusPainted(false);
+        cancelButton.addActionListener(e -> dialog.dispose());
+        
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(cancelButton);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
+        
+        dialog.setSize(600, 700);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+    
+    /**
+     * Creates a theme preview button showing the theme's actual colors.
+     */
+    private JButton createThemePreviewButton(Theme.ThemeType themeType, Theme previewTheme) {
+        JButton button = new JButton();
+        button.setLayout(new BorderLayout());
+        button.setPreferredSize(new Dimension(250, 100));
+        button.setFocusPainted(false);
+        button.setBorderPainted(true);
+        
+        // Set the button's background to the theme's background
+        button.setBackground(previewTheme.getBackgroundColor());
+        
+        // Create preview content
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false);
+        contentPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
+        
+        JLabel nameLabel = new JLabel(Theme.getThemeName(themeType), SwingConstants.CENTER);
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        nameLabel.setForeground(previewTheme.getForegroundColor());
+        
+        JPanel colorPreview = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        colorPreview.setOpaque(false);
+        
+        // Show small color swatches
+        JPanel primarySwatch = new JPanel();
+        primarySwatch.setBackground(previewTheme.getPrimaryButtonColor());
+        primarySwatch.setPreferredSize(new Dimension(20, 15));
+        
+        JPanel panelSwatch = new JPanel();
+        panelSwatch.setBackground(previewTheme.getPanelColor());
+        panelSwatch.setPreferredSize(new Dimension(20, 15));
+        
+        JPanel accentSwatch = new JPanel();
+        accentSwatch.setBackground(previewTheme.getAccentColor());
+        accentSwatch.setPreferredSize(new Dimension(20, 15));
+        
+        colorPreview.add(primarySwatch);
+        colorPreview.add(panelSwatch);
+        colorPreview.add(accentSwatch);
+        
+        contentPanel.add(nameLabel, BorderLayout.CENTER);
+        contentPanel.add(colorPreview, BorderLayout.SOUTH);
+        
+        button.add(contentPanel);
+        
+        return button;
+    }
+
+    /**
+     * Refreshes the UI to apply the new theme.
+     */
+    private void refreshUI() {
+        // Refresh this panel
+        applyTheme();
+        
+        // Remove and recreate all components to apply theme
+        removeAll();
+        add(createTitlePanel(), BorderLayout.NORTH);
+        add(createButtonPanel(router, logic), BorderLayout.CENTER);
+        add(createFooterPanel(), BorderLayout.SOUTH);
+        
+        revalidate();
+        repaint();
     }
 
 
@@ -208,13 +316,15 @@ public class MenuPage extends JPanel {
      * @return a JPanel with a motivational quote
      */
     private JPanel createFooterPanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footer.setOpaque(false);
         footer.setBorder(new EmptyBorder(20, 0, 80, 0));
 
         JLabel quoteLabel = new JLabel("\"A better plan starts with a better menu.\"");
         quoteLabel.setFont(new Font("SansSerif", Font.ITALIC, 18));
-        quoteLabel.setForeground(Color.GRAY);
+        quoteLabel.setForeground(theme.getSubtitleColor());
         footer.add(quoteLabel);
 
         return footer;

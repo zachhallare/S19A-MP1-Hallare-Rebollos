@@ -1,7 +1,6 @@
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -27,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
+import com.hallareandrebollos.models.Theme;
 import com.hallareandrebollos.widgets.calendarTile;
 
 
@@ -54,13 +54,21 @@ public class CalendarPage extends JPanel {
     public CalendarPage(Router router, LogicController logic) {
         this.logic = logic;
         setLayout(new BorderLayout());
-        setBackground(new Color(0xE0E0E0));
+        applyTheme();
         initializeDate();
         add(createTopPanel(router), BorderLayout.NORTH);
         this.calendarGrid = createCalendarGrid();
         add(this.calendarGrid, BorderLayout.CENTER);
         add(createBottomPanel(router), BorderLayout.SOUTH);
         drawCalendar(router);
+    }
+
+    /**
+     * Applies the current theme to this panel.
+     */
+    private void applyTheme() {
+        Theme theme = logic.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
     }
 
 
@@ -80,8 +88,10 @@ public class CalendarPage extends JPanel {
      * @return Configured JPanel for the top section
      */
     private JPanel createTopPanel(Router router) {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        topPanel.setBackground(new Color(0xE0E0E0));
+        topPanel.setBackground(theme.getBackgroundColor());
 
         JButton prevYearButton = new JButton("<<");
         JButton prevMonthButton = new JButton("<");
@@ -89,20 +99,21 @@ public class CalendarPage extends JPanel {
         JButton nextYearButton = new JButton(">>");
 
         this.datePickerButton = new JButton();
-        this.datePickerButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        this.datePickerButton.setFont(theme.getButtonFont());
         this.datePickerButton.setFocusPainted(false);
-        this.datePickerButton.setBackground(Color.WHITE);
+        this.datePickerButton.setBackground(theme.getPrimaryButtonColor());
+        this.datePickerButton.setForeground(theme.getButtonTextColor());
         updateDatePickerLabel();
 
         // Dimension and Font for the Buttons.
         Dimension squareSize = new Dimension(50, 30);
-        Font buttonFont = new Font("SansSerif", Font.BOLD, 14);
         JButton[] navButtons = {prevYearButton, prevMonthButton, nextMonthButton, nextYearButton};
         for (JButton button : navButtons) {
             button.setPreferredSize(squareSize);
-            button.setFont(buttonFont);
+            button.setFont(theme.getButtonFont());
             button.setFocusPainted(false);
-            button.setBackground(Color.WHITE);
+            button.setBackground(theme.getPrimaryButtonColor());
+            button.setForeground(theme.getButtonTextColor());
         }
 
         // Add the Buttons to the Top Panel.
@@ -124,9 +135,11 @@ public class CalendarPage extends JPanel {
      * @return A JPanel arranged in a 7-column grid layout
      */
     private JPanel createCalendarGrid() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel calendarGrid = new JPanel();
         calendarGrid.setLayout(new GridLayout(0, 7));
-        calendarGrid.setBackground(new Color(0xD0D0D0));
+        calendarGrid.setBackground(theme.getPanelColor());
         calendarGrid.setBorder(new EmptyBorder(10, 10, 10, 10));
         return calendarGrid;
     }
@@ -138,13 +151,16 @@ public class CalendarPage extends JPanel {
      * @return Configured JPanel for the bottom section
      */
     private JPanel createBottomPanel(Router router) {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setBackground(new Color(0xE0E0E0));
+        bottomPanel.setBackground(theme.getBackgroundColor());
         
         JButton weeklyViewButton = new JButton("Weekly View");
-        weeklyViewButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        weeklyViewButton.setFont(theme.getRegularFont());
         weeklyViewButton.setFocusPainted(false);
-        weeklyViewButton.setBackground(Color.WHITE);
+        weeklyViewButton.setBackground(theme.getSecondaryButtonColor());
+        weeklyViewButton.setForeground(theme.getButtonTextColor());
         weeklyViewButton.addActionListener(e -> {
             // Set the weekly view to start from the first day of the selected month
             LocalDate firstDayOfMonth = LocalDate.of(logic.getSelectedYear(), logic.getSelectedMonth(), 1);
@@ -152,9 +168,10 @@ public class CalendarPage extends JPanel {
         });
         
         JButton deleteCalendarButton = new JButton("Delete Calendar");
-        deleteCalendarButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        deleteCalendarButton.setFont(theme.getRegularFont());
         deleteCalendarButton.setFocusPainted(false);
-        deleteCalendarButton.setBackground(Color.WHITE);
+        deleteCalendarButton.setBackground(theme.getAccentColor());
+        deleteCalendarButton.setForeground(theme.getButtonTextColor());
         deleteCalendarButton.addActionListener(e -> {
             // Show confirmation dialog.
             String calendarName = logic.getCurrentCalendarObject() != null ? 
@@ -174,15 +191,17 @@ public class CalendarPage extends JPanel {
         });
 
         JButton backButton = new JButton("Back to Menu");
-        backButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        backButton.setFont(theme.getRegularFont());
         backButton.setFocusPainted(false);
-        backButton.setBackground(Color.WHITE);
+        backButton.setBackground(theme.getSecondaryButtonColor());
+        backButton.setForeground(theme.getButtonTextColor());
         backButton.addActionListener(e -> router.showMenuPage());
 
         JButton addInfoButton = new JButton("Help");
-        addInfoButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        addInfoButton.setFont(theme.getRegularFont());
         addInfoButton.setFocusPainted(false);
-        addInfoButton.setBackground(Color.WHITE);
+        addInfoButton.setBackground(theme.getSecondaryButtonColor());
+        addInfoButton.setForeground(theme.getButtonTextColor());
         addInfoButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Red = Task Entry\nBlue = Event Entry\nYellow = Meeting Entry\nGreen = Journal Entry", "Help", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -282,6 +301,7 @@ public class CalendarPage extends JPanel {
      * @param router Router used for interaction in calendar tiles
      */
     private void drawCalendar(Router router) {
+        Theme theme = logic.getCurrentTheme();
         calendarGrid.removeAll();
 
         DayOfWeek[] weekDays = {
@@ -293,7 +313,8 @@ public class CalendarPage extends JPanel {
             JLabel label = new JLabel(day.getDisplayName(TextStyle.FULL, Locale.ENGLISH), SwingConstants.CENTER);
             label.setFont(new Font("SansSerif", Font.BOLD, 13));
             label.setOpaque(true);
-            label.setBackground(new Color(0xC0C0C0));
+            label.setBackground(theme.getBorderColor());
+            label.setForeground(theme.getTextColor());
             label.setPreferredSize(new Dimension(0, 24));
             calendarGrid.add(label);
         }
@@ -308,7 +329,7 @@ public class CalendarPage extends JPanel {
         for (int i = 0; i < startDay; i++) {
             JButton filler = new JButton();
             filler.setEnabled(false);
-            filler.setBackground(new Color(0xD8D8D8));
+            filler.setBackground(theme.getSecondaryButtonColor());
             calendarGrid.add(filler);
         }
 
@@ -332,7 +353,7 @@ public class CalendarPage extends JPanel {
         for (int i = 0; i < remainingCells; i++) {
             JButton filler = new JButton();
             filler.setEnabled(false);
-            filler.setBackground(new Color(0xD8D8D8));
+            filler.setBackground(theme.getSecondaryButtonColor());
             calendarGrid.add(filler);
         }
 

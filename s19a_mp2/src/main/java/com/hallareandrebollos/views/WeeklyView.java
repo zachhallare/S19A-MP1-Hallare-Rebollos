@@ -2,10 +2,8 @@
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.List;
@@ -19,10 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
 import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.models.Theme;
 import com.hallareandrebollos.widgets.entryList;
 
 
@@ -59,7 +59,7 @@ public class WeeklyView extends JPanel {
         this.router = router;
         this.logic = logic;
         setLayout(new BorderLayout());
-        setBackground(new Color(0xE0E0E0));
+        applyTheme();
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
         // Default week start: SUNNNNNNNNNNDAAAAAAAAAAAAAAAAAAAAYYYYYYYYY
@@ -73,12 +73,22 @@ public class WeeklyView extends JPanel {
         updateWeekView();
     }
 
+    /**
+     * Applies the current theme to this panel.
+     */
+    private void applyTheme() {
+        Theme theme = logic.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
+    }
+
 
     /**
      * Creates the top panel with navigation buttons and week label.
      * @return the top JPanel component
      */
     private JPanel createTopPanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
@@ -87,10 +97,12 @@ public class WeeklyView extends JPanel {
 
         JButton prevWeekBtn = new JButton("<");
         JButton nextWeekBtn = new JButton(">");
-        prevWeekBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
-        nextWeekBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
-        prevWeekBtn.setBackground(Color.WHITE);
-        nextWeekBtn.setBackground(Color.WHITE);
+        prevWeekBtn.setFont(theme.getButtonFont());
+        nextWeekBtn.setFont(theme.getButtonFont());
+        prevWeekBtn.setBackground(theme.getPrimaryButtonColor());
+        nextWeekBtn.setBackground(theme.getPrimaryButtonColor());
+        prevWeekBtn.setForeground(theme.getButtonTextColor());
+        nextWeekBtn.setForeground(theme.getButtonTextColor());
         prevWeekBtn.setFocusPainted(false);
         nextWeekBtn.setFocusPainted(false);
 
@@ -106,7 +118,8 @@ public class WeeklyView extends JPanel {
         navPanel.add(prevWeekBtn);
 
         this.weekLabel = new JLabel();
-        this.weekLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        this.weekLabel.setFont(theme.getTitleFont());
+        this.weekLabel.setForeground(theme.getForegroundColor());
         this.weekLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         navPanel.add(this.weekLabel);
@@ -132,6 +145,7 @@ public class WeeklyView extends JPanel {
         this.horizontalScrollPane.getHorizontalScrollBar().setUnitIncrement(24);
         this.horizontalScrollPane.setOpaque(false);
         this.horizontalScrollPane.getViewport().setOpaque(false);
+        this.horizontalScrollPane.setBackground(logic.getCurrentTheme().getBackgroundColor());
 
         return this.horizontalScrollPane;
     }
@@ -142,12 +156,15 @@ public class WeeklyView extends JPanel {
      * @return the bottom JPanel component
      */
     private JPanel createBottomPanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setOpaque(false);
 
         JButton returnBtn = new JButton("Return to Calendar");
-        returnBtn.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        returnBtn.setBackground(Color.WHITE);
+        returnBtn.setFont(theme.getRegularFont());
+        returnBtn.setBackground(theme.getSecondaryButtonColor());
+        returnBtn.setForeground(theme.getButtonTextColor());
         returnBtn.setFocusPainted(false);
         returnBtn.addActionListener(e -> router.showCalendarPage(logic.getCurrentCalendarObject()));
 
@@ -160,7 +177,8 @@ public class WeeklyView extends JPanel {
      * Updates the entry view and label based on the current weekStart value.
      */
     public void updateWeekView() {
-        // Update week label and lavel
+        Theme theme = logic.getCurrentTheme();
+        
         LocalDate weekEnd = weekStart.plusDays(6);
         String startStr = weekStart.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " +
                 weekStart.getDayOfMonth() + " (" + weekStart.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + ")";
@@ -178,10 +196,20 @@ public class WeeklyView extends JPanel {
 
             JScrollPane entryScrollPane = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             entryScrollPane.setPreferredSize(new Dimension(220, 400));
-            entryScrollPane.setBorder(BorderFactory.createTitledBorder(date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)));
+            
+            TitledBorder titledBorder = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(theme.getBorderColor()), 
+                date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+            );
+            titledBorder.setTitleFont(theme.getRegularFont());
+            titledBorder.setTitleColor(theme.getTextColor());
+            entryScrollPane.setBorder(titledBorder);
+            
             entryScrollPane.getVerticalScrollBar().setUnitIncrement(24);
             entryScrollPane.setOpaque(false);
             entryScrollPane.getViewport().setOpaque(false);
+            entryScrollPane.setBackground(theme.getBackgroundColor());
+            entryScrollPane.getViewport().setBackground(theme.getBackgroundColor());
 
             entryListsPanel.add(entryScrollPane);
         }
@@ -198,5 +226,22 @@ public class WeeklyView extends JPanel {
     public void moveToSpecificWeek(LocalDate startDate) {
         this.weekStart = startDate.minusDays(startDate.getDayOfWeek().getValue() % 7);
         updateWeekView();
+    }
+
+    /**
+     * Refreshes the UI to apply the current theme to all components.
+     */
+    public void refreshTheme() {
+        applyTheme();
+        
+        removeAll();
+        add(createTopPanel(), BorderLayout.NORTH);
+        add(createMainPanel(), BorderLayout.CENTER);
+        add(createBottomPanel(), BorderLayout.SOUTH);
+        
+        updateWeekView();
+        
+        revalidate();
+        repaint();
     }
 }

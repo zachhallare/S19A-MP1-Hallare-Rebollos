@@ -31,6 +31,7 @@ import com.hallareandrebollos.models.Event;
 import com.hallareandrebollos.models.Journal;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
+import com.hallareandrebollos.models.Theme;
 import com.hallareandrebollos.widgets.hhmmSelector;
 import com.hallareandrebollos.widgets.yyyymmddSelector;
 
@@ -175,8 +176,10 @@ public class EntryForm extends JPanel {
      * Initializes layout structure of EntryForm.
      */
     private void initializeLayout() {
+        Theme theme = logic.getCurrentTheme();
+        
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(theme.getBackgroundColor());
         
         // Create header panel with instruction and buttons
         this.headerPanel = createHeaderPanel();
@@ -187,7 +190,8 @@ public class EntryForm extends JPanel {
         JScrollPane scrollPane = new JScrollPane(this.formPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBackground(Color.WHITE);
+        scrollPane.setBackground(theme.getBackgroundColor());
+        scrollPane.getViewport().setOpaque(false);
         add(scrollPane, BorderLayout.CENTER);
         
         // Create bottom action buttons
@@ -201,10 +205,12 @@ public class EntryForm extends JPanel {
      * @return the header JPanel
      */
     private JPanel createHeaderPanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(new Color(248, 249, 250));
+        header.setBackground(theme.getPanelColor());
         header.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)),
+            BorderFactory.createMatteBorder(0, 0, 1, 0, theme.getBorderColor()),
             BorderFactory.createEmptyBorder(20, 30, 20, 30)
         ));
         
@@ -213,13 +219,13 @@ public class EntryForm extends JPanel {
         titlePanel.setOpaque(false);
         
         JLabel titleLabel = new JLabel(this.editingEntry == null ? "Create New Entry" : "Edit Entry");
-        titleLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
-        titleLabel.setForeground(new Color(51, 51, 51));
+        titleLabel.setFont(theme.getTitleFont());
+        titleLabel.setForeground(theme.getTextColor());
         titlePanel.add(titleLabel, BorderLayout.NORTH);
         
         JLabel instructionLabel = new JLabel("Select the type of entry you want to create:");
-        instructionLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-        instructionLabel.setForeground(new Color(102, 102, 102));
+        instructionLabel.setFont(theme.getRegularFont());
+        instructionLabel.setForeground(theme.getSubtitleColor());
         instructionLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 15, 0));
         titlePanel.add(instructionLabel, BorderLayout.CENTER);
         
@@ -259,22 +265,23 @@ public class EntryForm extends JPanel {
      * Updates the button styles to reflect the currently selected type.
      */
     private void updateButtonStyles() {
+        Theme theme = logic.getCurrentTheme();
         Color[] activeColors = {
-            new Color(59, 130, 246),   // Blue for Event
-            new Color(34, 197, 94),    // Green for Journal  
-            new Color(251, 191, 36),   // Yellow for Meeting
-            new Color(239, 68, 68)     // Red for Task
+            theme.getAccentColor(),     // Event
+            theme.getAccentColor(),     // Journal  
+            theme.getAccentColor(),     // Meeting
+            theme.getAccentColor()      // Task
         };
         
         for (int i = 0; i < this.typeButtons.length; i++) {
             if (i == this.currentIdx) {
                 this.typeButtons[i].setBackground(activeColors[i]);
-                this.typeButtons[i].setForeground(Color.WHITE);
+                this.typeButtons[i].setForeground(theme.getButtonTextColor());
             } else {
-                this.typeButtons[i].setBackground(Color.WHITE);
-                this.typeButtons[i].setForeground(new Color(107, 114, 128));
+                this.typeButtons[i].setBackground(theme.getPanelColor());
+                this.typeButtons[i].setForeground(theme.getSubtitleColor());
                 this.typeButtons[i].setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(209, 213, 219), 1),
+                    BorderFactory.createLineBorder(theme.getBorderColor(), 1),
                     BorderFactory.createEmptyBorder(11, 23, 11, 23)
                 ));
             }
@@ -287,14 +294,16 @@ public class EntryForm extends JPanel {
      * @return the JPanel to be added to the south
      */
     private JPanel createBottomPanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 20));
-        bottomPanel.setBackground(new Color(248, 249, 250));
-        bottomPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(220, 220, 220)));
+        bottomPanel.setBackground(theme.getPanelColor());
+        bottomPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, theme.getBorderColor()));
 
         JButton submitBtn = new JButton(this.editingEntry == null ? "Create Entry" : "Update Entry");
-        submitBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        submitBtn.setBackground(new Color(16, 185, 129));
-        submitBtn.setForeground(Color.WHITE);
+        submitBtn.setFont(theme.getButtonFont());
+        submitBtn.setBackground(theme.getAccentColor());
+        submitBtn.setForeground(theme.getButtonTextColor());
         submitBtn.setFocusPainted(false);
         submitBtn.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 32));
         submitBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -302,9 +311,9 @@ public class EntryForm extends JPanel {
         bottomPanel.add(submitBtn);
 
         JButton returnBtn = new JButton("Return");
-        returnBtn.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        returnBtn.setBackground(new Color(107, 114, 128));
-        returnBtn.setForeground(Color.WHITE);
+        returnBtn.setFont(theme.getButtonFont());
+        returnBtn.setBackground(theme.getSecondaryButtonColor());
+        returnBtn.setForeground(theme.getButtonTextColor());
         returnBtn.setFocusPainted(false);
         returnBtn.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 32));
         returnBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -340,14 +349,8 @@ public class EntryForm extends JPanel {
         formPanel.setLayout(new GridBagLayout());
 
         // Set Background Color Based on Entry Type.
-        Color[] bgColors = {
-            new Color(239, 246, 255),   // Event - Light Blue
-            new Color(240, 253, 244),   // Journal - Light Green
-            new Color(255, 251, 235),   // Meeting - Light Yellow
-            new Color(254, 242, 242)    // Task - Light Red
-        };
-
-        Color bgColor = bgColors[idx];
+        Theme theme = logic.getCurrentTheme();
+        Color bgColor = theme.getBackgroundColor();
         formPanel.setBackground(bgColor);
         setBackground(bgColor);
 

@@ -1,7 +1,6 @@
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -14,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
+import com.hallareandrebollos.models.Theme;
 
 
 /**
@@ -22,31 +22,31 @@ import com.hallareandrebollos.controls.Router;
  */
 public class LandingPage extends JPanel {
 
-    /** Background color for the landing page */
-    private static final Color BACKGROUND_COLOR = new Color(0xD3D3D3);
-
-    /** Foreground color for titles and labels */
-    private static final Color FOREGROUND_COLOR = new Color(0x36454F);
-
-    /** Font used for the main title */
-    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
-
-    /** Font used for the subtitle below the title */
-    private static final Font SUBTITLE_FONT = new Font("SansSerif", Font.PLAIN, 20);
+    /** Reference to the LogicController for theme access. */
+    private final LogicController logic;
 
 
     /**
      * Constructs the LandingPage and lays out all UI components.
      * @param router Router used to navigate to other views
-     * @param logic LogicController for accessing application logic (not used here, but may be in future)
+     * @param logic LogicController for accessing application logic and themes
      */
     public LandingPage(Router router, LogicController logic) {
+        this.logic = logic;
         setLayout(new BorderLayout());
-        setBackground(BACKGROUND_COLOR);
+        applyTheme();
 
         add(createTitlePanel(), BorderLayout.NORTH);
         add(createCenterPanel(router), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
+    }
+
+    /**
+     * Applies the current theme to this panel.
+     */
+    private void applyTheme() {
+        Theme theme = logic.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
     }
 
 
@@ -55,18 +55,20 @@ public class LandingPage extends JPanel {
      * @return a JPanel with title and subtitle labels
      */
     private JPanel createTitlePanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
         titlePanel.setBorder(new EmptyBorder(80, 0, 30, 0));
 
         JLabel titleLabel = new JLabel("Digital Calendar", SwingConstants.CENTER);
-        titleLabel.setFont(TITLE_FONT);
-        titleLabel.setForeground(FOREGROUND_COLOR);
+        titleLabel.setFont(theme.getTitleFont());
+        titleLabel.setForeground(theme.getForegroundColor());
         titlePanel.add(titleLabel, BorderLayout.CENTER);
 
         JLabel subtitleLabel = new JLabel("Plan smart. Stay on track.", SwingConstants.CENTER);
-        subtitleLabel.setFont(SUBTITLE_FONT);
-        subtitleLabel.setForeground(Color.DARK_GRAY);
+        subtitleLabel.setFont(theme.getSubtitleFont());
+        subtitleLabel.setForeground(theme.getSubtitleColor());
         titlePanel.add(subtitleLabel, BorderLayout.SOUTH);
         
         return titlePanel;
@@ -104,13 +106,15 @@ public class LandingPage extends JPanel {
      * @return a JPanel containing a quote label
      */
     private JPanel createFooterPanel() {
+        Theme theme = logic.getCurrentTheme();
+        
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         footer.setOpaque(false);
         footer.setBorder(new EmptyBorder(40, 0, 90, 0));
 
         JLabel quoteLabel = new JLabel("\"Your time is valuable. Use it wisely.\"");
         quoteLabel.setFont(new Font("SansSerif", Font.ITALIC, 18));
-        quoteLabel.setForeground(Color.GRAY);
+        quoteLabel.setForeground(theme.getSubtitleColor());
         footer.add(quoteLabel);
 
         return footer;
@@ -122,8 +126,11 @@ public class LandingPage extends JPanel {
      * @param button the JButton to style
      */
     private void styleButton(JButton button) {
-        button.setFont(new Font("SansSerif", Font.PLAIN, 22));
+        Theme theme = logic.getCurrentTheme();
+        
+        button.setFont(theme.getButtonFont());
         button.setFocusPainted(false);
-        button.setBackground(Color.LIGHT_GRAY);
+        button.setBackground(theme.getPrimaryButtonColor());
+        button.setForeground(theme.getButtonTextColor());
     }
 }

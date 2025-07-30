@@ -10,15 +10,19 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.models.Entry;
+import com.hallareandrebollos.models.Theme;
 
 public class pieChart extends JPanel {
     private final int[] values;
-    private final Color[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.ORANGE};
+    private final LogicController logicController;
     private final String[] types = {"Event", "Meeting", "Task", "Journal"};
     private final int size;
 
-    public pieChart(ArrayList<Entry> entries, int sizeX, int sizeY) {
+    public pieChart(ArrayList<Entry> entries, int sizeX, int sizeY, LogicController logicController) {
+        this.logicController = logicController;
+        
         // Count entries by type
         int[] counts = new int[4]; // Event, Meeting, Task, Journal
 
@@ -43,6 +47,9 @@ public class pieChart extends JPanel {
         setPreferredSize(new Dimension(size, size));
         setMinimumSize(new Dimension(size, size));
         setMaximumSize(new Dimension(size, size));
+        
+        Theme theme = logicController.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
     }
 
     @Override
@@ -72,6 +79,14 @@ public class pieChart extends JPanel {
     }
 
     private void drawPieChart(Graphics2D g2d, int drawSize) {
+        Theme theme = logicController.getCurrentTheme();
+        Color[] colors = {
+            theme.getAccentColor(),
+            Theme.lighterColor(theme.getAccentColor(), 0.3),
+            Theme.darkerColor(theme.getAccentColor(), 0.3),
+            theme.getPrimaryButtonColor()
+        };
+        
         int total = 0;
         for (int value : values) {
             total += value;
@@ -89,14 +104,14 @@ public class pieChart extends JPanel {
             int centerSize = drawSize / 3;
             int centerX = (drawSize - centerSize) / 2;
             int centerY = (drawSize - centerSize) / 2;
-            g2d.setColor(Color.WHITE);
+            g2d.setColor(theme.getBackgroundColor());
             g2d.fillOval(centerX, centerY, centerSize, centerSize);
         }
     }
 
     // Static method for creating BufferedImage (if needed elsewhere)
-    public static BufferedImage constructPieChartImage(ArrayList<Entry> entries, int sizeX, int sizeY) {
-        pieChart pie = new pieChart(entries, sizeX, sizeY);
+    public static BufferedImage constructPieChartImage(ArrayList<Entry> entries, int sizeX, int sizeY, LogicController logicController) {
+        pieChart pie = new pieChart(entries, sizeX, sizeY, logicController);
         BufferedImage image = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

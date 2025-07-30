@@ -12,6 +12,7 @@ import com.hallareandrebollos.models.FamilyCalendar;
 import com.hallareandrebollos.models.Journal;
 import com.hallareandrebollos.models.Meeting;
 import com.hallareandrebollos.models.Task;
+import com.hallareandrebollos.models.Theme;
 
 /**
  * Controls the logic of the calendar application, including account management,
@@ -40,6 +41,9 @@ public class LogicController {
     /** Currently selected day (1–31) for calendar view. */
     private int selectedDay;
 
+    /** Current application theme. */
+    private Theme currentTheme;
+
 
     /**
      * Constructs a LogicController and initializes all lists and indices.
@@ -49,6 +53,7 @@ public class LogicController {
         this.CalendarObjects = new ArrayList<>();
         this.accountIndex = -1; // No account is logged in initially
         this.CalendarObjectIndex = -1; // No CalendarObject is selected initially
+        this.currentTheme = new Theme(); // Initialize with default light theme
     }
 
 
@@ -580,5 +585,29 @@ public class LogicController {
         } else {
             System.out.println("Account not found: " + username);
         }
+    }
+
+    /**
+     * Returns the current application theme.
+     * @return The current Theme instance
+     */
+    public Theme getCurrentTheme() {
+        return currentTheme;
+    }
+
+    /**
+     * Sets the current application theme.
+     * @param theme The new Theme to apply
+     */
+    public void setCurrentTheme(Theme theme) {
+        this.currentTheme = theme;
+    }
+
+    /**
+     * Changes the current theme to the specified theme type.
+     * @param themeType The theme type to switch to
+     */
+    public void changeTheme(Theme.ThemeType themeType) {
+        this.currentTheme.applyTheme(themeType);
     }
 }

@@ -1,8 +1,6 @@
 package com.hallareandrebollos.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -17,6 +15,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.hallareandrebollos.controls.LogicController;
 import com.hallareandrebollos.controls.Router;
+import com.hallareandrebollos.models.Theme;
 
 
 /**
@@ -25,17 +24,8 @@ import com.hallareandrebollos.controls.Router;
  */
 public class AccountPage extends JPanel {
 
-    /** Background color for the page. */
-    private static final Color BACKGROUND_COLOR = new Color(0xD3D3D3);
-
-    /** Foreground (text) color used for labels. */
-    private static final Color FOREGROUND_COLOR = new Color(0x36454F);
-
-    /** Font used for the main title. */
-    private static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 36);
-
-    /** Font used for labels. */
-    private static final Font LABEL_FONT = new Font("SansSerif", Font.PLAIN, 20);
+    /** Reference to the LogicController for theme access. */
+    private final LogicController logic;
     
     /** Button for submitting login or signup. */
     private JButton mainButton;
@@ -51,8 +41,9 @@ public class AccountPage extends JPanel {
      * @param isLoginPage  true if displaying login UI; false if displaying sign-up UI
      */
     public AccountPage(Router router, LogicController logic, boolean isLoginPage) {
+        this.logic = logic;
         setLayout(new BorderLayout());
-        setBackground(BACKGROUND_COLOR);
+        applyTheme();
 
         add(createTitlePanel(isLoginPage), BorderLayout.NORTH);
 
@@ -65,6 +56,14 @@ public class AccountPage extends JPanel {
         addButtonLogic(usernameField, passwordField, isLoginPage, router, logic);
     }
 
+    /**
+     * Applies the current theme to this panel.
+     */
+    private void applyTheme() {
+        Theme theme = logic.getCurrentTheme();
+        setBackground(theme.getBackgroundColor());
+    }
+
 
     /**
      * Creates the title panel.
@@ -72,9 +71,11 @@ public class AccountPage extends JPanel {
      * @return a JPanel with the title
      */
     private JPanel createTitlePanel(boolean isLoginPage) {
+        Theme theme = logic.getCurrentTheme();
+        
         JLabel titleLabel = new JLabel(isLoginPage ? "Login" : "Create an Account", SwingConstants.CENTER);
-        titleLabel.setFont(TITLE_FONT);
-        titleLabel.setForeground(FOREGROUND_COLOR);
+        titleLabel.setFont(theme.getTitleFont());
+        titleLabel.setForeground(theme.getForegroundColor());
         titleLabel.setBorder(new EmptyBorder(80, 0, 20, 0));
 
         JPanel titlePanel = new JPanel(new BorderLayout());
@@ -95,22 +96,26 @@ public class AccountPage extends JPanel {
      * @return the form panel
      */
     private JPanel createFormPanel(JTextField usernameField, JPasswordField passwordField, boolean isLoginPage, Router router, LogicController logic) {
+        Theme theme = this.logic.getCurrentTheme();
+        
         JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 50));
         formPanel.setOpaque(false);
         formPanel.setBorder(new EmptyBorder(30, 220, 30, 220));
 
         // Username.
         JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setFont(LABEL_FONT);
+        usernameLabel.setFont(theme.getSubtitleFont());
+        usernameLabel.setForeground(theme.getTextColor());
         usernameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        usernameField.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        usernameField.setFont(theme.getRegularFont());
         usernameField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         // Password.
         JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setFont(LABEL_FONT);
+        passwordLabel.setFont(theme.getSubtitleFont());
+        passwordLabel.setForeground(theme.getTextColor());
         passwordLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        passwordField.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        passwordField.setFont(theme.getRegularFont());
         passwordField.setBorder(new EmptyBorder(0, 10, 0, 10));
 
         // Password Panel with toggle.
@@ -141,11 +146,13 @@ public class AccountPage extends JPanel {
      * @return the toggle button
      */
     private JButton createToggleButton(JPasswordField passwordField) {
+        Theme theme = logic.getCurrentTheme();
+        
         JButton toggleButton = new JButton("Show");
         toggleButton.setFocusPainted(false);
-        toggleButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        toggleButton.setBackground(Color.WHITE);
-        toggleButton.setForeground(FOREGROUND_COLOR.darker());
+        toggleButton.setFont(theme.getRegularFont());
+        toggleButton.setBackground(theme.getPanelColor());
+        toggleButton.setForeground(theme.getSubtitleColor());
         toggleButton.setBorder(BorderFactory.createEmptyBorder(5, 8, 5, 8));
 
         toggleButton.addActionListener(ev -> {
@@ -168,10 +175,13 @@ public class AccountPage extends JPanel {
      * @return the button
      */
     private JButton createMainButton(boolean isLoginPage) {
+        Theme theme = logic.getCurrentTheme();
+        
         JButton button = new JButton(isLoginPage ? "Login" : "Sign Up");
-        button.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        button.setFont(theme.getButtonFont());
         button.setFocusPainted(false);
-        button.setBackground(Color.LIGHT_GRAY);
+        button.setBackground(theme.getPrimaryButtonColor());
+        button.setForeground(theme.getButtonTextColor());
 
         return button;
     }
@@ -185,10 +195,13 @@ public class AccountPage extends JPanel {
      * @return the back button
      */
     private JButton createBackButton(JTextField usernameField, JPasswordField passwordField, Router router) {
+        Theme theme = logic.getCurrentTheme();
+        
         JButton button = new JButton("Back");
-        button.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        button.setFont(theme.getButtonFont());
         button.setFocusPainted(false);
-        button.setBackground(Color.LIGHT_GRAY);
+        button.setBackground(theme.getSecondaryButtonColor());
+        button.setForeground(theme.getButtonTextColor());
         button.addActionListener(e -> {
             usernameField.setText("");
             passwordField.setText("");
